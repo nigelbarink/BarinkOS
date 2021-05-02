@@ -1,13 +1,9 @@
-#include <stdbool.h>
+#pragma once 
+#include <stdint.h>
 #include <stddef.h>
 #include <stdint.h>
-
-#include "string.h"
-
-#define KernelTag "[Kernel]: "
-#define AS_KERNEL() (  kterm_setcolor(VGA_COLOR_LIGHT_BLUE),\
-                       kterm_write(KernelTag, strlen(KernelTag)), \
-                       kterm_resetcolor())
+#include <stdbool.h>
+#include "../vga/colors.h"
 
 void kterm_init();
 
@@ -20,5 +16,7 @@ void kterm_write(const char*, size_t);
 void kterm_writestring(const char*);
 void kterm_scrollup();
 
-
-
+#define KernelTag "[Kernel]: "
+#define AS_KERNEL() (  kterm_setcolor(VGA_COLOR_LIGHT_BLUE),\
+                       kterm_write(KernelTag, 10 ), \
+                       kterm_resetcolor())

@@ -1,3 +1,4 @@
+#pragma once 
 enum vga_color {
 	VGA_COLOR_BLACK = 0,
 	VGA_COLOR_BLUE = 1,

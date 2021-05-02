@@ -1,39 +1,14 @@
-#include "kernel.h"
 #include "kterm.h"
+static const size_t VGA_WIDTH = 80;
+static const size_t VGA_HEIGHT = 25;
+
+size_t kterm_row;
+size_t kterm_column;
+uint8_t kterm_color;
+uint16_t* kterm_buffer;
 
 
-/**
- *      simple delay function 
- **/
-void delay(int t){
-    volatile int i,j;
-    for(i=0;i<t;i++)
-        for(j=0;j<25000;j++)
-            asm("NOP");
-}
-
-void kernel_main (void) {
-    /** initialize terminal interface */ 
-    kterm_init();
-
-    /** Wrtite stuff to the screen to test the terminal**/ 
-    kterm_writestring("Hello world!\n");
-    kterm_writestring("We got newline support!\n");
-
-    for(;;){
-        delay(500);
-        kterm_writestring("We have implemented terminal scrolling!\n");
-    }
-   
-   
-}   
-
-
-/**
- * KTerm stuff 
- **/
-
-static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg) {
+static inline uint8_t vga_entry_color( enum vga_color fg, enum vga_color bg) {
     return fg | bg << 4;
 }
 
@@ -109,7 +84,6 @@ void kterm_write(const char* data, size_t size) {
         kterm_put(data[i]);
     }
 }   
-
 
 void kterm_writestring(const char* data ){
     AS_KERNEL();
