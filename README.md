@@ -14,7 +14,7 @@ I hope to soon have the basic output and booting sequence with multiboot done.
 
 ### Planning
 
-[ ] Muliboot to kernel \
+[x] Muliboot to kernel \
 [ ] Printing strings and integer numbers (both decimal and hex) on the screen is certainly a must. This is one of most basic ways of debugging, and virtually all of us have gone through a kprint() or kout in version 0.01. \
 [ ] Outputting to a serial port will save you a lot of debugging time. You don't have to fear losing information due to scrolling. You will be able to test your OS from a console, filter interesting debug messages, and automatize some tests. \
 [ ] Having a working and reliable interrupt/exception handling system that can dump the contents of the registers (and perhaps the address of the fault) will be very useful. \

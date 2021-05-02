@@ -9,6 +9,9 @@ SRC_DIR=src
 BUILD_DIR=build
 
 
+# clean old build 
+rm build/*
+
 # Execute build
 i686-elf-as $SRC_DIR/boot.s -o $BUILD_DIR/boot.o
 i686-elf-gcc -c $SRC_DIR/kernel.c -o $BUILD_DIR/kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra

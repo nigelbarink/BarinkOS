@@ -46,20 +46,36 @@ void kterm_putat (char c, uint8_t color, size_t x, size_t y ) {
 
 }
 
-void kterm_put (char c) {
-    // add newline support 
-    if ( c == '\n'){
-        kterm_column = 0;
-        kterm_row++;
-        return;
-    }
 
-    kterm_putat ( c, kterm_color, kterm_column, kterm_row);
-    if(kterm_column++ == VGA_WIDTH ){
+/**
+ *  With the help from:
+ * https://whiteheadsoftware.dev/operating-systems-development-for-dummies/
+ **/ 
+void kterm_scrollup(){
+    size_t i ;
+    for(i=0; i < (VGA_WIDTH * VGA_HEIGHT - VGA_WIDTH); i++)
+        kterm_buffer[i] = kterm_buffer[i+VGA_WIDTH];
+
+    for( i=0; i< VGA_WIDTH; i++)
+        kterm_buffer[(VGA_HEIGHT -1) * VGA_WIDTH + i ] = vga_entry(' ', kterm_color); 
+
+}
+
+void kterm_put (char c) {
+ 
+    if(++kterm_column == VGA_WIDTH || c == '\n' ) {
         kterm_column = 0;
-        if(kterm_row++ == VGA_HEIGHT)
-            kterm_row = 0;
+        if(kterm_row == VGA_HEIGHT-1) {       
+            kterm_scrollup();
+        } else {
+            kterm_row ++;
+        }
+            
     }
+    
+    if(c == '\n') return;
+    kterm_putat ( c, kterm_color, kterm_column, kterm_row);
+    
 
 }
 
@@ -71,15 +87,34 @@ void kterm_write(const char* data, size_t size) {
 
 
 void kterm_writestring(const char* data ){
+    
+    //#define KernelTag "[Kernel]: "
+    //kterm_write(KernelTag, strlen(KernelTag));
+
     kterm_write(data, strlen(data));
 }
 
+/**
+ *      simple delay function 
+ **/
+void delay(int t){
+    volatile int i,j;
+    for(i=0;i<t;i++)
+        for(j=0;j<25000;j++)
+            asm("NOP");
+}
 
 void kernel_main (void) {
     /** initialize terminal interface */ 
     init_kterm();
 
-    kterm_writestring("K: Hello world!\n");
-    kterm_writestring("K: We got newline support!");
-    
+    /** Wrtite stuff to the screen to test the terminal**/ 
+    kterm_writestring("Hello world!\n");
+    kterm_writestring("We got newline support!\n");
+    for(;;){
+        delay(100);
+        kterm_writestring("We have implemented terminal scrolling!");
+    }
+   
+   
 }   
