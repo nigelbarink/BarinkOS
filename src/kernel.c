@@ -47,6 +47,13 @@ void kterm_putat (char c, uint8_t color, size_t x, size_t y ) {
 }
 
 void kterm_put (char c) {
+    // add newline support 
+    if ( c == '\n'){
+        kterm_column = 0;
+        kterm_row++;
+        return;
+    }
+
     kterm_putat ( c, kterm_color, kterm_column, kterm_row);
     if(kterm_column++ == VGA_WIDTH ){
         kterm_column = 0;
@@ -73,6 +80,6 @@ void kernel_main (void) {
     init_kterm();
 
     kterm_writestring("K: Hello world!\n");
-
+    kterm_writestring("K: We got newline support!");
     
 }   
