@@ -47,3 +47,6 @@ I hope to soon have the basic output and booting sequence with multiboot done.
 [wiki.osdev.org/Main_Page](wiki.osdev.org/Main_Page)
 
 [Modern Operating Systems [book]](https://www.amazon.com/Modern-Operating-Systems-Tanenbaum-Andrew/dp/1292061421/ref=sr_1_1?__mk_nl_NL=%C3%85M%C3%85%C5%BD%C3%95%C3%91&dchild=1&keywords=Modern+Operating+systems&qid=1619967779&sr=8-1)
+
+
+[whiteheadsoftware.dev](https://whiteheadsoftware.dev/operating-systems-development-for-dummies/)
