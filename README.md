@@ -3,8 +3,10 @@
  Inspired by people like Linus Torvalds and Andreas Kling
 ________________________
 ### Screenshot(s)
-Coming soon ...
-<img></img>
+<img src="screenshots/Screenshot1.png"></img>
+The first scrolling boot screen. 😲
+
+
 ________________________
 
 ### The goal
