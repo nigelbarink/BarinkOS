@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
+
 #include "../vga/colors.h"
 
 void kterm_init();

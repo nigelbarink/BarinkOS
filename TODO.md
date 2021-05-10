@@ -5,7 +5,7 @@
 <input type="checkbox" checked/> Printing string to the screen \
 <input type="checkbox" /> Printing values/numbers to the screen (a.k.k itoa) \
 <input type="checkbox" /> Extend Multiboot implementation \
-<input type="checkbox" /> Output to serial port \
+<input type="checkbox" checked/> Output to serial port \
 <input type="checkbox" /> Move to protected mode \
 <input type="checkbox" /> Enabel CMOS clock \
 <input type="checkbox" /> Time measurement (PIC &| PIT) \
