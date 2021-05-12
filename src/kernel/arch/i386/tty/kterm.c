@@ -89,4 +89,3 @@ void kterm_writestring(const char* data ){
     AS_KERNEL();
     kterm_write(data, strlen(data));
 }
-

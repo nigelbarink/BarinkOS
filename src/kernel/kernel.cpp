@@ -74,6 +74,12 @@ char read_serial() {
 }
 
 
+void print_serial(const char* string ){
+    for(size_t i = 0; i < strlen(string); i ++){
+        write_serial(string[i]);
+    }
+}
+
 void test_serial(){
         /** Serial test **/
         kterm_writestring("Writing to COM1 serial port:");
@@ -93,11 +99,34 @@ void test_serial(){
 }
 
 
+
 extern "C" {
+
+    void early_main(){
+
+       init_serial();
+       print_serial("\033[31;42mEarly main called!\n");
+       
+
+    }
+
     void kernel_main (void) {
+
+        print_serial("\033[31;42mKernel main called!\n");
+
+
         /** initialize terminal interface */ 
         kterm_init();
 
+        /** Setup the MMU **/
+        kterm_writestring("Starting MMU...\n");
+        auto mmu = MMU();
+        mmu.enable();
+        kterm_writestring("MMU enabled!\n");
+
+        
+
+        
         /** Wrtite stuff to the screen to test the terminal**/ 
         kterm_writestring("Hello world!\n");
         kterm_writestring("We got newline support!\n");
@@ -114,14 +143,11 @@ extern "C" {
         auto testObject = Test();
         testObject.printMe();
 
-        /** Setup the MMU **/
-        kterm_writestring("Starting MMU...\n");
-        auto mmu = MMU();
-        mmu.enable();
-        kterm_writestring("MMU enabled!\n");
 
-        
+        /** test interrupt handlers **/
+        //asm volatile ("int $0x3");
 
+        //asm volatile ("int $0x4");
 
         /** Lets start using the serial port for debugging .. **/
         // Hopefully once we go into realmode or do something that
@@ -129,7 +155,6 @@ extern "C" {
         // some situational awareness
         //Serial serialbus = Serial::init();
 
-        test_serial();
 
     
     }   

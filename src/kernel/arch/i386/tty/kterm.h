@@ -15,6 +15,7 @@ void kterm_putat(char, uint8_t, size_t, size_t);
 void kterm_put(char);
 void kterm_write(const char*, size_t);
 void kterm_writestring(const char*);
+
 void kterm_scrollup();
 
 #define KernelTag "[Kernel]: "
