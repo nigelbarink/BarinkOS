@@ -31,6 +31,39 @@ extern "C" {
 
     void irq_handler (registers regs);
 
+    extern void irs0 ();
+    extern void irs1 ();
+    extern void irs2 ();
+    extern void irs3 ();
+    extern void irs4 ();
+    extern void irs5 ();
+    extern void irs6 ();
+    extern void irs7 ();
+    extern void irs8 ();
+    extern void irs9 ();
+    extern void irs10 ();
+    extern void irs11 ();
+    extern void irs12 ();
+    extern void irs13 ();
+    extern void irs14 ();
+    extern void irs15 ();
+    extern void irs16 ();
+    extern void irs17 ();
+    extern void irs18 ();
+    extern void irs19 ();
+    extern void irs20 ();
+    extern void irs21 ();
+    extern void irs22 ();
+    extern void irs23 ();
+    extern void irs24 ();
+    extern void irs25 ();
+    extern void irs26 ();
+    extern void irs27 ();
+    extern void irs28 ();
+    extern void irs29 ();
+    extern void irs30 ();
+    extern void irs31 ();
+
     extern void irq0 ();
     extern void irq1 ();
     extern void irq2 ();
@@ -47,23 +80,6 @@ extern "C" {
     extern void irq13 ();
     extern void irq14 ();
     extern void irq15 ();
-    extern void irq16 ();
-    extern void irq17 ();
-    extern void irq18 ();
-    extern void irq19 ();
-    extern void irq20 ();
-    extern void irq21 ();
-    extern void irq22 ();
-    extern void irq23 ();
-    extern void irq24 ();
-    extern void irq25 ();
-    extern void irq26 ();
-    extern void irq27 ();
-    extern void irq28 ();
-    extern void irq29 ();
-    extern void irq30 ();
-    extern void irq31 ();
-
 
 
 
