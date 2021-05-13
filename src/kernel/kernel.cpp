@@ -9,6 +9,10 @@ void delay(int t){
             asm("NOP");
 }
 
+
+
+
+
 class Test {
     public:
          Test();
@@ -109,7 +113,7 @@ extern "C" {
        
         print_serial("Remapping PIC\n");
         // remap the PIC IRQ table
-        outb(0x20, 0x11);
+        /*outb(0x20, 0x11);
         outb(0xA0, 0x11);
         outb(0x21, 0x20);
         outb(0xA1, 0x28);
@@ -118,7 +122,7 @@ extern "C" {
         outb(0x21, 0x01);
         outb(0xA1, 0x01);
         outb(0x21, 0x0);
-        outb(0xA1, 0x0);
+        outb(0xA1, 0x0);*/
 
         
         print_serial("done... \n");
@@ -158,7 +162,7 @@ extern "C" {
         auto testObject = Test();
         testObject.printMe();
 
-        IRQ_set_mask(0);
+        /*IRQ_set_mask(0);
         IRQ_set_mask(1);
         IRQ_set_mask(2);
         IRQ_set_mask(3);
@@ -174,13 +178,13 @@ extern "C" {
         IRQ_set_mask(13);
         IRQ_set_mask(14);
         IRQ_set_mask(15);
-        
+        */
 
 
         /** test interrupt handlers **/
         asm volatile ("int $0x03");
 
-        //asm volatile ("int $4");
+        asm volatile ("int $4");
 
         /** Lets start using the serial port for debugging .. **/
         // Hopefully once we go into realmode or do something that

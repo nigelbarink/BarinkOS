@@ -6,4 +6,4 @@ extern "C" {
 #include "MMU.h"
 #include "io.h"
 #include "idt.h"
-#include "pic.h"
+//#include "pic.h"
