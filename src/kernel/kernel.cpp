@@ -9,17 +9,12 @@ void delay(int t){
             asm("NOP");
 }
 
-
-
-
-
 class Test {
     public:
          Test();
         void printMe();
          ~Test();
 };
-
 
 Test::Test(){
     kterm_writestring("Create a test object\n");
@@ -56,7 +51,6 @@ static int init_serial() {
    return 0;
 }
 
-
 int is_transmit_empty() {
    return inb(PORT + 5) & 0x20;
 }
@@ -76,7 +70,6 @@ char read_serial() {
  
    return inb(PORT);
 }
-
 
 void print_serial(const char* string ){
     for(size_t i = 0; i < strlen(string); i ++){
@@ -102,31 +95,13 @@ void test_serial(){
         kterm_writestring("\n");
 }
 
-
-
 extern "C" {
 
     void early_main(){
 
        init_serial();
        print_serial("\033[31;42mEarly main called!\n");
-       
-        print_serial("Remapping PIC\n");
-        // remap the PIC IRQ table
-        /*outb(0x20, 0x11);
-        outb(0xA0, 0x11);
-        outb(0x21, 0x20);
-        outb(0xA1, 0x28);
-        outb(0x21, 0x04);
-        outb(0xA1, 0x02);
-        outb(0x21, 0x01);
-        outb(0xA1, 0x01);
-        outb(0x21, 0x0);
-        outb(0xA1, 0x0);*/
-
-        
-        print_serial("done... \n");
-
+   
     }
 
     void kernel_main (void) {
@@ -162,24 +137,7 @@ extern "C" {
         auto testObject = Test();
         testObject.printMe();
 
-        /*IRQ_set_mask(0);
-        IRQ_set_mask(1);
-        IRQ_set_mask(2);
-        IRQ_set_mask(3);
-        IRQ_set_mask(4);
-        IRQ_set_mask(5);
-        IRQ_set_mask(6);
-        IRQ_set_mask(7);
-        IRQ_set_mask(8);
-        IRQ_set_mask(9);
-        IRQ_set_mask(10);
-        IRQ_set_mask(11);
-        IRQ_set_mask(12);
-        IRQ_set_mask(13);
-        IRQ_set_mask(14);
-        IRQ_set_mask(15);
-        */
-
+        
 
         /** test interrupt handlers **/
         asm volatile ("int $0x03");

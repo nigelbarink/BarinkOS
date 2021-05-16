@@ -27,251 +27,365 @@ stack_top:
 */
 # NOTE: I have no clue how I should use these macros.
 # Have tried to use them in a myriad of ways, none would actually work
-.macro irq_NoErrCode code:req
-	.globl irq\code
-	irq\code:
+.macro irs_NoErrCode code:req
+	.globl irs\code
+	irs\code:
 		cli 
 		pushb $0
 		pushb \code
-		jmp irq_common
+		jmp irs_common
 .endm
 
-.macro irq_ErrCode code
-	.globl irq\code
-	irq\code:
+.macro irs_ErrCode code
+	.globl irs\code
+	irs\code:
 		cli
 		pushb \code
-		jmp irq_common
+		jmp irs_common
 .endm
+
+.globl irs0
+irs0:
+	cli 
+	push $0
+	push $0
+	jmp irs_common
+
+.globl irs1
+irs1:
+	cli 
+	push $0
+	push $1
+	jmp irs_common
+
+.globl irs2
+irs2:
+	cli 
+	push $0
+	push $2
+	jmp irs_common
+
+.globl irs3
+irs3:
+	cli 
+	push $0
+	push $3
+	jmp irs_common
+
+.globl irs4
+irs4:
+	cli 
+	push $0
+	push $4
+	jmp irs_common
+
+.globl irs5
+irs5:
+	cli 
+	push $0
+	push $5
+	jmp irs_common
+
+.globl irs6
+irs6:
+	cli 
+	push $0
+	push $6
+	jmp irs_common
+
+.globl irs7
+irs7:
+	cli 
+	push $0
+	push $7
+	jmp irs_common
+
+.globl irs8
+irs8:
+	cli 
+	push $0
+	push $8
+	jmp irs_common
+
+.globl irs9
+irs9:
+	cli 
+	push $0
+	push $9
+	jmp irs_common
+
+.globl irs10
+irs10:
+	cli 
+	push $0
+	push $10
+	jmp irs_common
+
+.globl irs11
+irs11:
+	cli 
+	push $0
+	push $11
+	jmp irs_common
+
+.globl irs12
+irs12:
+	cli 
+	push $0
+	push $12
+	jmp irs_common
+
+.globl irs13
+irs13:
+	cli 
+	push $13
+	jmp irs_common
+
+.globl irs14
+irs14:
+	cli 
+	push $0
+	push $14
+	jmp irs_common
+
+.globl irs15
+irs15:
+	cli 
+	push $0
+	push $15
+	jmp irs_common
+
+.globl irs16
+irs16:
+	cli 
+	push $0
+	push $16
+	jmp irs_common
+
+.globl irs17
+irs17:
+	cli 
+	push $0
+	push $17
+	jmp irs_common
+
+.globl irs18
+irs18:
+	cli 
+	push $0
+	push $18
+	jmp irs_common
+
+.globl irs19
+irs19:
+	cli 
+	push $0
+	push $19
+	jmp irs_common
+
+.globl irs20
+irs20:
+	cli 
+	push $0
+	push $20
+	jmp irs_common
+
+.globl irs21
+irs21:
+	cli 
+	push $0
+	push $21
+	jmp irs_common
+
+.globl irs22
+irs22:
+	cli 
+	push $0
+	push $22
+	jmp irs_common
+
+.globl irs23
+irs23:
+	cli 
+	push $0
+	push $23
+	jmp irs_common
+
+.globl irs24
+irs24:
+	cli 
+	push $0
+	push $24
+	jmp irs_common
+
+.globl irs25
+irs25:
+	cli 
+	push $0
+	push $25
+	jmp irs_common
+
+.globl irs26
+irs26:
+	cli 
+	push $0
+	push $26
+	jmp irs_common
+
+.globl irs27
+irs27:
+	cli 
+	push $0
+	push $27
+	jmp irs_common
+
+.globl irs28
+irs28:
+	cli 
+	push $0
+	push $28
+	jmp irs_common
+
+.globl irs29
+irs29:
+	cli 
+	push $0
+	push $29
+	jmp irs_common
+
+.globl irs30
+irs30:
+	cli 
+	push $0
+	push $30
+	jmp irs_common
+
+.globl irs31
+irs31:
+	cli 
+	push $0
+	push $31
+	jmp irs_common
+
+
 
 .globl irq0
 irq0:
 	cli 
 	push $0
-	push $0
-	jmp irq_common
+	push $32
+	jmp irs_common
 
 .globl irq1
 irq1:
 	cli 
 	push $0
-	push $1
-	jmp irq_common
+	push $33
+	jmp irs_common
 
 .globl irq2
 irq2:
 	cli 
 	push $0
-	push $2
-	jmp irq_common
+	push $34
+	jmp irs_common
 
 .globl irq3
 irq3:
 	cli 
 	push $0
-	push $3
-	jmp irq_common
+	push $35
+	jmp irs_common
 
 .globl irq4
 irq4:
 	cli 
 	push $0
-	push $4
-	jmp irq_common
+	push $36
+	jmp irs_common
 
 .globl irq5
 irq5:
 	cli 
 	push $0
-	push $5
-	jmp irq_common
+	push $37
+	jmp irs_common
 
 .globl irq6
 irq6:
 	cli 
 	push $0
-	push $6
-	jmp irq_common
+	push $38
+	jmp irs_common
 
 .globl irq7
 irq7:
 	cli 
 	push $0
-	push $7
-	jmp irq_common
+	push $39
+	jmp irs_common
 
 .globl irq8
 irq8:
 	cli 
 	push $0
-	push $8
-	jmp irq_common
+	push $40
+	jmp irs_common
 
 .globl irq9
 irq9:
 	cli 
 	push $0
-	push $9
-	jmp irq_common
+	push $41
+	jmp irs_common
 
 .globl irq10
 irq10:
 	cli 
 	push $0
-	push $10
-	jmp irq_common
+	push $42
+	jmp irs_common
 
 .globl irq11
 irq11:
 	cli 
 	push $0
-	push $11
-	jmp irq_common
+	push $43
+	jmp irs_common
+
 
 .globl irq12
 irq12:
 	cli 
 	push $0
-	push $12
-	jmp irq_common
+	push $44
+	jmp irs_common
 
 .globl irq13
 irq13:
 	cli 
-	push $13
-	jmp irq_common
+	push $0
+	push $45
+	jmp irs_common
 
 .globl irq14
 irq14:
 	cli 
 	push $0
-	push $14
-	jmp irq_common
+	push $46
+	jmp irs_common
 
 .globl irq15
 irq15:
 	cli 
 	push $0
-	push $15
-	jmp irq_common
-
-.globl irq16
-irq16:
-	cli 
-	push $0
-	push $16
-	jmp irq_common
-
-.globl irq17
-irq17:
-	cli 
-	push $0
-	push $17
-	jmp irq_common
-
-.globl irq18
-irq18:
-	cli 
-	push $0
-	push $18
-	jmp irq_common
-
-.globl irq19
-irq19:
-	cli 
-	push $0
-	push $19
-	jmp irq_common
-
-.globl irq20
-irq20:
-	cli 
-	push $0
-	push $20
-	jmp irq_common
-
-.globl irq21
-irq21:
-	cli 
-	push $0
-	push $21
-	jmp irq_common
-
-.globl irq22
-irq22:
-	cli 
-	push $0
-	push $22
-	jmp irq_common
-
-.globl irq23
-irq23:
-	cli 
-	push $0
-	push $23
-	jmp irq_common
-
-.globl irq24
-irq24:
-	cli 
-	push $0
-	push $24
-	jmp irq_common
-
-.globl irq25
-irq25:
-	cli 
-	push $0
-	push $25
-	jmp irq_common
-
-.globl irq26
-irq26:
-	cli 
-	push $0
-	push $26
-	jmp irq_common
-
-.globl irq27
-irq27:
-	cli 
-	push $0
-	push $27
-	jmp irq_common
-
-.globl irq28
-irq28:
-	cli 
-	push $0
-	push $28
-	jmp irq_common
-
-.globl irq29
-irq29:
-	cli 
-	push $0
-	push $29
-	jmp irq_common
-
-.globl irq30
-irq30:
-	cli 
-	push $0
-	push $30
-	jmp irq_common
-
-.globl irq31
-irq31:
-	cli 
-	push $0
-	push $31
-	jmp irq_common
+	push $47
+	jmp irs_common
 
 
 
 
-
-irq_common:
+irs_common:
 	pusha 				# Pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
 
 
@@ -286,7 +400,7 @@ irq_common:
 	mov %ax, %fs
 	mov %ax, %gs
 
-	call irq_handler
+	call irs_handler
 
 	pop %eax
 
@@ -296,7 +410,7 @@ irq_common:
 	mov %ax, %gs
 
 	popa
-	add  $8, %esp  # cleans push error and irq code
+	add  $8, %esp  # cleans push error and irs code
 	sti
 	iret # pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
 
