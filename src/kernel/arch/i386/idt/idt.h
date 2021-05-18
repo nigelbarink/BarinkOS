@@ -3,13 +3,12 @@
 #include "stdint.h"
 #include "stddef.h"
 #include "../vga/colors.h"
-#include "../pic/pic.h";
+#include "../pic/pic.h"
 
+extern "C"{
+    #include "../tty/kterm.h"
+}
 #define AS_KERNEL() (  kterm_writestring("[KERNEL]:"))
-
-extern "C" void kterm_writestring(const char* data );
-extern "C" void kterm_putat(char, uint8_t, size_t, size_t);
-extern "C" void kterm_put(char);
 
 
 extern "C" {
