@@ -7,3 +7,4 @@ extern "C" {
 #include "arch/i386/idt/idt.h"
 #include "MMU.h"
 #include "io.h"
+#include "time.h"

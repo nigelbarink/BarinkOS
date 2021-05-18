@@ -144,6 +144,15 @@ extern "C" {
 
         asm volatile ("int $4");
 
+
+        
+        while (true){
+            // Read time indefinetely 
+            read_rtc();
+            printf( "(YY-MM-DD h:mm:ss): %2d-%2d-%2d %2d:%2d:%2d\r" ,year, month, day, hour, minute, second);
+            delay(1000);
+        }
+        
         /** Lets start using the serial port for debugging .. **/
         // Hopefully once we go into realmode or do something that
         // cause the screen to go black.. this serial comms part will give
