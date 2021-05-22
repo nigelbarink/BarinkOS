@@ -149,7 +149,7 @@ extern "C" {
         while (true){
             // Read time indefinetely 
             read_rtc();
-            printf( "(YY-MM-DD h:mm:ss): %2d-%2d-%2d %2d:%2d:%2d\r" ,year, month, day, hour, minute, second);
+            printf( "UTC time: %2d-%2d-%2d %2d:%2d:%2d  : (YY-MM-DD h:mm:ss)\r" ,year, month, day, hour, minute, second);
             delay(1000);
         }
         
