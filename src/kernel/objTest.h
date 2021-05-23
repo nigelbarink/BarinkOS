@@ -1,10 +1,9 @@
 #pragma once
-
-extern "C" void kterm_writestring(const char*);
+#include "arch/i386/tty/kterm.h"
 
 class Test {
     public:
          Test();
-        void printMe();
+         void printMe();
          ~Test();
 };

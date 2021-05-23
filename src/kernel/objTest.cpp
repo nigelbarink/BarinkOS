@@ -1,14 +1,17 @@
 #include "objTest.h"
-
+    
 
 Test::Test(){
-    kterm_writestring("Create a test object\n");
+    auto terminal = TextMode();
+    terminal.println("Create a test object");
 };
 
 void Test::printMe(){
-    kterm_writestring("testObject.printMe()\n");
+    auto terminal = TextMode();
+    terminal.println("testObject.printMe()\n");
 }
 
 Test::~Test(){
-    kterm_writestring("Destroy testObject! Bye bye\n");
+    auto terminal = TextMode();
+    terminal.println("Destroy testObject! Bye bye\n");
 }

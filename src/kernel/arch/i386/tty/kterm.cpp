@@ -16,7 +16,7 @@ static inline uint16_t vga_entry (unsigned char uc, uint8_t color) {
     return (uint16_t) uc | (uint16_t) color << 8;
 }
 
-void kterm_init () { 
+TextMode::TextMode () { 
     kterm_row = 0;
     kterm_column = 0;
     kterm_color = vga_entry_color ( VGA_COLOR_LIGHT_GREY , VGA_COLOR_BLACK);
@@ -31,15 +31,15 @@ void kterm_init () {
 }
 
 
-void kterm_resetcolor(){
+void TextMode::kterm_resetcolor(){
      kterm_color = vga_entry_color ( VGA_COLOR_LIGHT_GREY , VGA_COLOR_BLACK);
 }
 
-void kterm_setcolor(uint8_t color){
+void TextMode::kterm_setcolor(uint8_t color){
     kterm_color = color;
 }
 
-void kterm_putat (char c, uint8_t color, size_t x, size_t y ) {
+void TextMode::kterm_putat (char c, uint8_t color, size_t x, size_t y ) {
     const size_t index = y * VGA_WIDTH + x;
 
     kterm_buffer[index] = vga_entry(c, color);
@@ -51,7 +51,7 @@ void kterm_putat (char c, uint8_t color, size_t x, size_t y ) {
  *  With the help from:
  * https://whiteheadsoftware.dev/operating-systems-development-for-dummies/
  **/ 
-void kterm_scrollup(){
+void TextMode::kterm_scrollup(){
     size_t i ;
     for(i=0; i < (VGA_WIDTH * VGA_HEIGHT - VGA_WIDTH); i++)
         kterm_buffer[i] = kterm_buffer[i+VGA_WIDTH];
@@ -61,7 +61,7 @@ void kterm_scrollup(){
 
 }
 
-void kterm_put (char c) {
+void TextMode::kterm_put (char c) {
  
     if(++kterm_column == VGA_WIDTH || c == '\n' ) {
         kterm_column = 0;
@@ -79,14 +79,19 @@ void kterm_put (char c) {
 
 }
 
-void kterm_write(const char* data, size_t size) {
+void TextMode::kterm_write(const char* data, size_t size) {
     for(size_t i = 0; i < size; i++){
         kterm_put(data[i]);
     }
 }   
 
-void kterm_writestring(const char* data ){
+void TextMode::kterm_writestring(const char* data ){
     AS_KERNEL();
     kterm_write(data, strlen(data));
 }
 
+
+void TextMode::println( char* data) {
+
+    kterm_writestring( data + '\n' );
+}

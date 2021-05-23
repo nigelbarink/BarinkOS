@@ -9,40 +9,40 @@ void delay(int t){
             asm("NOP");
 }
 
-SerialHub* serial;
+
 extern "C" {
     void kernel_main (void) {
         /** initialize terminal interface */ 
-        kterm_init();
+        auto terminal = TextMode();
 
         /** Wrtite stuff to the screen to test the terminal**/ 
-        kterm_writestring("Hello world!\n");
-        kterm_writestring("We got newline support!\n");
+        terminal.println("Hello world!");
+        terminal.println("We got newline support!");
 
         /** Test scrolling **/
         for(int i=0; i < 5; i++){
             delay(500);
-            kterm_writestring("We have implemented terminal scrolling!\n");
+            terminal.println("We have implemented terminal scrolling!");
         }
     
         /** Test objective cpp **/
-        kterm_writestring("Testing C++ object support\n");
+        terminal.println("Testing C++ object support");
         auto testObject = Test();
         testObject.printMe();
 
         /** Setup the MMU **/
-        kterm_writestring("Starting MMU...\n");
-        auto mmu = MMU();
-        mmu.enable();
-        kterm_writestring("MMU enabled!\n");
+        //println("Starting MMU...");
+        //auto mmu = MMU();
+        //mmu.enable();
+        //println("MMU enabled!");
 
         /** Lets start using the serial port for debugging .. **/
         // Hopefully once we go into realmode or do something that
         // cause the screen to go black.. this serial comms part will give
         // some situational awareness
-        serial = new SerialHub();
+        SerialHub serial =  SerialHub();
 
-        serial->print("Hello world!");
+        serial.print("Hello world!");
 
     
     }   

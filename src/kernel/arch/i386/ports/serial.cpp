@@ -1,6 +1,5 @@
 #include "serial.h"
 
-extern "C" int strlen(const char*);
 
 void SerialHub::print(const char* message){
     uint8_t length  = strlen(message);
@@ -15,23 +14,24 @@ void SerialHub::println(const char* message){
 }
 
 SerialHub::SerialHub(){
-    
+    auto terminal = TextMode();
+
     /*Initialize 4 serial communication ports */
     int result = init(COM1);
     if (result != 0 )
-        kterm_writestring ("COM1 failed to initialize!");
+        terminal.println ("COM1 failed to initialize!");
 
     result = init(COM2);
     if (result != 0 )
-        kterm_writestring ("COM2 failed to initialize!");
+        terminal.println ("COM2 failed to initialize!");
 
     result = init(COM3);
     if (result != 0 )
-        kterm_writestring ("COM3 failed to initialize!");
+        terminal.println ("COM3 failed to initialize!");
 
     result = init(COM4);
     if (result != 0 )
-        kterm_writestring ("COM4 failed to initialize!");
+        terminal.println ("COM4 failed to initialize!");
 
     // set the default COM port to COM1
     PORT = COM1;
@@ -87,9 +87,10 @@ char SerialHub::read() {
 }
 
 void SerialHub::test(){
+        auto terminal = TextMode();
         /** Serial test **/
-        kterm_writestring("Writing to COM1 serial port.");
-        kterm_writestring("TEST 123...\n");
+        terminal.println("Writing to COM1 serial port.");
+        terminal.println("TEST 123...\n");
 
         println("TEST 123...");
 }

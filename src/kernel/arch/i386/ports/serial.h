@@ -2,13 +2,9 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
-
-extern "C" {
-    #include "../tty/kterm.h"
-}
+#include "../../../../libc/include/string.h"
+#include "../tty/kterm.h"
 #include "../../../io.h"
-
-extern "C" void kterm_writestring(const char* );
 
 class SerialHub {
 
