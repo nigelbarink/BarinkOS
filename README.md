@@ -2,11 +2,11 @@
 ## As a learning experience!
  Inspired by people like Linus Torvalds and Andreas Kling
 
-![Logo](images/BarinkOS_logo(standard).svg)
+![Logo](images/BarinkOS.png)
 
 ________________________
 ### Screenshot(s)
-<img src="screenshots/Screenshot1.png"></img>
+![Scrolling the terminal](screenshots/Screenshot1.png)   \
 The first scrolling boot screen. 😲
 
 
