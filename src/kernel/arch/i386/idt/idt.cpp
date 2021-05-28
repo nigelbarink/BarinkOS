@@ -1,5 +1,5 @@
 #include "idt.h"
-
+#include "Scancodes.h"
 
 IDT_entry idt_table[256];
 IDT_ptr idt_ptr;
@@ -17,7 +17,7 @@ void set_id_entry (uint8_t num , uint32_t base, uint16_t sel,  uint8_t flags){
 void irs_handler (registers regs) {
         kterm_writestring("received interrupt!\n");
      
-        printf(" Interrupt number: %d \n", regs.int_no);
+        printf("(IRS) Interrupt number: %d \n", regs.int_no);
 
         if( regs.int_no == 13){
             printf(" Error code: %d \n", regs.err_code);
@@ -26,6 +26,52 @@ void irs_handler (registers regs) {
 
 }
 
+
+
+void irq_handler (registers regs) {
+        
+     
+        if ( regs.int_no != 0) {
+            kterm_writestring("received interrupt!\n");
+            printf("(IRQ) Interrupt number: %d \n", regs.int_no);
+        
+        }
+        
+        if ( regs.int_no == 1 ){
+            // Keyboard interrupt !!
+
+            int scan;
+            register int i;
+
+            // Read scancode 
+
+            scan = inb(0x60);
+            
+            // Send ack message!
+            i = inb(0x61);
+            outb(0x61, i|0x80);
+            outb(0x61, i);
+            kterm_writestring("A key was pressed/released\n");
+            printf( "Scancode: %x\n", scan);
+
+    
+        }
+
+        
+        
+        outb(0x20, 0x20); // send end of interrupt to master
+
+        if ( regs.int_no > 8 && regs.int_no <= 15) {
+            outb(0xA0, 0x20); // send end of interrupt to slave 
+        }
+       
+       
+        if( regs.int_no == 13){
+            printf(" Error code: %d \n", regs.err_code);
+
+        }
+
+}
 
 
 
@@ -39,7 +85,7 @@ void init_idt(){
 
     // TODO: Set everything to zero first
 
-    set_id_entry(0,  (uint32_t) irs0 , 0x08, 0x8E);
+    set_id_entry(0,  (uint32_t) irs0 , 0x08, 0x8F);
     set_id_entry(1,  (uint32_t) irs1 , 0x08, 0x8E);
     set_id_entry(2,  (uint32_t) irs2 , 0x08, 0x8E);
     set_id_entry(3,  (uint32_t) irs3 , 0x08, 0x8E);

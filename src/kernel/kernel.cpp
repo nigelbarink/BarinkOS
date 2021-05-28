@@ -140,18 +140,17 @@ extern "C" {
         
 
         /** test interrupt handlers **/
-        asm volatile ("int $0x03");
+        //asm volatile ("int $0x03");
 
-        asm volatile ("int $4");
+        //asm volatile ("int $0x04");
 
-
-        
         while (true){
-            // Read time indefinetely 
+            //Read time indefinetely 
             read_rtc();
             printf( "UTC time: %2d-%2d-%2d %2d:%2d:%2d  : (YY-MM-DD h:mm:ss)\r" ,year, month, day, hour, minute, second);
             delay(1000);
         }
+
         
         /** Lets start using the serial port for debugging .. **/
         // Hopefully once we go into realmode or do something that
