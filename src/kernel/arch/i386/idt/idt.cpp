@@ -1,5 +1,5 @@
 #include "idt.h"
-#include "Scancodes.h"
+//#include "scancodes/set1.h"
 
 IDT_entry idt_table[256];
 IDT_ptr idt_ptr;
