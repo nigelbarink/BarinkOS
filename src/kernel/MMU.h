@@ -7,6 +7,7 @@ extern "C" void enablePaging();
 class MMU {
     public:
     void enable ();
+    uint32_t readTableEntry(int);
 
     private:
     uint32_t page_directory[1024] __attribute__((aligned(4096)));

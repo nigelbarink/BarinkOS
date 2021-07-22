@@ -88,7 +88,7 @@ void kterm_write(const char* data, size_t size) {
 }   
 
 void kterm_writestring(const char* data ){
-    AS_KERNEL();
+   // AS_KERNEL();
     kterm_write(data, strlen(data));
 }
 

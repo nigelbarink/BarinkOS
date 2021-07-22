@@ -471,6 +471,17 @@ _start:
 	/*Setup the stack pointer to point to the beginning of our stack */
 	/* I believe its a hight address growing down to lower adress for the stack on x86*/
 	mov $stack_top, %esp
+
+	/*Reset EFLAGS*/
+	pushl $0 
+	popf 
+
+	/* push the pointer to the Multiboot information structure*/
+	pushl %ebx
+
+	/* push the magic value */
+	pushl %eax
+	
 	call early_main
 	cli
 	load_gdt:

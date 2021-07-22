@@ -24,7 +24,7 @@ all: clean build
 build: build_kernel run 
 
 run:
-	$(EMULATOR) -d int -kernel $(BUILD_DIR)/myos.bin -serial stdio -vga std
+	$(EMULATOR)  -kernel $(BUILD_DIR)/myos.bin -serial stdio -vga std
 
 build_kernel: $(OBJ_LINK_LIST)
 	

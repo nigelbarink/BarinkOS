@@ -21,9 +21,9 @@ void MMU::enable(){
     //we will fill all 1024 entries in the table, mapping 4 megabytes
     for(unsigned int i = 0; i < 1024; i++)
     {
-    // As the address is page aligned, it will always leave 12 bits zeroed.
-    // Those bits are used by the attributes ;)
-    first_page_table[i] = (i * 0x1000) | 3; // attributes: supervisor level, read/write, present.
+        // As the address is page aligned, it will always leave 12 bits zeroed.
+        // Those bits are used by the attributes ;)
+        first_page_table[i] = (i * 0x1000) | 3; // attributes: supervisor level, read/write, present.
     }
 
     // attributes: supervisor level, read/write, present
@@ -32,4 +32,10 @@ void MMU::enable(){
 
     loadPageDirectory(this->page_directory);
     enablePaging();
+}
+
+
+uint32_t MMU::readTableEntry(int entry){
+    return this->page_directory[entry];
+
 }
