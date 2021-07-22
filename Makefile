@@ -24,7 +24,7 @@ all: clean build
 build: build_kernel run 
 
 run:
-	$(EMULATOR)  -kernel $(BUILD_DIR)/myos.bin -serial stdio -vga std
+	$(EMULATOR)  -kernel $(BUILD_DIR)/myos.bin -serial file:CON -vga std -monitor stdio -display gtk -m 2G -cpu core2duo -drive file=demodisk.img
 
 build_kernel: $(OBJ_LINK_LIST)
 	

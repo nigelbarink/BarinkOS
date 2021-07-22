@@ -46,6 +46,48 @@ void kterm_putat (char c, uint8_t color, size_t x, size_t y ) {
 
 }
 
+void enable_cursor (uint8_t start_cursor , uint8_t end_cursor ){
+    outb(0x3D4, 0x0A);
+    outb(0x3D5, (inb(0x3D5) & 0xC0) | start_cursor);
+
+    outb(0x3D4, 0x0B);
+    outb(0x3D5, (inb(0x3D5) & 0xE0) | end_cursor);
+}
+
+void disable_cursor() 
+{
+        outb(0x3D4, 0x0A);
+        outb(0x3D5, 0x20);
+}
+
+
+void update_cursor(int x, int y){
+    uint16_t pos = y * VGA_WIDTH + x;
+
+    outb(0x3D4, 0x0F);
+    outb(0x3D5, (uint8_t) (pos & 0xFF));
+    outb(0x3D4, 0x0E);
+    outb(0x3D5, (uint8_t) ((pos >> 8) & 0xFF));
+}
+
+uint16_t get_cursor_position(){
+    uint16_t pos = 0;
+    outb(0x3D4, 0x0F);
+    pos |= inb(0x3D5);
+    outb(0x3D4, 0x0E);
+    pos |= ((uint16_t) inb(0x3D5)) << 8;
+    return pos;
+}
+
+int get_cursor_x (uint16_t cursor_pos) {
+    return cursor_pos % VGA_WIDTH;
+}
+
+int get_cursor_y (uint16_t cursor_pos ) {
+    return cursor_pos / VGA_WIDTH;
+}
+
+
 
 /**
  *  With the help from:
@@ -63,6 +105,7 @@ void kterm_scrollup(){
 
 void kterm_put (char c) {
     if(++kterm_column == VGA_WIDTH || c == '\n' ) {
+        update_cursor(kterm_column , kterm_row);
         kterm_column = 0;
         if(kterm_row == VGA_HEIGHT-1 ) {       
             kterm_scrollup();

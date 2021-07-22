@@ -10,17 +10,16 @@ ________________________
 The first scrolling boot screen. 😲
 
 
-<img src="screenshots/WIP_interruptHandling.png"></img>
+![Interrupt handeling](screenshots/WIP_interruptHandling.png)   \
 W.I.P - Working on interrupt handling
 
+
+![Multiboot integration](screenshots/multiboot.png) \
+Multiboot information can be read by the kernel.
 ________________________
 
 ### The goal
 Writing a hobby operating system to better understand the basic building blocks of any operating system.
-
-
-
-
 
 ________________________
 ### Operating System Technical specs/details

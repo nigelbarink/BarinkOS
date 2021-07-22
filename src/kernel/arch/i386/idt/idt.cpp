@@ -23,6 +23,9 @@ void irs_handler (registers regs) {
             printf(" Error code: %d \n", regs.err_code);
 
         }
+        
+  
+       
 
 }
 
