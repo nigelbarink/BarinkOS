@@ -16,7 +16,6 @@ class Test {
          ~Test();
 };
 
-
 Test::Test(){
     kterm_writestring("Create a test object\n");
 };
@@ -52,7 +51,6 @@ static int init_serial() {
    return 0;
 }
 
-
 int is_transmit_empty() {
    return inb(PORT + 5) & 0x20;
 }
@@ -73,6 +71,11 @@ char read_serial() {
    return inb(PORT);
 }
 
+void print_serial(const char* string ){
+    for(size_t i = 0; i < strlen(string); i ++){
+        write_serial(string[i]);
+    }
+}
 
 void test_serial(){
         /** Serial test **/
@@ -92,12 +95,32 @@ void test_serial(){
         kterm_writestring("\n");
 }
 
-
 extern "C" {
+
+    void early_main(){
+
+       init_serial();
+       print_serial("\033[31;42mEarly main called!\n");
+   
+    }
+
     void kernel_main (void) {
+       
+        print_serial("Kernel main called!\n");
+
+
         /** initialize terminal interface */ 
         kterm_init();
 
+        /** Setup the MMU **/
+        //kterm_writestring("Starting MMU...\n");
+        //auto mmu = MMU();
+        //mmu.enable();
+        //kterm_writestring("MMU enabled!\n");
+
+        
+
+        
         /** Wrtite stuff to the screen to test the terminal**/ 
         kterm_writestring("Hello world!\n");
         kterm_writestring("We got newline support!\n");
@@ -114,22 +137,27 @@ extern "C" {
         auto testObject = Test();
         testObject.printMe();
 
-        /** Setup the MMU **/
-        kterm_writestring("Starting MMU...\n");
-        auto mmu = MMU();
-        mmu.enable();
-        kterm_writestring("MMU enabled!\n");
-
         
 
+        /** test interrupt handlers **/
+        //asm volatile ("int $0x03");
 
+        //asm volatile ("int $0x04");
+
+        while (true){
+            //Read time indefinetely 
+            read_rtc();
+            printf( "UTC time: %2d-%2d-%2d %2d:%2d:%2d  : (YY-MM-DD h:mm:ss)\r" ,year, month, day, hour, minute, second);
+            delay(1000);
+        }
+
+        
         /** Lets start using the serial port for debugging .. **/
         // Hopefully once we go into realmode or do something that
         // cause the screen to go black.. this serial comms part will give
         // some situational awareness
         //Serial serialbus = Serial::init();
 
-        test_serial();
 
     
     }   

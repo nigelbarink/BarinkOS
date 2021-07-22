@@ -57,3 +57,11 @@ void outsl(unsigned short , const void *,
         unsigned long ){
 
         }
+
+void io_wait(void)
+{
+    /* TODO: This is probably fragile. */
+    asm volatile ( "jmp 1f\n\t"
+                   "1:jmp 2f\n\t"
+                   "2:" );
+}

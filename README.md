@@ -10,6 +10,9 @@ ________________________
 The first scrolling boot screen. 😲
 
 
+<img src="screenshots/WIP_interruptHandling.png"></img>
+W.I.P - Working on interrupt handling
+
 ________________________
 
 ### The goal

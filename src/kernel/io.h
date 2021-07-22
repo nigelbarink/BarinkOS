@@ -41,3 +41,4 @@ void outsw(unsigned short port, const void *addr,
         unsigned long count);
 void outsl(unsigned short port, const void *addr,
         unsigned long count);
+void io_wait();
