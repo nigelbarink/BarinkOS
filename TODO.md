@@ -3,14 +3,14 @@
 <input type="checkbox" checked/> Setup Cross-Compiler \
 <input type="checkbox" checked/> Multiboot to kernel \
 <input type="checkbox" checked/> Printing string to the screen \
-<input type="checkbox" /> Printing values/numbers to the screen (a.k.k itoa) \
-<input type="checkbox" /> Extend Multiboot implementation \
+<input type="checkbox" checked/> Printing values/numbers to the screen (a.k.k itoa) \
+<input type="checkbox" checked/> Extend Multiboot implementation \
 <input type="checkbox" checked/> Output to serial port \
-<input type="checkbox" /> Move to protected mode \
-<input type="checkbox" /> Enabel CMOS clock \
+<input type="checkbox" checked/> Move to protected mode \
+<input type="checkbox" checked/> Enabel CMOS clock \
 <input type="checkbox" /> Time measurement (PIC &| PIT) \
 <input type="checkbox" /> Detect CPU speed \
-<input type="checkbox" /> Interrupt / exception system (API) \
+<input type="checkbox" checked/> Interrupt / exception system (API) \
 
 <input type="checkbox" /> Plan your memory map (virtual, and physical) : decide where you want the data to be. \
 <input type="checkbox" /> The heap: allocating memory at runtime (malloc and free) is almost impossible to go without. \
