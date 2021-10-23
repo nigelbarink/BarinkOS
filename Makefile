@@ -19,12 +19,27 @@ OBJ_LINK_LIST = $(CRTI_OBJ) $(CRTBEGIN_OBJ) $(OFILES) $(CRTEND_OBJ) $(CRTN_OBJ)
 INTERNAL_OBJS = $(CRTI_OBJ) $(OFILES) $(CRTN_OBJ)
 
 
-all: clean build
+all: clean build clean_up
 
-build: build_kernel run 
+build: build_kernel 
 
-run:
-	$(EMULATOR)  -kernel $(BUILD_DIR)/myos.bin -serial file:CON -vga std -monitor stdio -display gtk -m 2G -cpu core2duo -drive file=demodisk.img
+
+
+clean_iso: 
+	if [[ -a isodir/* ]] ; then rm isodir/* -d ; fi
+	if [ -f barinkOS.iso ] ; then rm barinkOS.iso ; fi
+	
+iso: clean_iso build
+	mkdir -p isodir/boot/grub
+	cp build/myos.bin isodir/boot/myos.bin
+	cp src/grub.cfg isodir/boot/grub/grub.cfg
+	grub-mkrescue -o barinkOS.iso isodir
+	
+clean_up:
+	rm build/*.o
+
+test:
+	$(EMULATOR)  -kernel $(BUILD_DIR)/myos.bin -serial file:CON -vga std -monitor stdio -display gtk -m 2G -cpu core2duo 
 
 build_kernel: $(OBJ_LINK_LIST)
 	
