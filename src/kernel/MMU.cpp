@@ -1,4 +1,5 @@
 #include "MMU.h"
+#include <stdint.h>
 
 
 
@@ -34,8 +35,13 @@ void MMU::enable(){
     enablePaging();
 }
 
-
-uint32_t MMU::readTableEntry(int entry){
-    return this->page_directory[entry];
-
+/*
+void IdentityPaging(uint32_t *first_pte, vaddr from, int size)
+{
+    from = from & 0xFFFFF000; // Discard the bits we don't want
+    for (; size > 0; from += 4096, first_pte++)
+    {
+        *first_pte = from | 1; // makr page present.
+    }
 }
+*/

@@ -21,7 +21,6 @@ stack_bottom:
 stack_top:
  
 .section .text
-
 /*
 * Interupt handlers
 */
@@ -469,7 +468,7 @@ loadPageDirectory:
 .type _start, @function
 _start:
 	/*Setup the stack pointer to point to the beginning of our stack */
-	/* I believe its a hight address growing down to lower adress for the stack on x86*/
+	/* I believe its a high address growing down to lower adress for the stack on x86*/
 	mov $stack_top, %esp
 
 	/*Reset EFLAGS*/
@@ -484,6 +483,7 @@ _start:
 	
 	call early_main
 	cli
+	
 	load_gdt:
 		lgdt gdt
 

@@ -6,6 +6,10 @@
 
 #include "../vga/colors.h"
 #include "../../../io.h"
+
+
+#include "./../../../../libc/include/string.h"
+
 void kterm_init();
 
 /* Kernel terminal - Colour functions*/
@@ -31,7 +35,7 @@ int get_cursor_y (uint16_t cursor_pos);
 
 void printf ( const char *format, ...);
 
-static void itoa (char *buf, int base, int d);
+//static void itoa (char *buf, int base, int d);
 
 #define KernelTag "[Kernel]: "
 #define AS_KERNEL() (  kterm_setcolor(VGA_COLOR_LIGHT_BLUE),\

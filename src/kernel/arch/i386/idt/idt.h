@@ -8,7 +8,6 @@
 extern "C"{
     #include "../tty/kterm.h"
 }
-#define AS_KERNEL() (  kterm_writestring("[KERNEL]:"))
 
 
 extern "C" {

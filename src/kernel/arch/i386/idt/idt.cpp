@@ -44,7 +44,7 @@ void irq_handler (registers regs) {
             // Keyboard interrupt !!
 
             int scan;
-            register int i;
+            /*register*/int i;
 
             // Read scancode 
 

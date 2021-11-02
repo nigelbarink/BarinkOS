@@ -5,7 +5,7 @@ CC = ${HOME}/opt/cross/bin/i686-elf-gcc
 CPP = ${HOME}/opt/cross/bin/i686-elf-g++ 
 CFLAGS =  -ffreestanding -O2 -Wall -Wextra
 
-OFILES =	$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o $(BUILD_DIR)/io.o $(BUILD_DIR)/MMU.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o
+OFILES =	$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o $(BUILD_DIR)/io.o $(BUILD_DIR)/MMU.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/string.o
 
 SRC_DIR = src
 BUILD_DIR = build
@@ -79,3 +79,6 @@ $(BUILD_DIR)/idt.o:
 
 $(BUILD_DIR)/pic.o:
 	$(CPP) -c $(SRC_DIR)/kernel/arch/i386/pic/pic.cpp -o $(BUILD_DIR)/pic.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+$(BUILD_DIR)/string.o:
+	$(CC) -c $(SRC_DIR)/libc/include/string.c  -o $(BUILD_DIR)/string.o $(CFLAGS) -std=gnu99

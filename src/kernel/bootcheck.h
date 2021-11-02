@@ -33,7 +33,7 @@ void CheckMBT ( multiboot_info_t*  mbt  ){
         /* Are mods_* valid? */
         if(CHECK_FLAG ( mbi->flags, 3)){
             multiboot_module_t *mod;
-            int i;
+            uint32_t i;
 
             printf("mods count = %d, mods_addr = 0x%x\n", (int) mbi->mods_count, (int) mbi->mods_addr);
 

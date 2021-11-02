@@ -1,6 +1,6 @@
 #include <cpuid.h> // NOTE: Only available in GCC 
-
-    static int get_model(){
+// NOT currently usefull!
+/*    static int get_model(){
         int ebx, unused;
         __cpuid(0, unused, ebx, unused, unused);
         return ebx;
@@ -14,3 +14,4 @@
         __get_cpuid(1, &eax, &unused, &unused, &edx);
         return  edx & CPUID_FEAT_EDX_APIC;
     }
+*/

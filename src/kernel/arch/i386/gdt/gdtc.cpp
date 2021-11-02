@@ -1,5 +1,5 @@
 #include "gdtc.h"
-
+#include "../tty/kterm.h"
  
 gdtEntry_t gdt[3];
 
@@ -18,8 +18,10 @@ void gdtSetGate(int num, uint64_t base, uint64_t limit, uint8_t access,
 }
 
 void setupGdt(){
+
+   printf("setupGdt is called!");
    gdtPointer.limit   = (sizeof(gdtEntry_t) * 3) - 1;
-   gdtPointer.base      = &gdt;
+   gdtPointer.base    = &gdt;
 
    gdtSetGate(0, 0, 0, 0, 0);
    gdtSetGate(1, 0, 0xFFFFFFFF, 0x9A, 0xCF);

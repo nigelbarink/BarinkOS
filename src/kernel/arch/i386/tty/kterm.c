@@ -1,4 +1,5 @@
 #include "kterm.h"
+
 static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 25;
 
@@ -201,8 +202,10 @@ void printf ( const char *format, ...) {
             switch (c)
             {
             case 'd':
-
+                kterm_writestring("Not implemented!!");
+                break;
             case 'u':
+                break;
             case 'x':
                 itoa(buf, c, *((int *) arg++));
 
