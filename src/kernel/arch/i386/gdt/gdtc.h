@@ -1,5 +1,5 @@
 #include <stdint.h>
-extern "c"{
+extern "C"{
 
 typedef struct {
    uint16_t           lLimit;

@@ -49,6 +49,8 @@ void read_rtc() {
       year = get_RTC_register(0x09);
       if(century_register != 0) {
             century = get_RTC_register(century_register);
+      } else {
+            century = 21;
       }
  
       do {
@@ -141,7 +143,7 @@ void WriteTOCMOS(unsigned char array[])
        asm("cli\n\t"       // Clear interrupts
          "mov al,index\n\t"    // move index address
          "out 0x70,al\n\t"     // copy address to CMOS register
-         /* some kind of real delay here is probably best 
+         // some kind of real delay here is probably best 
          "mov al,tvalue\n\t"   // move value to al
          "out 0x71,al\n\t"   // write 1 byte to CMOS
          "sti\n\\t"   );        // Enable interrupts

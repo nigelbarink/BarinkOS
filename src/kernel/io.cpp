@@ -1,19 +1,24 @@
 #include "io.h"
 
 unsigned char inb_p(unsigned short ){
-
+        // TODO: implement me!
+        return 0;
 }
 unsigned short inw(unsigned short ){
-
+// TODO: implement me!
+        return 0;
 }
 unsigned short inw_p(unsigned short ){
-
+// TODO: implement me!
+        return 0;
 }
 unsigned int inl(unsigned short ){
-
+// TODO: implement me!
+        return 0;
 }
 unsigned int inl_p(unsigned short ){
-
+// TODO: implement me!
+        return 0;
 }
 
 

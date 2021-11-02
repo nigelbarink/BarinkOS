@@ -1,1 +1,8 @@
 build
+CON
+.vscode
+isodir/
+root/
+*.iso
+*.img
+

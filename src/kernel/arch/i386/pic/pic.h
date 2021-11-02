@@ -49,7 +49,7 @@ void PIC_sendEOI (unsigned char irq);
 }
 
 
-static uint16_t __pic_get_irq_reg(int ocw3);
+//static uint16_t __pic_get_irq_reg(int ocw3);
 uint16_t pic_get_irr(void);
 uint16_t pic_get_isr(void);
 
