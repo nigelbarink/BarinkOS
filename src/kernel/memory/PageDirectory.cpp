@@ -1,9 +1,9 @@
-#include "MMU.h"
+#include "PageDirectory.h"
 #include <stdint.h>
 
 
 
-void MMU::enable(){
+void PageDirectory::enable(){
 
     //set each entry to not present
     int i;

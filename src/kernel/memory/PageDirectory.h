@@ -18,7 +18,7 @@ struct page_table_entry{};
 
 
 
-class MMU {
+class PageDirectory {
     public:
     void enable ();
     

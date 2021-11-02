@@ -1,16 +1,13 @@
 #pragma once 
 extern "C" {
-
     #include "arch/i386/tty/kterm.h"
-    #include "pmm.h"
 }
 
 #include "../libc/include/string.h"
-#include "multiboot.h"
+#include "./bootloader/multiboot.h"
 #include "bootcheck.h"
 #include "arch/i386/idt/idt.h"
 
-#include "MMU.h"
 #include "io.h"
 #include "time.h"
 #include "cpu.h"

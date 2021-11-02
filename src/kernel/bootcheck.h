@@ -1,5 +1,5 @@
 #pragma once 
-#include "multiboot.h"
+#include "bootloader/multiboot.h"
 #define CHECK_FLAG(flags, bit) ((flags) & (1 <<(bit)))
 
 extern "C" {
