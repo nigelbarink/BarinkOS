@@ -5,9 +5,7 @@
 #include "../vga/colors.h"
 #include "../pic/pic.h"
 
-extern "C"{
-    #include "../tty/kterm.h"
-}
+#include "../tty/kterm.h"
 
 
 extern "C" {

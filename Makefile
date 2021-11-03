@@ -5,7 +5,7 @@ CC = ${HOME}/opt/cross/bin/i686-elf-gcc
 CPP = ${HOME}/opt/cross/bin/i686-elf-g++ 
 CFLAGS =  -ffreestanding -O2 -Wall -Wextra
 
-OFILES =	$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o $(BUILD_DIR)/io.o $(BUILD_DIR)/PageDirectory.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/string.o
+OFILES =	$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o  $(BUILD_DIR)/PageFrameAllocator.o $(BUILD_DIR)/io.o $(BUILD_DIR)/PageDirectory.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/string.o
 
 SRC_DIR = src
 BUILD_DIR = build
@@ -57,10 +57,10 @@ $(BUILD_DIR)/kernel.o:
 	$(CPP) -c $(SRC_DIR)/kernel/kernel.cpp -o $(BUILD_DIR)/kernel.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/kterm.o:
-	$(CC) -c $(SRC_DIR)/kernel/arch/i386/tty/kterm.c  -o $(BUILD_DIR)/kterm.o $(CFLAGS) -std=gnu99
+	$(CPP) -c $(SRC_DIR)/kernel/arch/i386/tty/kterm.cpp  -o $(BUILD_DIR)/kterm.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/boot.o:
-	$(AS) $(SRC_DIR)/kernel/arch/i386/boot.s -o $(BUILD_DIR)/boot.o
+	$(AS) $(SRC_DIR)/kernel/arch/i386/boot.S -o $(BUILD_DIR)/boot.o
 
 $(BUILD_DIR)/crti.o:
 	$(AS) $(SRC_DIR)/kernel/arch/i386/crti.s -o $(BUILD_DIR)/crti.o
@@ -82,3 +82,6 @@ $(BUILD_DIR)/pic.o:
 
 $(BUILD_DIR)/string.o:
 	$(CC) -c $(SRC_DIR)/libc/include/string.c  -o $(BUILD_DIR)/string.o $(CFLAGS) -std=gnu99
+
+$(BUILD_DIR)/PageFrameAllocator.o:
+	$(CPP) -c $(SRC_DIR)/kernel/memory/PageFrameAllocator.cpp  -o $(BUILD_DIR)/PageFrameAllocator.o $(CFLAGS) -fno-exceptions -fno-rtti
