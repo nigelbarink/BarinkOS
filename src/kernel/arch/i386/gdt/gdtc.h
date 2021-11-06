@@ -10,11 +10,13 @@ typedef struct {
    uint8_t            hBase;
 } gdtEntry_t;
 
-struct {
+struct gdtSegmentPointer {
    uint16_t limit;
    uint32_t base;
-} gdtPointer;
+};
 
-extern void loadGdt();
+extern gdtSegmentPointer gdtPointer;
+
+extern void load_gdt();
 void setupGdt();
 }

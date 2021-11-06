@@ -46,7 +46,7 @@ _start:
 	
 	call early_main
 	cli
-	
+	.global load_gdt
 	load_gdt:
 		lgdt gdt
 

@@ -26,17 +26,18 @@
             printf("kernel: 0x%x - 0x%x\n", &kernel_begin , &kernel_end);         
         }
 
-
-        //setupGdt();
+        printf("Call to setupGdt!\n");
+        setupGdt();
 
        
     }
 
     extern "C" void kernel_main (void) {
 
+        printf("call to init serial\n");
         init_serial();
 
-        while (false){
+        while (true){
             //Read time indefinetely 
             read_rtc();
             printf( "UTC time: %02d-%02d-%02d %02d:%02d:%02d  [ Formatted as YY-MM-DD h:mm:ss]\r" ,year, month, day, hour, minute, second);

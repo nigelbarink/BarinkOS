@@ -5,7 +5,7 @@ CC = ${HOME}/opt/cross/bin/i686-elf-gcc
 CPP = ${HOME}/opt/cross/bin/i686-elf-g++ 
 CFLAGS =  -ffreestanding -O2 -Wall -Wextra
 
-OFILES =	$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o  $(BUILD_DIR)/PhysicalMemoryManager.o $(BUILD_DIR)/io.o $(BUILD_DIR)/PageDirectory.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/string.o
+OFILES =	$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o  $(BUILD_DIR)/PhysicalMemoryManager.o $(BUILD_DIR)/io.o $(BUILD_DIR)/PageDirectory.o $(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/string.o
 
 SRC_DIR = src
 BUILD_DIR = build
@@ -76,6 +76,10 @@ $(BUILD_DIR)/PageDirectory.o:
 
 $(BUILD_DIR)/idt.o:
 	$(CPP) -c $(SRC_DIR)/kernel/arch/i386/idt/idt.cpp -o $(BUILD_DIR)/idt.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+$(BUILD_DIR)/gdtc.o:
+	$(CPP) -c $(SRC_DIR)/kernel/arch/i386/gdt/gdtc.cpp -o $(BUILD_DIR)/gdtc.o $(CFLAGS) -fno-exceptions -fno-rtti
+
 
 $(BUILD_DIR)/pic.o:
 	$(CPP) -c $(SRC_DIR)/kernel/arch/i386/pic/pic.cpp -o $(BUILD_DIR)/pic.o $(CFLAGS) -fno-exceptions -fno-rtti
