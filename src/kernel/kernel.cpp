@@ -1,6 +1,6 @@
 #include "kernel.h"
-#include "memory/PageFrameAllocator.h"
-
+#define GB4 524288
+#define GB2 262144
     extern "C" void early_main(unsigned long magic, unsigned long addr){
         /** initialize terminal interface */ 
         kterm_init();
@@ -16,14 +16,16 @@
 
         /* Are mmap_* valid? */
         if (CHECK_FLAG(mbt->flags, 6)){
-            mapMultibootMemoryMap(mbt);
+            PhysicalMemoryManager_initialise( mbt->mmap_addr,  GB2/* Seriously dangerous hardcoded memory value*/);
+            PhysicalMemoryManager_initialise_available_regions(mbt->mmap_addr, mbt->mmap_addr + mbt->mmap_length);
+            PhysicalMemoryManager_deinitialise_kernel();
+            extern uint8_t* kernel_begin;
+            extern uint8_t* kernel_end;
 
+            printf("Kernel MemoryMap:\n");
+            printf("kernel: 0x%x - 0x%x\n", &kernel_begin , &kernel_end);         
         }
 
-        /* Draw diagonal blue line */
-        if (CHECK_FLAG (mbt->flags, 12)){
-            printf("Can draw!");
-        } 
 
         //setupGdt();
 

@@ -67,5 +67,10 @@ void CheckMBT ( multiboot_info_t*  mbt  ){
             
         }
 
+        /* Draw diagonal blue line */
+        if (CHECK_FLAG (mbt->flags, 12)){
+            printf("Can draw!");
+        } 
+
 
 }

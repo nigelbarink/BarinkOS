@@ -6,8 +6,8 @@ extern "C"{
 #include "arch/i386/tty/kterm.h"
 
 #include "./bootloader/multiboot.h"
-
 #include "bootcheck.h"
+#include "memory/PhysicalMemoryManager.h"
 
 #include "arch/i386/gdt/gdtc.h"
 #include "arch/i386/idt/idt.h"
