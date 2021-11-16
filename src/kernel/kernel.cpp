@@ -26,8 +26,7 @@
             printf("kernel: 0x%x - 0x%x\n", &kernel_begin , &kernel_end);         
         }
 
-        printf("Call to setupGdt!\n");
-        setupGdt();
+        initGDT();
 
        
     }

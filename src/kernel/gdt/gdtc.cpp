@@ -1,31 +1,61 @@
 #include "gdtc.h"
 #include "../tty/kterm.h"
- 
-gdtEntry_t gdt[3];
-gdtSegmentPointer gdtPointer{};
+
+#define NULL_SEGMENT          0
+#define KERNEL_CODE_SEGMENT   1
+#define KERNEL_DATA_SEGMENT   2
+#define USER_CODE_SEGMENT     3
+#define USER_DATA_SEGMENT     4
+
+SegmentDescriptor GlobalDescriptorTable[5];
+GlobalDescriptorTableDescriptor gdtDescriptor;
+
+void add_descriptor(int which , unsigned long base, unsigned long limit, unsigned char access, unsigned char granularity ){
+   GlobalDescriptorTable[which].base_low = (base & 0xFFFF );
+   GlobalDescriptorTable[which].base_middle = (base >> 6) & 0xFF;
+   GlobalDescriptorTable[which].base_high = (base >> 24) & 0xFF;
+   
+   GlobalDescriptorTable[which].limit_low = (limit & 0xFFFF);
+   GlobalDescriptorTable[which].granularity = ((limit >> 16) & 0x0F);
+
+   GlobalDescriptorTable[which].granularity |= (granularity & 0xF0);
+   GlobalDescriptorTable[which].access = access;
 
 
-
-void gdtSetGate(int num, uint64_t base, uint64_t limit, uint8_t access,
-   uint8_t gran){
-   gdt[num].lBase      = (base & 0xFFFF);
-   gdt[num].mBase      = (base >> 16) & 0xFF;
-   gdt[num].hBase      = (base >> 24) & 0xFF;
-
-   gdt[num].lLimit      = (limit & 0xFFFF);
-   gdt[num].granularity   = ((limit >> 16) & 0x0F);
-
-   gdt[num].granularity   |= (gran & 0xF0);
-   gdt[num].access      = access;
 }
 
-void setupGdt(){
-   gdtPointer.limit   = (sizeof(gdtEntry_t) * 3) - 1;
-   gdtPointer.base    = (uint32_t) &gdt;
 
-   gdtSetGate(0, 0, 0, 0, 0);
-   gdtSetGate(1, 0, 0xFFFFFFFF, 0x9A, 0xCF);
-   gdtSetGate(2, 0, 0xFFFFFFFF, 0x92, 0xCF);
-   printf("call to load gdt\n");
-   load_gdt();
+
+
+void initGDT(){
+
+      // NULL segment
+      add_descriptor(NULL_SEGMENT, 0,0,0,0);
+
+      // Kernel Code Segment
+      add_descriptor(KERNEL_CODE_SEGMENT, 0, 0xFFFFFFFF, 0x9A, 0xCF);
+
+      // Kernel Data Segment
+      add_descriptor(KERNEL_DATA_SEGMENT, 0, 0xFFFFFFFF, 0x92, 0xCF);      
+
+      // User Code Segment
+      // TODO:
+      
+      // User Data Segement
+      // TODO: 
+      
+      // init Gdt Descriptor
+      gdtDescriptor.limit = ((sizeof(SegmentDescriptor ) * 5 ) - 1);
+      gdtDescriptor.base = (unsigned int) &GlobalDescriptorTable;
+
+
+
+      LoadGlobalDescriptorTable();
+
+      while (true)
+         asm volatile("hlt");
+      
+
+
+
 }

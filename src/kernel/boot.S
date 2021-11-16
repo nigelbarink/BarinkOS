@@ -50,3 +50,29 @@ _start:
 	
 
 .include "./src/kernel/gdt/gdt.s"
+
+	loadIDT:
+		#load idt
+		call init_idt
+        sti
+        
+        # Try enable A20
+		# mov $0x2401, %ax
+		# int $0x15
+
+
+		# enable protected mode
+		mov %cr0, %eax 
+		or $1, %eax
+		mov %eax, %cr0
+
+		
+		call kernel_main
+
+
+		cli
+	1:	hlt
+		jmp 1b
+
+
+.size _start, . - _start

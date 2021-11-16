@@ -1,22 +1,27 @@
 #include <stdint.h>
-extern "C"{
 
-typedef struct {
-   uint16_t           lLimit;
-   uint16_t           lBase;
-   uint8_t            mBase;
-   uint8_t            access;
-   uint8_t            granularity;
-   uint8_t            hBase;
-} gdtEntry_t;
 
-struct gdtSegmentPointer {
-   uint16_t limit;
-   uint32_t base;
-};
+struct SegmentDescriptor {
+   unsigned short limit_low;
+   unsigned short base_low;
+   unsigned char base_middle;
+   unsigned char access;
+   unsigned char granularity;
+   unsigned char base_high;
+}__attribute__((packed));
 
-extern gdtSegmentPointer gdtPointer;
 
-extern void load_gdt();
-void setupGdt();
-}
+struct GlobalDescriptorTableDescriptor{
+   unsigned short limit;
+   unsigned int base;
+}__attribute__((packed));
+
+extern SegmentDescriptor GlobalDescriptorTable[];
+extern GlobalDescriptorTableDescriptor gdtDescriptor;
+
+
+void add_descriptor(int which , unsigned long base, unsigned long limit, unsigned char access, unsigned char granularity );
+
+
+extern "C" void LoadGlobalDescriptorTable();
+void initGDT();
