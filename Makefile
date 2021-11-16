@@ -43,7 +43,7 @@ test:
 
 build_kernel: $(OBJ_LINK_LIST)
 	
-	$(CC) -T $(SRC_DIR)/kernel/arch/i386/linker.ld -o $(BUILD_DIR)/myos.bin \
+	$(CC) -T $(SRC_DIR)/kernel//linker.ld -o $(BUILD_DIR)/myos.bin \
 	 -ffreestanding -O2 -nostdlib $(OBJ_LINK_LIST) -lgcc
 
 build_x86_64: 
@@ -57,16 +57,16 @@ $(BUILD_DIR)/kernel.o:
 	$(CPP) -c $(SRC_DIR)/kernel/kernel.cpp -o $(BUILD_DIR)/kernel.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/kterm.o:
-	$(CPP) -c $(SRC_DIR)/kernel/arch/i386/tty/kterm.cpp  -o $(BUILD_DIR)/kterm.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/tty/kterm.cpp  -o $(BUILD_DIR)/kterm.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/boot.o:
-	$(AS) $(SRC_DIR)/kernel/arch/i386/boot.S -o $(BUILD_DIR)/boot.o
+	$(AS) $(SRC_DIR)/kernel//boot.S -o $(BUILD_DIR)/boot.o
 
 $(BUILD_DIR)/crti.o:
-	$(AS) $(SRC_DIR)/kernel/arch/i386/crti.s -o $(BUILD_DIR)/crti.o
+	$(AS) $(SRC_DIR)/kernel/crti.s -o $(BUILD_DIR)/crti.o
 
 $(BUILD_DIR)/crtn.o:
-	$(AS) $(SRC_DIR)/kernel/arch/i386/crtn.s -o $(BUILD_DIR)/crtn.o
+	$(AS) $(SRC_DIR)/kernel/crtn.s -o $(BUILD_DIR)/crtn.o
 
 $(BUILD_DIR)/io.o:
 		$(CPP) -c $(SRC_DIR)/kernel/io.cpp  -o $(BUILD_DIR)/io.o $(CFLAGS) -fno-exceptions -fno-rtti
@@ -75,14 +75,14 @@ $(BUILD_DIR)/PageDirectory.o:
 	$(CPP) -c $(SRC_DIR)/kernel/memory/PageDirectory.cpp -o $(BUILD_DIR)/PageDirectory.o $(CFLAGS) -fno-exceptions -fno-rtti 
 
 $(BUILD_DIR)/idt.o:
-	$(CPP) -c $(SRC_DIR)/kernel/arch/i386/idt/idt.cpp -o $(BUILD_DIR)/idt.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/idt/idt.cpp -o $(BUILD_DIR)/idt.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/gdtc.o:
-	$(CPP) -c $(SRC_DIR)/kernel/arch/i386/gdt/gdtc.cpp -o $(BUILD_DIR)/gdtc.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/gdt/gdtc.cpp -o $(BUILD_DIR)/gdtc.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 
 $(BUILD_DIR)/pic.o:
-	$(CPP) -c $(SRC_DIR)/kernel/arch/i386/pic/pic.cpp -o $(BUILD_DIR)/pic.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/pic/pic.cpp -o $(BUILD_DIR)/pic.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/string.o:
 	$(CC) -c $(SRC_DIR)/libc/include/string.c  -o $(BUILD_DIR)/string.o $(CFLAGS) -std=gnu99

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "arch/i386/tty/kterm.h"
+#include "tty/kterm.h"
 #include "io.h"
 #define PORT 0x3f8 
 static int init_serial() {

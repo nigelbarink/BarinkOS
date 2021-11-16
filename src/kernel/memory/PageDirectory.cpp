@@ -4,7 +4,7 @@
 
 
 void PageDirectory::enable(){
-
+    // https://wiki.osdev.org/Setting_Up_Paging
     //set each entry to not present
     int i;
     for(i = 0; i < 1024; i++)

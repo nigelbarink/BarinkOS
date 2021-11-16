@@ -5,10 +5,10 @@
 #include <stdbool.h>
 
 #include "../vga/colors.h"
-#include "../../../io.h"
+#include "../io.h"
 
 extern "C"{
-    #include "./../../../../libc/include/string.h"
+    #include "./../../libc/include/string.h"
 }
 
 void kterm_init();

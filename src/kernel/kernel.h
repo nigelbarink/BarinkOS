@@ -2,15 +2,15 @@
 extern "C"{
    #include "../libc/include/string.h" 
 }
-#include "arch/i386/vga/VBE.h"
-#include "arch/i386/tty/kterm.h"
+#include "vga/VBE.h"
+#include "tty/kterm.h"
 
 #include "./bootloader/multiboot.h"
 #include "bootcheck.h"
 #include "memory/PhysicalMemoryManager.h"
 
-#include "arch/i386/gdt/gdtc.h"
-#include "arch/i386/idt/idt.h"
+#include "gdt/gdtc.h"
+#include "idt/idt.h"
 
 #include "io.h"
 #include "time.h"

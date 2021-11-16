@@ -43,6 +43,9 @@
             printf( "UTC time: %02d-%02d-%02d %02d:%02d:%02d  [ Formatted as YY-MM-DD h:mm:ss]\r" ,year, month, day, hour, minute, second);
             delay(1000);
         }
+            
+
+        
        
     }   
 

@@ -21,10 +21,10 @@ stack_bottom:
 stack_top:
  
 .section .text
-.include "./src/kernel/arch/i386/irs_table.s"
-.include "./src/kernel/arch/i386/irq_table.s"
-.include "./src/kernel/arch/i386/idt/idt.s"
-.include "./src/kernel/arch/i386/paging.s"
+.include "./src/kernel/irs_table.s"
+.include "./src/kernel/irq_table.s"
+.include "./src/kernel/idt/idt.s"
+.include "./src/kernel/paging.s"
 
 
 .global _start
@@ -46,44 +46,7 @@ _start:
 	
 	call early_main
 	cli
-	.global load_gdt
-	load_gdt:
-		lgdt gdt
-
-		# set the segment selecters
-
-		movw $0x10, %ax 
-		movw %ax, %ds
-		movw %ax, %es
-		movw %ax, %fs
-		movw %ax, %gs
-		movw %ax, %ss
-		ljmp $0x08, $flush 
-		
-		flush:
-        
-		
-		#load idt
-		call init_idt
-        sti
-        
-        # Try enable A20
-		# mov $0x2401, %ax
-		# int $0x15
-
-
-		# enable protected mode
-		mov %cr0, %eax 
-		or $1, %eax
-		mov %eax, %cr0
-
-		
-		call kernel_main
-
-
-		cli
-	1:	hlt
-		jmp 1b
+	
 	
 
-.include "./src/kernel/arch/i386/gdt/gdt.s"
+.include "./src/kernel/gdt/gdt.s"

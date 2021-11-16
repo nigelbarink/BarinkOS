@@ -2,7 +2,7 @@
 #include "bootloader/multiboot.h"
 #define CHECK_FLAG(flags, bit) ((flags) & (1 <<(bit)))
 
-#include "arch/i386/tty/kterm.h"
+#include "tty/kterm.h"
 
 
 
