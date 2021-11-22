@@ -6,6 +6,9 @@
 
 ________________________
 ### Screenshot(s)
+![Graphics mode](screenshots/BarinkOS_VBE_GRAPHICS.png) \
+It may not look like much but I am proud of it! We are in graphics mode.
+
 ![Scrolling the terminal](screenshots/Screenshot1.png)   \
 The first scrolling boot screen. 😲
 

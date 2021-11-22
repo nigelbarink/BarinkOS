@@ -36,7 +36,9 @@ iso: clean_iso clean build
 	grub-mkrescue -o build/barinkOS.iso root
 	
 test:
-	$(EMULATOR)  -kernel $(BUILD_DIR)/myos.bin -serial stdio -vga std -monitor stdio -display gtk -m 2G -cpu core2duo 
+	$(EMULATOR)  -kernel $(BUILD_DIR)/myos.bin -serial mon:stdio -vga std  -display gtk -m 2G -cpu core2duo # -monitor stdio
+test_iso:
+	$(EMULATOR) -cdrom build/barinkOS.iso -serial mon:stdio -vga std -display gtk -m 2G -cpu core2duo
 
 build_kernel: $(OBJ_LINK_LIST)
 	$(CC) -T $(SRC_DIR)/kernel//linker.ld -o $(BUILD_DIR)/myos.bin \
@@ -50,7 +52,7 @@ clean:
 	rm -f $(BUILD_DIR)/myos.bin $(INTERNAL_OBJS)
 
 $(BUILD_DIR)/kernel.o:
-	$(CPP) -c $(SRC_DIR)/kernel/kernel.cpp -o $(BUILD_DIR)/kernel.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/kernel.cpp -o $(BUILD_DIR)/kernel.o $(CFLAGS) -fno-exceptions -fno-rtti -fpermissive
 
 $(BUILD_DIR)/kterm.o:
 	$(CPP) -c $(SRC_DIR)/kernel/tty/kterm.cpp  -o $(BUILD_DIR)/kterm.o $(CFLAGS) -fno-exceptions -fno-rtti

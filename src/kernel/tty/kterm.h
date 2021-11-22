@@ -33,10 +33,9 @@ uint16_t get_cursor_position();
 int get_cursor_x (uint16_t cursor_pos);
 int get_cursor_y (uint16_t cursor_pos);
 
-
+extern "C"  void itoa (char *buf, int base, int d);
 void printf ( const char *format, ...);
 
-//static void itoa (char *buf, int base, int d);
 
 #define KernelTag "[Kernel]: "
 #define AS_KERNEL() (  kterm_setcolor(VGA_COLOR_LIGHT_BLUE),\

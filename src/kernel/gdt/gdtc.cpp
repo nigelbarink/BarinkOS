@@ -48,12 +48,13 @@ void initGDT(){
       gdtDescriptor.limit = ((sizeof(SegmentDescriptor ) * 5 ) - 1);
       gdtDescriptor.base = (unsigned int) &GlobalDescriptorTable;
 
+      printf("Hello GDT!\n");
 
 
       LoadGlobalDescriptorTable();
 
-      while (true)
-         asm volatile("hlt");
+//      while (true)
+//         asm volatile("hlt");
       
 
 

@@ -1,12 +1,18 @@
 #include "kernel.h"
 #define GB4 524288
 #define GB2 262144
+extern "C" void kernel_main (void);
+extern "C" void putPixel(int pos_x, int pos_y, unsigned char VGA_COLOR , unsigned char addr , unsigned char pixelWidth, unsigned pitch );
+
+
     extern "C" void early_main(unsigned long magic, unsigned long addr){
         /** initialize terminal interface */ 
-        kterm_init();
+       // kterm_init();
         
+        printf("Magic flag 0x%8x\n", magic);
+        printf("Magic must be 0x%8x\n", MULTIBOOT_BOOTLOADER_MAGIC);
         if (magic != MULTIBOOT_BOOTLOADER_MAGIC){
-            printf("Invalid magic number: 0x%x\n",  magic);
+            printf("Invalid magic number: 0x%8x\n",  magic);
             return;
         }
 
@@ -28,6 +34,14 @@
 
         initGDT();
 
+
+
+      print_serial("Video mode enabled!\n");
+      printf_serial("VBE mode: 0x%x\n", mbt->vbe_mode);
+      printf_serial("width: %d height: %d bpp: %d\n" , mbt->framebuffer_width, mbt->framebuffer_height, mbt->framebuffer_bpp);
+
+      kernel_main();
+
        
     }
 
@@ -35,6 +49,7 @@
 
         printf("call to init serial\n");
         init_serial();
+
 
         while (true){
             //Read time indefinetely 
