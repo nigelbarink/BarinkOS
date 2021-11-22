@@ -28,8 +28,8 @@ screen. The terminal/screen has scrolling so the latest messages are visible on 
 
 ________________________
 ### Planning
-[See TODO](TODO.md) 
-
+[See TODO](todo.md) \
+[See Features](features.md)
 ________________________
 ### Docs
 [Intro](docs/Intro.md) \
