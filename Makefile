@@ -5,7 +5,7 @@ CC = ${HOME}/opt/cross/bin/i686-elf-gcc
 CPP = ${HOME}/opt/cross/bin/i686-elf-g++ 
 CFLAGS =  -ffreestanding -O2 -Wall -Wextra
 
-OFILES =	$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o  $(BUILD_DIR)/PhysicalMemoryManager.o $(BUILD_DIR)/io.o $(BUILD_DIR)/PageDirectory.o $(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/string.o
+OFILES =  $(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o  $(BUILD_DIR)/PhysicalMemoryManager.o $(BUILD_DIR)/io.o $(BUILD_DIR)/PageDirectory.o $(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/string.o
 
 SRC_DIR = src
 BUILD_DIR = build
@@ -19,30 +19,26 @@ OBJ_LINK_LIST = $(CRTI_OBJ) $(CRTBEGIN_OBJ) $(OFILES) $(CRTEND_OBJ) $(CRTN_OBJ)
 INTERNAL_OBJS = $(CRTI_OBJ) $(OFILES) $(CRTN_OBJ)
 
 
-all: clean build clean_up
+all: clean build 
 
-build: build_kernel 
+build: build_kernel iso
 
 
 
 clean_iso: 
-	if [[ -a isodir/* ]] ; then rm isodir/* -d ; fi
-	if [ -f barinkOS.iso ] ; then rm barinkOS.iso ; fi
+	if [[ -a isodir/boot ]] ; then rm root/boot -rd ; fi
+	if [ -f build/barinkOS.iso ] ; then rm build/barinkOS.iso ; fi
 	
-iso: clean_iso build
-	mkdir -p isodir/boot/grub
-	cp build/myos.bin isodir/boot/myos.bin
-	cp src/grub.cfg isodir/boot/grub/grub.cfg
-	grub-mkrescue -o barinkOS.iso isodir
+iso: clean_iso clean build
+	mkdir -p root/boot/grub
+	cp build/myos.bin root/boot/myos.bin
+	cp src/grub.cfg root/boot/grub/grub.cfg
+	grub-mkrescue -o build/barinkOS.iso root
 	
-clean_up:
-	rm build/*.o
-
 test:
-	$(EMULATOR)  -kernel $(BUILD_DIR)/myos.bin -serial file:CON -vga std -monitor stdio -display gtk -m 2G -cpu core2duo 
+	$(EMULATOR)  -kernel $(BUILD_DIR)/myos.bin -serial stdio -vga std -monitor stdio -display gtk -m 2G -cpu core2duo 
 
 build_kernel: $(OBJ_LINK_LIST)
-	
 	$(CC) -T $(SRC_DIR)/kernel//linker.ld -o $(BUILD_DIR)/myos.bin \
 	 -ffreestanding -O2 -nostdlib $(OBJ_LINK_LIST) -lgcc
 

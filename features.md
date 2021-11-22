@@ -12,7 +12,7 @@
 <input type="checkbox" /> Detect CPU speed \
 <input type="checkbox" checked/> Interrupt / exception system (API) \
 
-<input type="checkbox" /> Plan your memory map (virtual, and physical) : decide where you want the data to be. \
+<input type="checkbox" checked/> Plan your memory map (virtual, and physical) : decide where you want the data to be. \
 <input type="checkbox" /> The heap: allocating memory at runtime (malloc and free) is almost impossible to go without. \
 <input type="checkbox" /> Enable SIMD Extensions (SSE)
 
@@ -23,13 +23,13 @@
 <input type="checkbox" /> ACPI support ( Or some other basic way to support shutdown, reboot and possibly hibernation ) \
 <input type="checkbox" /> ATAPI support \
 <input type="checkbox" /> Keyboard support ( P/S2 Keyboard) \
-<input type="checkbox" /> Memory Management (MMU)\ 
-<input type="checkbox" /> Preemptive multi tasking 
-<input type="checkbox" /> Processes 
+<input type="checkbox" checked/> Memory Management (MMU)   
+<input type="checkbox" /> Preemptive multi tasking \
+<input type="checkbox" /> Processes  \
 <input type="checkbox" /> Threads  
 <input type="checkbox" /> Scheduling (SRV2 Unix OR Priority Based Round Robin) \
-<input type="checkbox" /> System V ABI compliance (partially)
-<input type="checkbox" /> POSIX compliance (partially)
+<input type="checkbox" /> System V ABI compliance (partially) \
+<input type="checkbox" /> POSIX compliance (partially) \
 <input type="checkbox" /> RPC - for interprocess communication \
 <input type="checkbox" /> Sync primitives  - Semaphores, Mutexes, spinlocks et al. \
 <input type="checkbox" /> Basic Terminal \
@@ -37,4 +37,4 @@
 <input type="checkbox" /> Basic Window server/client \
 ## Support for more filesystems if I like the challenge in writing these ...
 <input type="checkbox" /> FAT Filesystem \
-<input type="checkbox" /> EXT2 Filesystem \
+<input type="checkbox" /> EXT2 Filesystem 
