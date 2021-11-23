@@ -35,11 +35,6 @@ extern "C" void putPixel(int pos_x, int pos_y, unsigned char VGA_COLOR , unsigne
         initGDT();
 
 
-
-      print_serial("Video mode enabled!\n");
-      printf_serial("VBE mode: 0x%x\n", mbt->vbe_mode);
-      printf_serial("width: %d height: %d bpp: %d\n" , mbt->framebuffer_width, mbt->framebuffer_height, mbt->framebuffer_bpp);
-
       kernel_main();
 
        

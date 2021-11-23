@@ -19,8 +19,8 @@
 .long 0 # .
 .long 0 # unused
 .long 0 # set graphics mode
-.long 1280 # screen witdh
-.long 720 # screen height
+.long 800 # screen witdh
+.long 600 # screen height
 .long 32 # bpp
 
 .section .bss
