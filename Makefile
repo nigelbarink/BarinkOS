@@ -5,7 +5,7 @@ CC = ${HOME}/opt/cross/bin/i686-elf-gcc
 CPP = ${HOME}/opt/cross/bin/i686-elf-g++ 
 CFLAGS =  -ffreestanding -O2 -Wall -Wextra
 
-OFILES =  $(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o  $(BUILD_DIR)/PhysicalMemoryManager.o $(BUILD_DIR)/io.o $(BUILD_DIR)/PageDirectory.o $(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/string.o
+OFILES =  $(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o  $(BUILD_DIR)/PhysicalMemoryManager.o $(BUILD_DIR)/io.o $(BUILD_DIR)/PageDirectory.o $(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pci.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/string.o
 
 SRC_DIR = src
 BUILD_DIR = build
@@ -36,7 +36,7 @@ iso: clean_iso clean build
 	grub-mkrescue -o build/barinkOS.iso root
 	
 test:
-	$(EMULATOR)  -kernel $(BUILD_DIR)/myos.bin -serial stdio -vga std -monitor stdio -display gtk -m 2G -cpu core2duo 
+	$(EMULATOR)  -kernel $(BUILD_DIR)/myos.bin -serial stdio -vga std -display gtk -m 2G -cpu core2duo 
 
 build_kernel: $(OBJ_LINK_LIST)
 	$(CC) -T $(SRC_DIR)/kernel//linker.ld -o $(BUILD_DIR)/myos.bin \
@@ -85,3 +85,6 @@ $(BUILD_DIR)/string.o:
 
 $(BUILD_DIR)/PhysicalMemoryManager.o:
 	$(CPP) -c $(SRC_DIR)/kernel/memory/PhysicalMemoryManager.cpp  -o $(BUILD_DIR)/PhysicalMemoryManager.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+$(BUILD_DIR)/pci.o:
+	$(CPP) -c $(SRC_DIR)/kernel/pci.cpp  -o $(BUILD_DIR)/pci.o $(CFLAGS) -fno-exceptions -fno-rtti

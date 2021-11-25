@@ -52,10 +52,6 @@ void initGDT(){
 
       LoadGlobalDescriptorTable();
 
-      while (true)
-         asm volatile("hlt");
       
-
-
 
 }
