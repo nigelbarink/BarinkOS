@@ -16,6 +16,9 @@ W.I.P - Working on interrupt handling
 
 ![Multiboot integration](screenshots/multiboot.png) \
 Multiboot information can be read by the kernel.
+
+![PCI enumeration](screenshots/PCIBusEnumeration.png) \
+Enumerating the PCI bus 
 ________________________
 
 ### The goal

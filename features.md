@@ -17,7 +17,7 @@
 <input type="checkbox" /> Enable SIMD Extensions (SSE)
 
 ## Other features I am thinking of:
-<input type="checkbox" /> PCI support \
+<input type="checkbox" checked/> PCI support \
 <input type="checkbox" /> ATA PIO Mode support \
 <input type="checkbox" /> USTAR Filesystem ( For its simplicity this is very likely the first filesystem the OS is going to support) \
 <input type="checkbox" /> ACPI support ( Or some other basic way to support shutdown, reboot and possibly hibernation ) \
