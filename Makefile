@@ -52,6 +52,9 @@ iso: clean_iso clean build
 test:
 	$(EMULATOR)  -kernel $(BUILD_DIR)/myos.bin -serial stdio -vga std -display gtk -m 2G -cpu core2duo 
 
+test_iso: 
+	$(EMULATOR)  -cdrom $(BUILD_DIR)/barinkOS.iso -serial stdio -vga std -display gtk -m 2G -cpu core2duo 
+
 build_kernel: $(OBJ_LINK_LIST)
 	$(CC) -T $(SRC_DIR)/kernel//linker.ld -o $(BUILD_DIR)/myos.bin \
 	 -ffreestanding -O2 -nostdlib $(OBJ_LINK_LIST) -lgcc
