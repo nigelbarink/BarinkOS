@@ -121,8 +121,6 @@ const char* getVendor( uint32_t VendorID){
 
 }
 
-
-
 uint32_t ConfigReadWord ( PCIBusAddress& PCIDeviceAddress , uint8_t offset){
     outl(CONFIG_ADDRESS , PCIDeviceAddress.getAddress() | offset );
     return inl(CONFIG_DATA);
@@ -143,8 +141,6 @@ uint32_t ConfigReadWord (uint8_t bus, uint8_t device, uint8_t func, uint8_t offs
     
     return inl(CONFIG_DATA);
 }
-
-
 
 uint8_t GetHeaderType( PCIBusAddress& PCIDeviceAddress ){
     uint32_t header_information = ConfigReadWord(PCIDeviceAddress , 0xC);
@@ -167,9 +163,6 @@ bool IsMultiFunctionDevice(PCIBusAddress& PCIDeviceAddress){
             >> 7  );
 }
 
-
-
-
 void PrintPCIDeviceInfo (PCIBusAddress& PCIDeviceAddress)
 {
     uint32_t DeviceID =  (GetDevice(PCIDeviceAddress.bus, PCIDeviceAddress.device, PCIDeviceAddress.function) >> 16);
@@ -190,8 +183,6 @@ void PrintPCIDeviceInfo (PCIBusAddress& PCIDeviceAddress)
     printf("class: %s, subClass: %d\n\n", GetClassCodeName((deviceClasses >>8)), deviceClasses & 0xFF);
 
 }
-
-
 
 void PCI_Enumerate(){
             int devicesFound = 0;
@@ -243,4 +234,14 @@ void PCI_Enumerate(){
         }
 
         printf("Found %d PCI devices!\n", devicesFound);
+}
+
+uint8_t GetProgIF (PCIBusAddress& PCIDeviceAddress){
+    uint32_t data = ConfigReadWord(PCIDeviceAddress, 0x8);
+    return ((data >> 8) & 0xFF);
+}
+
+uint32_t ReadBAR ( PCIBusAddress& PCIDeviceAddress, int bar_number){
+    int offsetToBar = 0x10 + (bar_number* 0x4);
+    return ConfigReadWord(PCIDeviceAddress, offsetToBar); 
 }

@@ -2,6 +2,8 @@
 extern "C"{
    #include "../libc/include/string.h" 
 }
+
+
 #include "vga/VBE.h"
 #include "tty/kterm.h"
 
@@ -17,7 +19,7 @@ extern "C"{
 #include "cpu.h"
 #include "serial.h"
 #include "pci.h"
-
+#include "ide/ide.h"
 
 
 #define CHECK_FLAG(flags, bit) ((flags) & (1 <<(bit)))

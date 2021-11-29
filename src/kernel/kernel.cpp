@@ -65,7 +65,11 @@ extern "C" void kernel_main (void);
      
 
         // Enumerate the PCI bus
-        PCI_Enumerate();        
+        PCI_Enumerate();  
+
+
+
+       TestIDEController();      
 
 
         while (true){

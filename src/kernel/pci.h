@@ -32,4 +32,7 @@ uint16_t GetClassCodes( PCIBusAddress& PICDeviceAddress );
 const char* getVendor( uint64_t VendorID);
 const char* GetClassCodeName (uint64_t ClassCode );
 
+uint8_t GetProgIF (PCIBusAddress& PCIDeviceAddress);
 void PCI_Enumerate();
+
+uint32_t ReadBAR ( PCIBusAddress& PCIDeviceAddress, int bar_number);
