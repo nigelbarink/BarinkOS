@@ -20,6 +20,8 @@ extern "C"{
 #include "serial.h"
 #include "pci.h"
 #include "ide/ide.h"
+#include "drivers/atapi/atapiDevice.h"
+
 
 
 #define CHECK_FLAG(flags, bit) ((flags) & (1 <<(bit)))

@@ -7,6 +7,8 @@
 
 #define IS_BIT_SET(x, bit) ((x >> bit & 0x1) == 1) 
 
+IDEChannelRegisters channels[2];
+IDE_DEVICE ide_devices[4];
 
 inline void CheckProgIF(uint8_t ProgIF){
     if( IS_BIT_SET(ProgIF, 0) ) // Is the 0th bit set

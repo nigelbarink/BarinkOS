@@ -17,7 +17,8 @@ $(BUILD_DIR)/idt.o \
 $(BUILD_DIR)/pci.o \
 $(BUILD_DIR)/pic.o \
 $(BUILD_DIR)/string.o \
-$(BUILD_DIR)/pcidevice.o
+$(BUILD_DIR)/pcidevice.o \
+$(BUILD_DIR)/atapiDevice.o 
 
 
 
@@ -108,3 +109,6 @@ $(BUILD_DIR)/pci.o:
 
 $(BUILD_DIR)/pcidevice.o:
 	$(CPP) -c $(SRC_DIR)/kernel/pci/pciDevice.cpp  -o $(BUILD_DIR)/pcidevice.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+$(BUILD_DIR)/atapiDevice.o:
+	$(CPP) -c $(SRC_DIR)/kernel/drivers/atapi/atapiDevice.cpp  -o $(BUILD_DIR)/atapiDevice.o $(CFLAGS) -fno-exceptions -fno-rtti

@@ -19,6 +19,10 @@ Multiboot information can be read by the kernel.
 
 ![PCI enumeration](screenshots/PCIBusEnumeration.png) \
 Enumerating the PCI bus 
+
+![ATAPI CD-ROM Identification](screenshots/CD-ROM_Identify.png) \
+Correctly identified our ATAPI device 🎉
+
 ________________________
 
 ### The goal

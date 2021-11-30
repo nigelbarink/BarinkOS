@@ -5,11 +5,8 @@ struct IDEChannelRegisters{
     unsigned short ctrl; // Control Base
     unsigned short bmide; // Bus Master IDE
     unsigned char nIEN; // IEN (no interrupt)
-}channels[2];
+};
 
-extern unsigned char ide_buf[2048];
-extern unsigned  char ide_irq_invoked;
-extern unsigned  char atapi_packet[12];
 
 struct IDE_DEVICE {
     unsigned char Reserved; // 0 (Empty) or 1 (This device exists).
@@ -19,7 +16,14 @@ struct IDE_DEVICE {
     unsigned short Signature; // Drive Signature
     unsigned short Capabilities; // Features.
     unsigned int CommandSets; // Command Sets Supported.
-    unsigned int Size; // Size in Sectors
+    unsigned int Size; // Size in Sectors (NOTE: Seems unused nowadays as i've only seen the value be zero
     unsigned char Model[41]; // Model in string.
-} ide_devices[4];
+} ;
 
+
+
+extern IDEChannelRegisters channels[2];
+extern IDE_DEVICE ide_devices[4];
+extern unsigned char ide_buf[2048];
+extern unsigned  char ide_irq_invoked;
+extern unsigned  char atapi_packet[12];

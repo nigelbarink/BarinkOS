@@ -71,6 +71,33 @@ extern "C" void kernel_main (void);
 
        TestIDEController();      
 
+        int devNumber = 0 ;
+        for ( auto device : ide_devices){
+            if (!device.Reserved)
+                continue;
+
+
+            printf("Device %d\n" , devNumber);
+            printf (" Device on Channel: (0x%x) %s\n" ,device.Channel, device.Channel == 0 ? "Primary" : "Secondary");
+            printf (" Device drive:(0x%x) %s\n" , device.Drive,  device.Drive? "Slave" : "Master");
+            printf (" Device Type:(0x%x) %s\n" , device.Type, device.Type ? "ATAPI" : "ATA");
+            devNumber ++;
+
+
+
+
+
+
+        }
+
+        // ATAPI_DEVICE::isPacketDevice();
+ 
+    
+
+
+        ATAPI_DEVICE::Identify(ATA_SECONDARY, DEVICE_DRIVE::MASTER);
+
+
 
         while (true){
             //Read time indefinetely 
