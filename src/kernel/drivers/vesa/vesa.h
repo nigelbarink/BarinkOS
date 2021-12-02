@@ -1,7 +1,7 @@
 #pragma once 
 #include <stdint.h>
-#include "bootloader/multiboot.h"
-#include "serial.h"
+#include "../../bootloader/multiboot.h"
+#include "../../serial.h"
 
 struct vbe_mode_info_structure{
         uint16_t attributes;

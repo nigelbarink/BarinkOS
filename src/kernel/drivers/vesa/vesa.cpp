@@ -15,13 +15,13 @@ void initVBEDevice(multiboot_info_t* mbt){
 }
 
 void putPixel( int x, int y , uint32_t colour){
-    printf_serial("putPixel x: %d, y: %d\n", x, y);
+   // printf_serial("putPixel x: %d, y: %d\n", x, y);
                     ///fb + mbt->framebuffer_pitch * y + 4 * x ,NOTE: this calculation is very important 
     *(uint32_t*) (  VbeModeInfo->framebuffer + VbeModeInfo->pitch * y + 4  * x ) = colour;
 }
 void drawLine(int x1, int y1, int x2, int y2, uint32_t colour ){
     print_serial("drawline\n");
-    // Bresenham's line algorithm??
+    // See Bresenham's line algorithm
     int deltaX = x2 - x1;
     int deltaY = y2 - y1;
     int D = 2 * deltaY - deltaX;
@@ -41,6 +41,14 @@ void drawLine(int x1, int y1, int x2, int y2, uint32_t colour ){
 }
 void drawRect ( int x, int y, int width, int height, uint32_t colour ){
     print_serial("drawRect\n");
+    for ( int i = x; i < x + width; i ++)
+    {
+      for(int j = y; j < y + height; j++){
+        
+        putPixel(i,j, colour);
+      }
+    }
+
 }
 
 
