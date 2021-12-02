@@ -1,9 +1,10 @@
 #pragma once 
 #include "bootloader/multiboot.h"
 #define CHECK_FLAG(flags, bit) ((flags) & (1 <<(bit)))
-
+#include "../gui/window.h"
+#include "../gui/cursor.h"
 #include "tty/kterm.h"
-#include "vesa.h"
+#include "drivers/vesa/vesa.h"
 
 void CheckMBT ( multiboot_info_t*  mbt  ){
   /* Set MBI to the addresss of the multiboot information structure*/
@@ -75,11 +76,32 @@ void CheckMBT ( multiboot_info_t*  mbt  ){
     // Init vesa driver
     initVBEDevice(mbt); 
 
-    // Turn pixel on in the middle of the screen;
-    putPixel( 50, 50 , 0x00FFFFFF);
+    // Fill screen with blue
+                                                // colours AARRGGBB
+    drawRect(0, 0 , VbeModeInfo->width,VbeModeInfo->height, 0xFF0000FF);
 
-    putPixel(VbeModeInfo->width / 2 , VbeModeInfo->height / 2  , 0x00FF0000);
-    drawLine(50,10, 150, 8, 0x00FF00FF);
+    // Create two windows
+    Rect rect_window1 {};
+    Rect rect_window2 {};
+    rect_window1.height =200;
+    rect_window1.width = 300;
+    rect_window1.x = 50;
+    rect_window1.y = 50;
+
+    rect_window2.height =200;
+    rect_window2.width = 300;
+    rect_window2.x = 300;
+    rect_window2.y = 200;
+
+    Window window_1 ( rect_window1, 0xFF00F0FF);
+    Window window_2 (rect_window2, 0xFFAACCDD);
+
+    window_1.draw();
+    window_2.draw();
+
+    Cursor cursor (70,100);
+
+    cursor.draw();
 
 
   }
