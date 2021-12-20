@@ -12,6 +12,7 @@ extern "C"{
 #include "gdt/gdtc.h"
 #include "idt/idt.h"
 
+#include "pit.h"
 #include "io.h"
 #include "time.h"
 #include "cpu.h"

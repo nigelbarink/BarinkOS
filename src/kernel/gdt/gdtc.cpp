@@ -29,6 +29,8 @@ void add_descriptor(int which , unsigned long base, unsigned long limit, unsigne
 
 void initGDT(){
 
+      printf("Init GDT!\n");
+
       // NULL segment
       add_descriptor(NULL_SEGMENT, 0,0,0,0);
 
@@ -51,11 +53,5 @@ void initGDT(){
 
 
       LoadGlobalDescriptorTable();
-
-      while (true)
-         asm volatile("hlt");
-      
-
-
 
 }

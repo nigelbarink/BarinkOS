@@ -1,4 +1,5 @@
 #include "idt.h"
+#include "../pit.h"
 //#include "scancodes/set1.h"
 
 IDT_entry idt_table[256];
@@ -24,6 +25,8 @@ void irs_handler (registers regs) {
 
         }
         
+
+    
   
        
 
@@ -32,36 +35,33 @@ void irs_handler (registers regs) {
 
 
 void irq_handler (registers regs) {
-        
-     
-        if ( regs.int_no != 0) {
-            kterm_writestring("received interrupt!\n");
-            printf("(IRQ) Interrupt number: %d \n", regs.int_no);
-        
-        }
-        
-        if ( regs.int_no == 1 ){
+
+        switch (regs.int_no)
+        {
+        case 0:
+             pit_tick++;
+            break;
+        case 1:
             // Keyboard interrupt !!
 
             int scan;
             /*register*/int i;
 
             // Read scancode 
-
             scan = inb(0x60);
             
             // Send ack message!
             i = inb(0x61);
             outb(0x61, i|0x80);
             outb(0x61, i);
-            kterm_writestring("A key was pressed/released\n");
             printf( "Scancode: %x\n", scan);
+            break;    
 
-    
-        }
+        default:
+            printf("Received INT: 0x%x\n", regs.int_no);
+            break;
+        }        
 
-        
-        
         outb(0x20, 0x20); // send end of interrupt to master
 
         if ( regs.int_no > 8 && regs.int_no <= 15) {
@@ -76,16 +76,13 @@ void irq_handler (registers regs) {
 
 }
 
-
-
-
-
 void init_idt(){
     // Initialise the IDT pointer
     idt_ptr.length = sizeof(IDT_entry) * 255;
     idt_ptr.base = (uint32_t)&idt_table;
 
-
+    printf("Init IDT\n");
+    
     // TODO: Set everything to zero first
 
     set_id_entry(0,  (uint32_t) irs0 , 0x08, 0x8F);

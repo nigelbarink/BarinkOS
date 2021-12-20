@@ -1,6 +1,8 @@
 #include "kernel.h"
-#define GB4 524288
 #define GB2 262144
+
+ extern "C" void kernel_main (void);
+  
     extern "C" void early_main(unsigned long magic, unsigned long addr){
         /** initialize terminal interface */ 
         kterm_init();
@@ -27,19 +29,30 @@
         }
 
         initGDT();
+        init_idt();
+        // Enable interrupts
+        asm volatile("STI");
+        
 
+        kernel_main();
        
     }
 
     extern "C" void kernel_main (void) {
 
-        printf("call to init serial\n");
+   
         init_serial();
+
+
+
+        pit_initialise();
+      
+
 
         while (true){
             //Read time indefinetely 
             read_rtc();
-            printf( "UTC time: %02d-%02d-%02d %02d:%02d:%02d  [ Formatted as YY-MM-DD h:mm:ss]\r" ,year, month, day, hour, minute, second);
+            printf( "UTC time: %02d-%02d-%02d %02d:%02d:%02d (Ticks: %06d)  [ Formatted as YY-MM-DD h:mm:ss]\r" ,year, month, day, hour, minute, second, pit_tick);
             delay(1000);
         }
             
