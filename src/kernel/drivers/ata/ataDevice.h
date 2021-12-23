@@ -1,10 +1,10 @@
 #pragma once
 #include <stdint.h>
-#include "../io.h"
-#include "../ide/ideCommands.h"
-#include "../ide/sampleIDE.definitions.h"
+#include "../../io.h"
+#include "../../ide/ideCommands.h"
+#include "../../ide/sampleIDE.definitions.h"
 
-#include "../tty/kterm.h"
+#include "../../tty/kterm.h"
 
 /*
 * This first driver wil make use of IO ports.
@@ -19,11 +19,13 @@ enum DEVICE_DRIVE{
 };
 
 
-namespace ATA_DEVICE
-{
-    void Identify   ( uint8_t,    DEVICE_DRIVE );
-    void Read       ( uint8_t,    DEVICE_DRIVE );
-    void Write      ( uint8_t,    DEVICE_DRIVE );
-    void Soft_Reset ( uint8_t,    DEVICE_DRIVE );
- 
+
+
+namespace ATA_DEVICE{
+    void Identify(uint16_t, DEVICE_DRIVE);
+    void Read (uint16_t, DEVICE_DRIVE, uint32_t, uint16_t*);
+    void Write(uint16_t, DEVICE_DRIVE);
+    void Soft_Reset(uint8_t ,DEVICE_DRIVE );
 };
+
+
