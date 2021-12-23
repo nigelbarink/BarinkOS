@@ -142,6 +142,7 @@ inline void init_IDE( uint32_t BAR0, uint32_t BAR1,uint32_t BAR2, uint32_t BAR3,
    
    DetectDevices();
  
+   return;
    // 4- Print Summary:
    for (int i = 0; i < 4; i++)
       if (ide_devices[i].Reserved == 1) {
