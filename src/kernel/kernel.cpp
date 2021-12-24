@@ -44,40 +44,84 @@ extern "C" void kernel_main (void);
         init_serial();
         print_serial("Serial port initialized!");
 
-     
+        RSDPTR* rsd = FindRSD();
+        RSDT* rsd_table = getRSDT(rsd);
+
 
         // Enumerate the PCI bus
         PCI_Enumerate();  
-
-
-
-       TestIDEController();      
+        TestIDEController();      
 
         int devNumber = 0 ;
         for ( auto device : ide_devices){
             if (!device.Reserved)
                 continue;
-
-
             printf("Device %d\n" , devNumber);
             printf (" Device on Channel: (0x%x) %s\n" ,device.Channel, device.Channel == 0 ? "Primary" : "Secondary");
             printf (" Device drive:(0x%x) %s\n" , device.Drive,  device.Drive? "Slave" : "Master");
             printf (" Device Type:(0x%x) %s\n" , device.Type, device.Type ? "ATAPI" : "ATA");
             devNumber ++;
 
-
-
-
-
-
         }
 
-        // ATAPI_DEVICE::isPacketDevice();
- 
-    
+        enum BUS_PORT { 
+            Primary= 0x1f0,
+            Secondary = 0x170
+        };
 
 
-        ATAPI_DEVICE::Identify(ATA_SECONDARY, DEVICE_DRIVE::MASTER);
+        
+        ATA_DEVICE::Identify((uint16_t) BUS_PORT::Primary, DEVICE_DRIVE::MASTER);
+
+        const int C = 0; 
+        const int H = 0; 
+        const int HPC = 16;
+        const int SPT = 63;
+
+        int S = 1; 
+        uint32_t LBA = (C*HPC+H) * SPT + (S-1);
+        printf("LBA: %d\n" , LBA);
+        uint16_t buffer [256];
+
+
+        ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, LBA, buffer);
+   
+        MBR* mbr = (MBR*) buffer;
+
+        printf("BootSector: 0x%x\n", mbr->ValidBootsector );
+        for( int i = 0 ; i < 4 ; i ++){
+             PartitionTableEntry PT = mbr->TableEntries[i];
+   
+             printf("Partition %d [  %d sectors,  PartitionType: %x, 0x%x, \nLBA Start: 0x%x ]\n" ,
+              i, PT.Number_sectors_inPartition, PT.PartitionType, mbr->uniqueID,  PT.LBA_partition_start );
+         }
+
+         // Find the super block
+        uint16_t superBlock[256];
+        ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, mbr->TableEntries[0].LBA_partition_start, superBlock);
+
+        BiosParameterBlock*  bpb =  (BiosParameterBlock*) superBlock;
+        
+
+        printf("\nBPB: Bytes per Sector %d\n", bpb->BytesPerSector );
+        printf("OEM ID: %s\n", bpb->OEM_id);
+        printf("Bytes per sector: %d\n", bpb->BytesPerSector);
+        printf("Sectors per cluster: %d\n", bpb->SectorsPerCluster);
+        printf("Reserved sectors: %d\n", bpb->ReservedSectors);
+        printf("Number of FAT: %d\n", bpb->NumberOfFileAllocationTables);
+        printf("Number of Dir entries: %d\n", bpb->NumberOfDirectoryEntries);
+        printf("Total Sectors in volume: %d\n", bpb->TotalSectorsInLogicalVolume);
+        printf("Sectors per FAT: %d\n", bpb->NumberOfSectorsPerFAT);
+
+        uint32_t PartitionAddress = mbr->TableEntries[0].LBA_partition_start *512 ;
+        uint32_t RootDirAddress = PartitionAddress + ((bpb->ReservedSectors + bpb->NumberOfSectorsPerFAT * bpb->NumberOfFileAllocationTables ) * bpb->BytesPerSector);
+        uint32_t RootDirLBA =RootDirAddress/512;
+        
+        
+     
+        uint16_t RootDir [16];
+        ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER,RootDirLBA, (uint16_t*) RootDir );
+     
 
 
 

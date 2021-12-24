@@ -20,8 +20,12 @@ extern "C"{
 #include "serial.h"
 #include "pci.h"
 #include "ide/ide.h"
-#include "drivers/atapi/atapiDevice.h"
-
+//#include "drivers/atapi/atapiDevice.h"
+#include "drivers/ata/ataDevice.h"
+#include "./PartitionTable/MBR/MasterBootRecord.h"
+#include "./filesytems/FAT32/BiosParameterBlock.h"
+#include "./filesytems/FAT32/ExtendBootRecord.h"
+#include "./drivers/rsdp/rsdp.h"
 
 
 #define CHECK_FLAG(flags, bit) ((flags) & (1 <<(bit)))
