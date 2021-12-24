@@ -3,7 +3,7 @@
 #include "tty/kterm.h"
 #include "io.h"
 #define PORT 0x3f8 
-static int init_serial() {
+inline static int init_serial() {
    outb(PORT + 1, 0x00);    // Disable all interrupts
    outb(PORT + 3, 0x80);    // Enable DLAB (set baud rate divisor)
    outb(PORT + 0, 0x03);    // Set divisor to 3 (lo byte) 38400 baud
@@ -25,33 +25,33 @@ static int init_serial() {
    return 0;
 }
 
-int is_transmit_empty() {
+inline int is_transmit_empty() {
    return inb(PORT + 5) & 0x20;
 }
  
-void write_serial(char a) {
+inline void write_serial(char a) {
    while (is_transmit_empty() == 0);
  
    outb(PORT,a);
 }
 
-int serial_received() {
+inline int serial_received() {
    return inb(PORT + 5) & 1;
 }
  
-char read_serial() {
+inline char read_serial() {
    while (serial_received() == 0);
  
    return inb(PORT);
 }
 
-void print_serial(const char* string ){
+inline void print_serial(const char* string ){
     for(size_t i = 0; i < strlen(string); i ++){
         write_serial(string[i]);
     }
 }
 
-void test_serial(){
+inline void test_serial(){
         /** Serial test **/
         kterm_writestring("Writing to COM1 serial port:");
         init_serial();

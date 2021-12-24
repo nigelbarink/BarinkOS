@@ -2,7 +2,6 @@
 #define GB4 524288
 #define GB2 262144
 
-int memcmp( const void* ptr1, const void* ptr2, size_t num);
 
 extern "C" void kernel_main (void);
 
@@ -34,27 +33,10 @@ extern "C" void kernel_main (void);
         initGDT();
      
 
-
         kernel_main();
     }
 
-    int memcmp( const void* ptr1, const void* ptr2, size_t num)
-    {
-        const unsigned char * cs = (const unsigned char*) ptr1;
-        const unsigned char * ct = (const unsigned char*) ptr2;
-
-
-        for (int i = 0 ; i < num ; i++, cs++, ct++ ){
-           if( *cs < *ct){
-               return -1;
-           } else if( *cs > *ct){
-               return 1;
-           }
-        } 
-
-        return 0;
-
-    }
+    
 
     extern "C" void kernel_main (void) {
 
@@ -105,9 +87,5 @@ extern "C" void kernel_main (void);
             printf( "UTC time: %02d-%02d-%02d %02d:%02d:%02d  [ Formatted as YY-MM-DD h:mm:ss]\r" ,year, month, day, hour, minute, second);
             delay(1000);
         }
-            
-
         
-       
     }   
-

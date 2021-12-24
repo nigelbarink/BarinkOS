@@ -18,8 +18,9 @@ $(BUILD_DIR)/pci.o \
 $(BUILD_DIR)/pic.o \
 $(BUILD_DIR)/string.o \
 $(BUILD_DIR)/pcidevice.o \
-$(BUILD_DIR)/atapiDevice.o 
-
+$(BUILD_DIR)/atapiDevice.o \
+$(BUILD_DIR)/ataDevice.o \
+$(BUILD_DIR)/rsdp.o \
 
 
 SRC_DIR = src
@@ -54,7 +55,7 @@ test:
 	$(EMULATOR)  -kernel $(BUILD_DIR)/myos.bin -serial stdio -vga std -display gtk -m 2G -cpu core2duo 
 
 test_iso: 
-	$(EMULATOR)  -cdrom $(BUILD_DIR)/barinkOS.iso -serial stdio -vga std -display gtk -m 2G -cpu core2duo 
+	$(EMULATOR)  -boot d -cdrom $(BUILD_DIR)/barinkOS.iso -serial stdio -vga std -display gtk -m 2G -cpu core2duo 
 
 build_kernel: $(OBJ_LINK_LIST)
 	$(CC) -T $(SRC_DIR)/kernel//linker.ld -o $(BUILD_DIR)/myos.bin \
@@ -112,3 +113,10 @@ $(BUILD_DIR)/pcidevice.o:
 
 $(BUILD_DIR)/atapiDevice.o:
 	$(CPP) -c $(SRC_DIR)/kernel/drivers/atapi/atapiDevice.cpp  -o $(BUILD_DIR)/atapiDevice.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+
+$(BUILD_DIR)/ataDevice.o:
+	$(CPP) -c $(SRC_DIR)/kernel/drivers/ata/ataDevice.cpp  -o $(BUILD_DIR)/ataDevice.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+$(BUILD_DIR)/rsdp.o:
+	$(CPP) -c $(SRC_DIR)/kernel/drivers/rsdp/rsdp.cpp  -o $(BUILD_DIR)/rsdp.o $(CFLAGS) -fno-exceptions -fno-rtti

@@ -1,5 +1,4 @@
 #include "kterm.h"
-
 static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 25;
 
@@ -173,6 +172,13 @@ static void itoa (char *buf, int base, int d) {
 
 }
 
+
+/**
+ * @brief For now this will not only write to VGA memory but also write to serial 
+ * 
+ * @param format 
+ * @param ... 
+ */
 void printf ( const char *format, ...) {
     
     char **arg = (char **)&format;

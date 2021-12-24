@@ -180,7 +180,8 @@ void ATA_DEVICE::Read(uint16_t DEVICE_CHANNEL,  DEVICE_DRIVE drive, uint32_t LBA
     for ( int i = 0; i < 256; i++){
         uint16_t data;
         asm volatile ("inw %1, %0" : "=a"(data): "Nd"(DEVICE_CHANNEL));
-        printf (" %x ", data);
+       // printf (" %x ", data);
+
         buffer[i] = data;
     }
     
