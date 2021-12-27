@@ -50,7 +50,9 @@ iso: clean_iso clean build
 	cp build/myos.bin root/boot/myos.bin
 	cp src/grub.cfg root/boot/grub/grub.cfg
 	grub-mkrescue -o build/barinkOS.iso root
-	
+run: all
+	virtualboxvm --startvm "BarinkOS_test"
+
 test:
 	$(EMULATOR)  -kernel $(BUILD_DIR)/myos.bin -serial stdio -vga std -display gtk -m 2G -cpu core2duo 
 

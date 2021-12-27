@@ -3,40 +3,17 @@
 #define GB2 262144
 
 
-extern "C" void kernel_main (void);
 
-    extern "C" void early_main(unsigned long magic, unsigned long addr){
-       /** initialize terminal interface */ 
-        kterm_init();
-
-        if (magic != MULTIBOOT_BOOTLOADER_MAGIC){
-            printf("Invalid magic number: 0x%x\n",  magic);
-            return;
-        }
-        
-        CheckMBT(  (multiboot_info_t *) addr);
-
-        multiboot_info_t* mbt = (multiboot_info_t*) addr;
-
-        /* Are mmap_* valid? */
-        if (CHECK_FLAG(mbt->flags, 6)){
-            PhysicalMemoryManager_initialise( mbt->mmap_addr,  GB2/* Seriously dangerous hardcoded memory value*/);
-            PhysicalMemoryManager_initialise_available_regions(mbt->mmap_addr, mbt->mmap_addr + mbt->mmap_length);
-            PhysicalMemoryManager_deinitialise_kernel();
-            extern uint8_t* kernel_begin;
-            extern uint8_t* kernel_end;
-
-            printf("Kernel MemoryMap:\n");
-            printf("kernel: 0x%x - 0x%x\n", &kernel_begin , &kernel_end);         
+    extern "C" void wait_until_shutdown(){
+        while (true){
+            //Read time indefinetely 
+            read_rtc();
+            printf( "UTC time: %02d-%02d-%02d %02d:%02d:%02d  [ Formatted as YY-MM-DD h:mm:ss]\r" ,year, month, day, hour, minute, second);
+            delay(1000);
         }
 
-        initGDT();
-     
-
-        kernel_main();
     }
 
-    
 
     extern "C" void kernel_main (void) {
 
@@ -96,11 +73,11 @@ extern "C" void kernel_main (void);
               i, PT.Number_sectors_inPartition, PT.PartitionType, mbr->uniqueID,  PT.LBA_partition_start );
          }
 
-         // Find the super block
-        uint16_t superBlock[256];
-        ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, mbr->TableEntries[0].LBA_partition_start, superBlock);
+         // Find the BiosParameter block
+        uint16_t biosparameterblock[256];
+        ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, mbr->TableEntries[0].LBA_partition_start, biosparameterblock);
 
-        BiosParameterBlock*  bpb =  (BiosParameterBlock*) superBlock;
+        BiosParameterBlock*  bpb =  (BiosParameterBlock*) biosparameterblock;
         
 
         printf("\nBPB: Bytes per Sector %d\n", bpb->BytesPerSector );
@@ -113,23 +90,124 @@ extern "C" void kernel_main (void);
         printf("Total Sectors in volume: %d\n", bpb->TotalSectorsInLogicalVolume);
         printf("Sectors per FAT: %d\n", bpb->NumberOfSectorsPerFAT);
 
-        uint32_t PartitionAddress = mbr->TableEntries[0].LBA_partition_start *512 ;
-        uint32_t RootDirAddress = PartitionAddress + ((bpb->ReservedSectors + bpb->NumberOfSectorsPerFAT * bpb->NumberOfFileAllocationTables ) * bpb->BytesPerSector);
-        uint32_t RootDirLBA =RootDirAddress/512;
         
         
-     
-        uint16_t RootDir [16];
-        ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER,RootDirLBA, (uint16_t*) RootDir );
-     
+
+        /**
+         * @brief File Allocation Table 
+         */
 
 
+        uint32_t FATAddress = mbr->TableEntries[0].LBA_partition_start +  bpb->ReservedSectors ;
+        uint16_t FAT[256];
+        ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, FATAddress, FAT );
 
-        while (true){
-            //Read time indefinetely 
-            read_rtc();
-            printf( "UTC time: %02d-%02d-%02d %02d:%02d:%02d  [ Formatted as YY-MM-DD h:mm:ss]\r" ,year, month, day, hour, minute, second);
-            delay(1000);
+        // Show data in terminal
+        for(int i = 0; i < 256; i++ ) {
+            printf("%x ", FAT[i]);
         }
+        kterm_put('\n');
+
+
+         uint32_t RootDirectoryRegion = FATAddress + ( bpb->NumberOfFileAllocationTables * bpb->NumberOfSectorsPerFAT );
+         uint32_t DataRegion = RootDirectoryRegion + ((bpb->NumberOfDirectoryEntries * 32) / bpb->BytesPerSector );
+
+         uint16_t data2 [256];
+         ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, RootDirectoryRegion, data2 );
+         DirectoryEntry* RootDirectory = (DirectoryEntry*) data2;
+         // List files in root
+          for(int i= 0; i < bpb->NumberOfDirectoryEntries ; i++ )
+          {  
+            DirectoryEntry* entry = (DirectoryEntry*)((uint32_t) RootDirectory + (i  * sizeof(DirectoryEntry)));
+
+            if( entry->filename[0] == (uint8_t) 0x00 )
+                break; // There are no more entries in this directory or the entry is free
+             
+            if( entry->attribute & 0x01 == 0x01 || entry->attribute & 0x20 == 0x20)
+                continue; // Skip listing if hidden or Achieve flag is set
+
+            // Print the filename;
+            for( int n = 0; n < 8; n++ ){
+                if(entry->filename[n] == 0x20)
+                    break;
+                kterm_put(entry->filename[n]);
+            }kterm_put('\n');
+
+            for( int n = 0; n < 3; n++){
+                kterm_put(entry->Extension[n]);
+            }kterm_put('\n');
+
+            printf("Attribute: %x \n" , entry->attribute);
+            printf("FileSize: %d Bytes\n", entry->FilesizeInBytes);
+    
+            if( entry->FilesizeInBytes != 0x0 || entry->attribute & 0x8 == 0x0){
+                printf("Show contents");
+
+                printf( "Start cluster of the file: 0x%x\n" , entry->StartingCluster);
+
+                printf("IS it only 1 cluster? %s\n" , FAT[i] == 0xFFFF? "Yes": "No" );
+
+                uint32_t sector = DataRegion + ((entry->StartingCluster - 0x02 ) * bpb->SectorsPerCluster);
+
+
+                uint16_t dataBlob [256];
+                ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, sector, dataBlob );
+                for( int n = 0; n < 256; n++)
+                {
+                    kterm_put(dataBlob[n] & 0x00ff);
+
+                    kterm_put(dataBlob[n] >> 8);
+                }kterm_put('\n');
+
+
+            }
+    
+            printf("======================\n");
+            
+    
+          }
+
+    
+        
+
+
+
+        wait_until_shutdown();
         
     }   
+
+
+
+
+    extern "C" void early_main(unsigned long magic, unsigned long addr){
+       /** initialize terminal interface */ 
+        kterm_init();
+
+        if (magic != MULTIBOOT_BOOTLOADER_MAGIC){
+            printf("Invalid magic number: 0x%x\n",  magic);
+            return;
+        }
+        
+        CheckMBT(  (multiboot_info_t *) addr);
+
+        multiboot_info_t* mbt = (multiboot_info_t*) addr;
+
+        /* Are mmap_* valid? */
+        if (CHECK_FLAG(mbt->flags, 6)){
+            PhysicalMemoryManager_initialise( mbt->mmap_addr,  GB2/* Seriously dangerous hardcoded memory value*/);
+            PhysicalMemoryManager_initialise_available_regions(mbt->mmap_addr, mbt->mmap_addr + mbt->mmap_length);
+            PhysicalMemoryManager_deinitialise_kernel();
+            extern uint8_t* kernel_begin;
+            extern uint8_t* kernel_end;
+
+            printf("Kernel MemoryMap:\n");
+            printf("kernel: 0x%x - 0x%x\n", &kernel_begin , &kernel_end);         
+        }
+
+        initGDT();
+     
+
+        kernel_main();
+    }
+
+    
