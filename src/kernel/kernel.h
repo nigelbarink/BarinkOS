@@ -4,7 +4,7 @@ extern "C"{
 }
 
 
-#include "vga/VBE.h"
+#include "drivers/VGA/VBE.h"
 #include "tty/kterm.h"
 
 #include "./bootloader/multiboot.h"
@@ -14,18 +14,17 @@ extern "C"{
 #include "gdt/gdtc.h"
 #include "idt/idt.h"
 
-#include "io.h"
+#include "drivers/IO/io.h"
 #include "time.h"
 #include "cpu.h"
 #include "serial.h"
-#include "pci.h"
+#include "drivers/IO/PCI/pci.h"
 #include "ide/ide.h"
-//#include "drivers/atapi/atapiDevice.h"
-#include "drivers/ata/ataDevice.h"
+#include "./drivers/IO/ata/ataDevice.h"
 #include "./PartitionTable/MBR/MasterBootRecord.h"
 #include "./filesytems/FAT32/BiosParameterBlock.h"
 #include "./filesytems/FAT32/ExtendBootRecord.h"
-#include "./drivers/rsdp/rsdp.h"
+#include "drivers/ACPI/rsdp.h"
 
 
 #define CHECK_FLAG(flags, bit) ((flags) & (1 <<(bit)))

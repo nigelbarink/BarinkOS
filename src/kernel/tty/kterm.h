@@ -4,8 +4,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "../vga/colors.h"
-#include "../io.h"
+#include "../drivers/VGA/colors.h"
+#include "../drivers/IO/io.h"
 
 extern "C"{
     #include "./../../libc/include/string.h"

@@ -1,10 +1,10 @@
 #pragma once
 #include <stdint.h>
-#include "../../io.h"
-#include "../../ide/ideCommands.h"
-#include "../../ide/sampleIDE.definitions.h"
+#include "../io.h"
+#include "../../../ide/ideCommands.h"
+#include "../../../ide/sampleIDE.definitions.h"
 
-#include "../../tty/kterm.h"
+#include "../../../tty/kterm.h"
 
 /*
 * This first driver wil make use of IO ports.

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "tty/kterm.h"
-#include "io.h"
+#include "drivers/IO/io.h"
 #define PORT 0x3f8 
 inline static int init_serial() {
    outb(PORT + 1, 0x00);    // Disable all interrupts

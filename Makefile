@@ -75,7 +75,7 @@ $(BUILD_DIR)/kterm.o:
 	$(CPP) -c $(SRC_DIR)/kernel/tty/kterm.cpp  -o $(BUILD_DIR)/kterm.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/boot.o:
-	$(AS) $(SRC_DIR)/kernel//boot.S -o $(BUILD_DIR)/boot.o
+	$(AS) $(SRC_DIR)/kernel/boot.S -o $(BUILD_DIR)/boot.o
 
 $(BUILD_DIR)/crti.o:
 	$(AS) $(SRC_DIR)/kernel/crti.s -o $(BUILD_DIR)/crti.o
@@ -84,7 +84,7 @@ $(BUILD_DIR)/crtn.o:
 	$(AS) $(SRC_DIR)/kernel/crtn.s -o $(BUILD_DIR)/crtn.o
 
 $(BUILD_DIR)/io.o:
-		$(CPP) -c $(SRC_DIR)/kernel/io.cpp  -o $(BUILD_DIR)/io.o $(CFLAGS) -fno-exceptions -fno-rtti
+		$(CPP) -c $(SRC_DIR)/kernel/drivers/IO/io.cpp  -o $(BUILD_DIR)/io.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/PageDirectory.o:
 	$(CPP) -c $(SRC_DIR)/kernel/memory/PageDirectory.cpp -o $(BUILD_DIR)/PageDirectory.o $(CFLAGS) -fno-exceptions -fno-rtti 
@@ -106,17 +106,17 @@ $(BUILD_DIR)/PhysicalMemoryManager.o:
 	$(CPP) -c $(SRC_DIR)/kernel/memory/PhysicalMemoryManager.cpp  -o $(BUILD_DIR)/PhysicalMemoryManager.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/pci.o:
-	$(CPP) -c $(SRC_DIR)/kernel/pci.cpp  -o $(BUILD_DIR)/pci.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/drivers/IO/PCI/pci.cpp  -o $(BUILD_DIR)/pci.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/pcidevice.o:
 	$(CPP) -c $(SRC_DIR)/kernel/pci/pciDevice.cpp  -o $(BUILD_DIR)/pcidevice.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/atapiDevice.o:
-	$(CPP) -c $(SRC_DIR)/kernel/drivers/atapi/atapiDevice.cpp  -o $(BUILD_DIR)/atapiDevice.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/drivers/IO/atapi/atapiDevice.cpp  -o $(BUILD_DIR)/atapiDevice.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 
 $(BUILD_DIR)/ataDevice.o:
-	$(CPP) -c $(SRC_DIR)/kernel/drivers/ata/ataDevice.cpp  -o $(BUILD_DIR)/ataDevice.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/drivers/IO/ata/ataDevice.cpp  -o $(BUILD_DIR)/ataDevice.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/rsdp.o:
-	$(CPP) -c $(SRC_DIR)/kernel/drivers/rsdp/rsdp.cpp  -o $(BUILD_DIR)/rsdp.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/drivers/ACPI/rsdp.cpp  -o $(BUILD_DIR)/rsdp.o $(CFLAGS) -fno-exceptions -fno-rtti

@@ -2,7 +2,7 @@
 
 #include "stdint.h"
 #include "stddef.h"
-#include "../vga/colors.h"
+#include "../drivers/VGA/colors.h"
 #include "../pic/pic.h"
 
 #include "../tty/kterm.h"
