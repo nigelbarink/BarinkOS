@@ -1,6 +1,6 @@
 #include "idt.h"
 #include "../pit.h"
-//#include "scancodes/set1.h"
+#include "../keyboard/keyboard.h"
 
 IDT_entry idt_table[256];
 IDT_ptr idt_ptr;
@@ -13,7 +13,6 @@ void set_id_entry (uint8_t num , uint32_t base, uint16_t sel,  uint8_t flags){
     idt_table[num].offset_2 = (base >> 16) & 0xFFFF;
 
 };
-
 
 void irs_handler (registers regs) {
         kterm_writestring("received interrupt!\n");
@@ -36,43 +35,60 @@ void irs_handler (registers regs) {
 
 void irq_handler (registers regs) {
 
-        switch (regs.int_no)
-        {
-        case 0:
-             pit_tick++;
-            break;
-        case 1:
-            // Keyboard interrupt !!
+    
 
-            int scan;
-            /*register*/int i;
+    switch (regs.int_no) {
+    case 0:
+            pit_tick++;
+        break;
+    case 1:
+        // Keyboard interrupt !!
 
-            // Read scancode 
-            scan = inb(0x60);
-            
-            // Send ack message!
-            i = inb(0x61);
-            outb(0x61, i|0x80);
-            outb(0x61, i);
-            printf( "Scancode: %x\n", scan);
-            break;    
+        int scan;
+        int i;/*register*/
 
-        default:
-            printf("Received INT: 0x%x\n", regs.int_no);
-            break;
-        }        
+        // Read scancode 
+        scan = inb(0x60);
+        
+        // Send ack message!
+        i = inb(0x61);
+        outb(0x61, i|0x80);
+        outb(0x61, i);
 
-        outb(0x20, 0x20); // send end of interrupt to master
-
-        if ( regs.int_no > 8 && regs.int_no <= 15) {
-            outb(0xA0, 0x20); // send end of interrupt to slave 
-        }
-       
-       
-        if( regs.int_no == 13){
-            printf(" Error code: %d \n", regs.err_code);
+        // NOTE: check for special scan codes 
+        // e.g. modifiers etc..
+        if( scan < 0x37){
+            //printf("Read from IO: 0x%x\n", scan);
+            keyPress.ScanCode = scan ;
+            //printf( "[From Interrupt] Scancode: %x\n", keyPress.ScanCode);
 
         }
+
+        
+        break;    
+    case 12:
+        // PS2 Mouse interrupt 
+        printf("Mouse event triggered!");
+        //int event = inb(0x60);
+        break;
+
+    default:
+        printf("Interrupt happened!");
+        printf("Received INT: 0x%x\n", regs.int_no);
+        break;
+    }        
+
+    outb(0x20, 0x20); // send end of interrupt to master
+
+    if ( regs.int_no > 8 && regs.int_no <= 15) {
+        outb(0xA0, 0x20); // send end of interrupt to slave 
+    }
+    
+    
+    if( regs.int_no == 13){
+        printf(" Error code: %d \n", regs.err_code);
+
+    }
 
 }
 
@@ -122,10 +138,15 @@ void init_idt(){
     //print_serial("Remapping PIC\n");
     PIC_remap(0x20, 0x28);
 
+    // clear mask for IRQ 12
+    uint8_t value = inb(0x21) & ~(1<< 12);
+    outb(0x21, value);
+
+
 
     // pic IRQ Table
     set_id_entry(32, (uint32_t)irq0, 0x08, 0x8E);
-    set_id_entry(33, (uint32_t)irq1, 0x08, 0x8E);
+    set_id_entry(33, (uint32_t)irq1, 0x08, 0x8E); // PS2 Keyboard
     set_id_entry(34, (uint32_t)irq2, 0x08, 0x8E);
     set_id_entry(35, (uint32_t)irq3, 0x08, 0x8E);
     set_id_entry(36, (uint32_t)irq4, 0x08, 0x8E);
@@ -136,7 +157,7 @@ void init_idt(){
     set_id_entry(41, (uint32_t)irq9, 0x08, 0x8E);
     set_id_entry(42, (uint32_t)irq10, 0x08, 0x8E);
     set_id_entry(43, (uint32_t)irq11, 0x08, 0x8E);
-    set_id_entry(44, (uint32_t)irq12, 0x08, 0x8E);
+    set_id_entry(44, (uint32_t)irq12, 0x08, 0x8E); // PS2 Mouse
     set_id_entry(45, (uint32_t)irq13, 0x08, 0x8E);
     set_id_entry(46, (uint32_t)irq14, 0x08, 0x8E);
     set_id_entry(47, (uint32_t)irq15, 0x08, 0x8E);
