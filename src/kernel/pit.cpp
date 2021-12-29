@@ -7,8 +7,9 @@ void pit_initialise()
 {
     asm volatile("CLI");
 
-    printf("init PIT!\n");
-
+#ifdef __VERBOSE__
+    printf("Init PIT!\n");
+#endif
     // clear mask for IRQ 0 
     uint8_t value = inb(0x21) & ~(1<< 0);
     outb(0x21, value);

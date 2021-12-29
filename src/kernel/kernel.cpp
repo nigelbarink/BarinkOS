@@ -4,28 +4,45 @@
  extern "C" void kernel_main (void);
   
     extern "C" void early_main(unsigned long magic, unsigned long addr){
-        /** initialize terminal interface */ 
+        /** 
+         * Initialize terminal interface 
+         * NOTE: This should be done later on , the magic value should be checked first.
+         */ 
         kterm_init();
         
-        // Check Multiboot magic number 
+        /**
+         * Check Multiboot magic number
+         * NOTE: Printf call should not be a thing this early on ...
+        */ 
         if (magic != MULTIBOOT_BOOTLOADER_MAGIC){
             printf("Invalid magic number: 0x%x\n",  magic);
             return;
         }
 
-        multiboot_info_t* mbt = (multiboot_info_t*) addr;
+        /**
+         * Show a little banner for cuteness
+         */
+        printf("|===    BarinkOS       ===|\n");
 
-        /* Are mmap_* valid? */
-        if (CHECK_FLAG(mbt->flags, 6)){
+
+        /**
+         * Use the address given as an argument as the pointer
+         * to a Multiboot information structure.
+         */
+          multiboot_info_t* mbt = (multiboot_info_t*) addr;
+         
+        /*
+            If we got a memory map from our bootloader we 
+            should be parsing it to find out the memory regions available.
+         */
+        if (CHECK_FLAG(mbt->flags, 6))
+        {   
+            printf("Preliminary results mmap scan:\n");
+            mapMultibootMemoryMap(mbt);
+            
             PhysicalMemoryManager_initialise( mbt->mmap_addr,  GB2/* Seriously dangerous hardcoded memory value*/);
             PhysicalMemoryManager_initialise_available_regions(mbt->mmap_addr, mbt->mmap_addr + mbt->mmap_length);
             PhysicalMemoryManager_deinitialise_kernel();
-            extern uint8_t* kernel_begin;
-            extern uint8_t* kernel_end;
-
-            printf("Kernel MemoryMap:\n");
-            printf("kernel: 0x%x - 0x%x\n", &kernel_begin , &kernel_end);         
-            printf("Frames used: 0x%x blocks of 4 KiB\n", used_blocks); 
         }
         
         initGDT();

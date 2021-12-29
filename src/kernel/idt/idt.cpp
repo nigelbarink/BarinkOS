@@ -254,8 +254,10 @@ void init_idt(){
     idt_ptr.length = sizeof(IDT_entry) * 255;
     idt_ptr.base = (uint32_t)&idt_table;
 
+#ifdef __VERBOSE__
     printf("Init IDT\n");
-    
+#endif
+
     // TODO: Set everything to zero first
 
     set_id_entry(0,  (uint32_t) irs0 , 0x08, 0x8F);

@@ -5,7 +5,7 @@ CC = ${HOME}/opt/cross/bin/i686-elf-gcc
 CPP = ${HOME}/opt/cross/bin/i686-elf-g++ 
 CFLAGS =  -ffreestanding -O2 -Wall -Wextra
 
-OFILES =  $(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o $(BUILD_DIR)/pit.o $(BUILD_DIR)/keyboard.o $(BUILD_DIR)/PhysicalMemoryManager.o $(BUILD_DIR)/io.o $(BUILD_DIR)/PageDirectory.o $(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/string.o
+OFILES =$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o	$(BUILD_DIR)/pit.o 	$(BUILD_DIR)/time.o	$(BUILD_DIR)/keyboard.o	$(BUILD_DIR)/PhysicalMemoryManager.o $(BUILD_DIR)/io.o 	$(BUILD_DIR)/PageDirectory.o $(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/sv-terminal.o $(BUILD_DIR)/string.o $(BUILD_DIR)/PageFrameAllocator.o 
 
 SRC_DIR = src
 BUILD_DIR = build
@@ -33,7 +33,7 @@ iso: clean_iso clean build
 	cp src/grub.cfg root/boot/grub/grub.cfg
 	grub-mkrescue -o build/barinkOS.iso root
 	
-test:
+run: all
 	$(EMULATOR)  -kernel $(BUILD_DIR)/myos.bin -serial stdio -vga std -display gtk -m 2G -cpu core2duo 
 
 build_kernel: $(OBJ_LINK_LIST)
@@ -90,3 +90,10 @@ $(BUILD_DIR)/pit.o:
 
 $(BUILD_DIR)/keyboard.o:
 	$(CPP) -c $(SRC_DIR)/kernel/keyboard/keyboard.cpp  -o $(BUILD_DIR)/keyboard.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+
+$(BUILD_DIR)/time.o:
+	$(CPP) -c $(SRC_DIR)/kernel/time.cpp  -o $(BUILD_DIR)/time.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+$(BUILD_DIR)/sv-terminal.o:
+	$(CPP) -c $(SRC_DIR)/kernel/sv-terminal/superVisorTerminal.cpp  -o $(BUILD_DIR)/sv-terminal.o $(CFLAGS) -fno-exceptions -fno-rtti

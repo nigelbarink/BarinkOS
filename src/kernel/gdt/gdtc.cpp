@@ -29,8 +29,9 @@ void add_descriptor(int which , unsigned long base, unsigned long limit, unsigne
 
 void initGDT(){
 
+#ifdef __VERBOSE__
       printf("Init GDT!\n");
-
+#endif
       // NULL segment
       add_descriptor(NULL_SEGMENT, 0,0,0,0);
 
