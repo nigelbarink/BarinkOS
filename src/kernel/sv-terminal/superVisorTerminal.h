@@ -3,6 +3,7 @@
 #include "../time.h"
 #include "../pit.h"
 #include "../keyboard/keyboard.h"
-#include "../memory/physical/PhysicalMemoryManager.h"
+#include "../memory/memory.h"
+#include "../bootinfo.h"
 
-void startSuperVisorTerminal();
+void startSuperVisorTerminal(BootInfo * );

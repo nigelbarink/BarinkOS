@@ -19,7 +19,8 @@ Multiboot information can be read by the kernel.
 ________________________
 
 ### The goal
-Writing a hobby operating system to better understand the basic building blocks of any operating system.
+Writing a hobby operating system to better understand the basic building blocks of any operating system.Initially I'd like for my 
+operating system to be able to run bash.
 
 ________________________
 ### Operating System Technical specs/details

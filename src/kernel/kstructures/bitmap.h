@@ -13,26 +13,26 @@ inline void bitmap_unset(uint32_t* map , int index)
     map[index/32] &= ~(1 << (index % 32));
 }
 
-inline int bitmap_first_unset( uint32_t* map , int size)
+inline uint32_t bitmap_first_unset( uint32_t* map , int map_size)
 {
-    uint32_t rem_bits = size % 32;
-    for(uint32_t i = 0; i < size/32; i++)
+    for ( int i = 0 ; i < map_size ; i ++ )
     {
-        if(map[i] != 0xFFFFFFFF){
-            for(int j = 0; j < 32; j++){
-                if(!(map[i] & (1<< j))){
-                    return (i*32) + j;
+        // a bit or more is set within this byte!
+        if( (map[i] & 0xFFFFFFFF) > 0 ){
+
+            // which bit is set? 
+            for(int j = 0 ; j < 32 ; j++){
+                if ( (map[i] & (0x00000001 << j)) > 0)
+                {
+                    printf("Found bit: byte 0x%x , bit 0x%x\n", i , j);
+                    return (i*32)+j;
                 }
             }
-        }
-    }
 
-    if(rem_bits){
-        for(uint32_t j = 0; j < rem_bits; j++){
-            if(!(map[size/32] & (1 << j ))){
-                return size + j; // Original author divided size by 32 and then multiplied it by 32 which is a net zero calculation ?!?
-            }
+        
         }
+
+
     }
 
     return -1;

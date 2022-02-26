@@ -1,14 +1,20 @@
 #pragma once
-extern "C"{
+extern "C" 
+{
    #include "../libc/include/string.h" 
 }
+
+#include "definitions.h"
+
 #include "vga/VBE.h"
 #include "tty/kterm.h"
 
 #include "./bootloader/multiboot.h"
+#include "bootinfo.h"
+
+#include "memory/memory.h"
+#include "memory/memoryinfo.h"
 #include "bootcheck.h"
-#include "memory/physical/PhysicalMemoryManager.h"
-#include "memory/frames/PageFrameAllocator.h"
 
 #include "gdt/gdtc.h"
 #include "idt/idt.h"
