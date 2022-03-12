@@ -1,5 +1,6 @@
 #pragma once
-extern "C"{
+extern "C" 
+{
    #include "../libc/include/string.h" 
 }
 
@@ -8,14 +9,19 @@ extern "C"{
 #include "tty/kterm.h"
 
 #include "./bootloader/multiboot.h"
+#include "bootinfo.h"
+
+#include "memory/memory.h"
+#include "memory/memoryinfo.h"
 #include "bootcheck.h"
-#include "memory/PhysicalMemoryManager.h"
 
 #include "gdt/gdtc.h"
 #include "idt/idt.h"
 
 #include "drivers/IO/io.h"
 #include "time.h"
+#include "pit.h"
+
 #include "cpu.h"
 #include "serial.h"
 #include "drivers/IO/PCI/pci.h"
@@ -28,17 +34,10 @@ extern "C"{
 #include "drivers/ACPI/rsdp.h"
 
 
+#include "time.h"
+#include "sv-terminal/superVisorTerminal.h"
+
 #define CHECK_FLAG(flags, bit) ((flags) & (1 <<(bit)))
-#define PANIC(message) {  return; }
+#define PANIC(message) {return;} 
 
 
-/* This needs to be moved! */
-/**
- *      simple delay function 
- **/
-void delay(int t){
-    volatile int i,j;
-    for(i=0;i<t;i++)
-        for(j=0;j<25000;j++)
-            asm("NOP");
-}

@@ -9,9 +9,8 @@ OFILES = \
 $(BUILD_DIR)/boot.o \
 $(BUILD_DIR)/kterm.o \
 $(BUILD_DIR)/kernel.o \
-$(BUILD_DIR)/PhysicalMemoryManager.o \
+$(BUILD_DIR)/memory.o \
 $(BUILD_DIR)/io.o \
-$(BUILD_DIR)/PageDirectory.o \
 $(BUILD_DIR)/gdtc.o \
 $(BUILD_DIR)/idt.o \
 $(BUILD_DIR)/pci.o \
@@ -21,6 +20,11 @@ $(BUILD_DIR)/pcidevice.o \
 $(BUILD_DIR)/atapiDevice.o \
 $(BUILD_DIR)/ataDevice.o \
 $(BUILD_DIR)/rsdp.o \
+$(BUILD_DIR)/pit.o	\
+$(BUILD_DIR)/time.o	\
+$(BUILD_DIR)/keyboard.o \
+$(BUILD_DIR)/sv-terminal.o \
+
 
 
 SRC_DIR = src
@@ -38,8 +42,6 @@ INTERNAL_OBJS = $(CRTI_OBJ) $(OFILES) $(CRTN_OBJ)
 all: clean build 
 
 build: build_kernel iso
-
-
 
 clean_iso: 
 	if [[ -a isodir/boot ]] ; then rm root/boot -rd ; fi
@@ -77,7 +79,7 @@ $(BUILD_DIR)/kterm.o:
 	$(CPP) -c $(SRC_DIR)/kernel/tty/kterm.cpp  -o $(BUILD_DIR)/kterm.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/boot.o:
-	$(AS) $(SRC_DIR)/kernel/boot.S -o $(BUILD_DIR)/boot.o
+	$(AS) $(SRC_DIR)/kernel/boot.s -o $(BUILD_DIR)/boot.o
 
 $(BUILD_DIR)/crti.o:
 	$(AS) $(SRC_DIR)/kernel/crti.s -o $(BUILD_DIR)/crti.o
@@ -88,8 +90,6 @@ $(BUILD_DIR)/crtn.o:
 $(BUILD_DIR)/io.o:
 		$(CPP) -c $(SRC_DIR)/kernel/drivers/IO/io.cpp  -o $(BUILD_DIR)/io.o $(CFLAGS) -fno-exceptions -fno-rtti
 
-$(BUILD_DIR)/PageDirectory.o:
-	$(CPP) -c $(SRC_DIR)/kernel/memory/PageDirectory.cpp -o $(BUILD_DIR)/PageDirectory.o $(CFLAGS) -fno-exceptions -fno-rtti 
 
 $(BUILD_DIR)/idt.o:
 	$(CPP) -c $(SRC_DIR)/kernel/idt/idt.cpp -o $(BUILD_DIR)/idt.o $(CFLAGS) -fno-exceptions -fno-rtti
@@ -122,3 +122,20 @@ $(BUILD_DIR)/ataDevice.o:
 
 $(BUILD_DIR)/rsdp.o:
 	$(CPP) -c $(SRC_DIR)/kernel/drivers/ACPI/rsdp.cpp  -o $(BUILD_DIR)/rsdp.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+$(BUILD_DIR)/pit.o:
+	$(CPP) -c $(SRC_DIR)/kernel/pit.cpp  -o $(BUILD_DIR)/pit.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+
+$(BUILD_DIR)/keyboard.o:
+	$(CPP) -c $(SRC_DIR)/kernel/keyboard/keyboard.cpp  -o $(BUILD_DIR)/keyboard.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+
+$(BUILD_DIR)/time.o:
+	$(CPP) -c $(SRC_DIR)/kernel/time.cpp  -o $(BUILD_DIR)/time.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+$(BUILD_DIR)/sv-terminal.o:
+	$(CPP) -c $(SRC_DIR)/kernel/sv-terminal/superVisorTerminal.cpp  -o $(BUILD_DIR)/sv-terminal.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+$(BUILD_DIR)/memory.o:
+	$(CPP) -c $(SRC_DIR)/kernel/memory/memory.cpp  -o $(BUILD_DIR)/memory.o $(CFLAGS) -fno-exceptions -fno-rtti

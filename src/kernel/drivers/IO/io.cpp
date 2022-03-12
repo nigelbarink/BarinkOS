@@ -23,7 +23,7 @@ unsigned int inl_p(unsigned short ){
 }
 
 
-void outb_p(unsigned char , unsigned short ){
+void b_p(unsigned char , unsigned short ){
 
 }
 void outw(unsigned short , unsigned short ){
