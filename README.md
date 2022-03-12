@@ -23,6 +23,9 @@ Enumerating the PCI bus
 ![ATAPI CD-ROM Identification](screenshots/CD-ROM_Identify.png) \
 Correctly identified our ATAPI device 🎉
 
+![Reading Files from FAT-16](screenshots/ReadingFilesFromFAT16.png) \
+Reading a file from a FAT-16 Formatted drive 
+
 ________________________
 
 ### The goal
