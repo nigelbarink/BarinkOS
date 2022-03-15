@@ -28,9 +28,9 @@ extern "C"
 #include "ide/ide.h"
 #include "./drivers/IO/ata/ataDevice.h"
 #include "./PartitionTable/MBR/MasterBootRecord.h"
-#include "./filesytems/FAT/BiosParameterBlock.h"
-#include "./filesytems/FAT/ExtendBootRecord.h"
-#include "./filesytems/FAT/DirectoryEntry.h"
+#include "./filesystems/FAT/BiosParameterBlock.h"
+#include "./filesystems/FAT/ExtendBootRecord.h"
+#include "./filesystems/FAT/DirectoryEntry.h"
 #include "drivers/ACPI/rsdp.h"
 
 
