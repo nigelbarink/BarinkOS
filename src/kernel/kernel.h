@@ -14,6 +14,7 @@ extern "C"
 
 #include "memory/memory.h"
 #include "memory/memoryinfo.h"
+#include "memory/paging.h"
 #include "bootcheck.h"
 
 #include "gdt/gdtc.h"

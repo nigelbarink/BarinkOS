@@ -4,6 +4,9 @@ extern "C" void kernel_main (BootInfo* bootinfo) {
     init_serial();
     pit_initialise();
 
+    InitializePaging();
+    //Enable();
+
     startSuperVisorTerminal(bootinfo);
 }   
 
