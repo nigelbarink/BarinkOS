@@ -4,7 +4,7 @@ extern "C" void kernel_main (BootInfo* bootinfo) {
     init_serial();
     pit_initialise();
 
-    InitializePaging();
+    //InitializePaging();
     //Enable();
 
     startSuperVisorTerminal(bootinfo);
@@ -90,8 +90,7 @@ extern "C" void early_main(unsigned long magic, unsigned long addr){
        memAlloc.allocate_region(kernel_end, kernel_end - kernel_begin);
 
         // test alloc_block
-     
-         
+        /*
         uint8_t* memory = (uint8_t*) memAlloc.allocate_block();
         printf("Got a new pointer: 0x%x\n", memory);
 
@@ -102,13 +101,13 @@ extern "C" void early_main(unsigned long magic, unsigned long addr){
         memAlloc.free_block((void*) memory);
 
         uint8_t* newBlockPlse = (uint8_t*) memAlloc.allocate_block();
-        
+        */
 
 
 
        // memAlloc.free_block((void*) memory);
-  
-    
+        InitializePaging();
+        Enable();
     }
     
     initGDT();

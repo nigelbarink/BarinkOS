@@ -12,10 +12,7 @@ void InitializePaging();
 void Enable();
 
 void AllocatePage(VIRTUAL_ADDRESS, PageDirectoryEntry&);
-
-
 void FreePage(VIRTUAL_ADDRESS, PageDirectoryEntry&);
-
 
 void Map(PHYSICAL_ADDRESS, VIRTUAL_ADDRESS, PageDirectoryEntry&);
 void Unmap (VIRTUAL_ADDRESS, PageDirectoryEntry&);
