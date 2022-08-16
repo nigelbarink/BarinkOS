@@ -26,7 +26,7 @@ stack_top:
 .include "./src/kernel/irq_table.s"
 .include "./src/kernel/idt/idt.s"
 .include "./src/kernel/paging.s"
-
+.include "./src/kernel/cpu.s"
 
 .global _start
 .type _start, @function

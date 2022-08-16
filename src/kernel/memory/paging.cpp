@@ -2,6 +2,9 @@
 PageDirectoryEntry kernel_directory[MAX_DIRECTORY_ENTRIES]__attribute__((aligned(4096)));
 PageTableEntry first_page_table[1024]__attribute__((aligned(4096)));
 
+
+
+
 #define KERNEL_VRT_MEMORY_BEGIN 0xC0000000
 #define KERNEL_VRT_MEMORY_END   0xCFFFFFFF
 #define PAGE_SIZE  0xFA0;
@@ -105,10 +108,29 @@ void Unmap(VIRTUAL_ADDRESS vaddr, PageDirectoryEntry& page_directory)
 
 
 void Enable()
-{
+{ 
+
+    //TODO: Write  protect will not be turned on 
+    // for the moment altough according to the intel
+    // developer manual this should happen.
+
+    uint32_t CR0;
+    
+    CR0 =  GetCR0();
+    printf("PG bit = %d \n" , GET_PG_BIT(CR0));
+
     printf("Load into CR3 address: 0x%x\n", (uint32_t)(&kernel_directory[0]));
     loadPageDirectory(&kernel_directory[0]);
     enablePaging();
 
     printf("Paging enabled!\n");
+
+
+    CR0 = GetCR0();
+    printf("PG bit = %d \n" , GET_PG_BIT(CR0) );
+
+
+    uint32_t EFLAGS = GetEFLAGS();
+
+
 }

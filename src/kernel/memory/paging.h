@@ -2,7 +2,7 @@
 #include "./memory.h"
 #include "./../tty/kterm.h"
 #include "paging.definitions.h"
-
+#include "../cpu.h"
 
 extern "C" void loadPageDirectory (uint32_t* addr );
 extern "C" void enablePaging();
@@ -16,3 +16,5 @@ void FreePage(VIRTUAL_ADDRESS, PageDirectoryEntry&);
 
 void Map(PHYSICAL_ADDRESS, VIRTUAL_ADDRESS, PageDirectoryEntry&);
 void Unmap (VIRTUAL_ADDRESS, PageDirectoryEntry&);
+
+
