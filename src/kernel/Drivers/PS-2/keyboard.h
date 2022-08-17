@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-#include "../tty/kterm.h"
+#include "../../Terminal/kterm.h"
 typedef enum ScanCodeSet{
     None            =   0,
     ScanCodeSet1    =   1,

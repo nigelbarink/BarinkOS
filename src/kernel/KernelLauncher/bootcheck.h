@@ -1,8 +1,8 @@
 #pragma once 
-#include "bootloader/multiboot.h"
+#include "../multiboot.h"
 #define CHECK_FLAG(flags, bit) ((flags) & (1 <<(bit)))
 
-#include "tty/kterm.h"
+#include "../Terminal/kterm.h"
 
 
 

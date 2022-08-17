@@ -3,10 +3,10 @@
 #include <stddef.h>
 
 #include "memoryinfo.h"
-#include "../bootloader/multiboot.h"
-#include "../tty/kterm.h"
-#include "../../libc/include/mem.h"
-#include "../kstructures/bitmap.h"
+#include "../multiboot.h"
+#include "../Terminal/kterm.h"
+#include "../Lib/mem.h"
+#include "../bitmap.h"
 
 #define BLOCK_SIZE 4092
 #define BLOCKS_PER_WORD 32 // A word is 16 bit in x86 machines according to my google search results!

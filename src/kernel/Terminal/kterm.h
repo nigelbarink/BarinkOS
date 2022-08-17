@@ -4,11 +4,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "../vga/colors.h"
+#include "../Drivers/VGA/colors.h"
 #include "../io.h"
 
 extern "C"{
-    #include "./../../libc/include/string.h"
+    #include "../Lib/string.h"
 }
 
 void kterm_init();

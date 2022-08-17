@@ -2,10 +2,10 @@
 
 #include "stdint.h"
 #include "stddef.h"
-#include "../vga/colors.h"
-#include "../pic/pic.h"
+#include "../../Drivers/VGA/colors.h"
+#include "../../Drivers/PIC/pic.h"
 
-#include "../tty/kterm.h"
+#include "../../Terminal/kterm.h"
 
 
 extern "C" {

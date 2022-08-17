@@ -1,9 +1,9 @@
 #pragma once 
-#include "../tty/kterm.h"
+#include "../Terminal/kterm.h"
 #include "../time.h"
-#include "../pit.h"
-#include "../keyboard/keyboard.h"
-#include "../memory/memory.h"
+#include "../Drivers/PIT/pit.h"
+#include "../Drivers/PS-2/keyboard.h"
+#include "../Memory/memory.h"
 #include "../bootinfo.h"
 
 void startSuperVisorTerminal(BootInfo * );

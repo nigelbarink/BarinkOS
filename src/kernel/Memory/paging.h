@@ -1,7 +1,7 @@
 #pragma once 
-#include "./memory.h"
-#include "./../tty/kterm.h"
+#include "memory.h"
 #include "paging.definitions.h"
+#include "../Terminal/kterm.h"
 #include "../cpu.h"
 
 extern "C" void loadPageDirectory (uint32_t* addr );

@@ -1,32 +1,32 @@
 #pragma once
 extern "C" 
 {
-   #include "../libc/include/string.h" 
+   #include "Lib/string.h" 
 }
 
 #include "definitions.h"
 
-#include "vga/VBE.h"
-#include "tty/kterm.h"
+#include "Drivers/VGA/VBE.h"
+#include "Terminal/kterm.h"
 
-#include "./bootloader/multiboot.h"
+#include "multiboot.h"
 #include "bootinfo.h"
 
-#include "memory/memory.h"
-#include "memory/memoryinfo.h"
-#include "memory/paging.h"
-#include "bootcheck.h"
+#include "Memory/memory.h"
+#include "Memory/memoryinfo.h"
+#include "Memory/paging.h"
+#include "KernelLauncher/bootcheck.h"
 
-#include "gdt/gdtc.h"
-#include "idt/idt.h"
+#include "Memory/GDT/gdtc.h"
+#include "Interrupts/idt/idt.h"
 
-#include "pit.h"
+#include "Drivers/PIT/pit.h"
 #include "io.h"
 #include "cpu.h"
 #include "serial.h"
 
 #include "time.h"
-#include "sv-terminal/superVisorTerminal.h"
+#include "SuperVisorTerminal/superVisorTerminal.h"
 
 #define CHECK_FLAG(flags, bit) ((flags) & (1 <<(bit)))
 #define PANIC(message) {return;} 

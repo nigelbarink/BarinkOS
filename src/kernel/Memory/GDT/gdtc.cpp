@@ -1,5 +1,5 @@
 #include "gdtc.h"
-#include "../tty/kterm.h"
+#include "../../Terminal/kterm.h"
 
 #define NULL_SEGMENT          0
 #define KERNEL_CODE_SEGMENT   1

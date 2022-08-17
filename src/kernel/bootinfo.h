@@ -1,6 +1,5 @@
 #pragma once
-#include "memory/memoryinfo.h"
-
+#include "Memory/memoryinfo.h"
 
 struct BootInfo{
     const char* BootStructureID = "BarinkOS";
