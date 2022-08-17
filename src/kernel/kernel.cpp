@@ -1,11 +1,9 @@
 #include "kernel.h"
 
+
 extern "C" void kernel_main (BootInfo* bootinfo) {
     init_serial();
-    pit_initialise();
-
-    //InitializePaging();
-    //Enable();
+    //pit_initialise();
 
     startSuperVisorTerminal(bootinfo);
 }   
@@ -16,8 +14,12 @@ extern "C" void early_main(unsigned long magic, unsigned long addr){
      * Initialize terminal interface 
      * NOTE: This should be done later on , the magic value should be checked first.
      */ 
+    initGDT();
     kterm_init();
-    
+    init_serial();
+    print_serial("Hello Higher half kernel!");
+    printf("DDDDDDDDDDDDDDDD");
+    return;
     /**
      * Check Multiboot magic number
      * NOTE: Printf call should not be a thing this early on ...
@@ -31,7 +33,7 @@ extern "C" void early_main(unsigned long magic, unsigned long addr){
      * Show a little banner for cuteness
      */
     printf("|===    BarinkOS       ===|\n");
-
+    printf("Kernel Begin AT(0x%x)", kernel_begin);
 
     /**
      * Use the address given as an argument as the pointer
@@ -107,17 +109,17 @@ extern "C" void early_main(unsigned long magic, unsigned long addr){
 
         //memAlloc.free_block((void*) memory);
         //InitializePaging();
-        IdentityMap();
-        Enable();
+        //IdentityMap();
+        //Enable();
     }
     
-    initGDT();
-    init_idt();
+    //initGDT();
+    //init_idt();
     // Enable interrupts
-    asm volatile("STI");
+    //asm volatile("STI");
     
 
-    CheckMBT(  (multiboot_info_t *) addr);
+    //CheckMBT(  (multiboot_info_t *) addr);
 
 
     kernel_main(&bootinfo);

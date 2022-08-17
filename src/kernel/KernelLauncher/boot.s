@@ -7,30 +7,104 @@
 .set MAGIC,    0x1BADB002       /* 'magic number' lets bootloader find the header */
 .set CHECKSUM, -(MAGIC + FLAGS) /* checksum of above, to prove we are multiboot */
 
-.section .multiboot
+.section .multiboot.data, "aw"
 .align 4
 .long MAGIC
 .long FLAGS
 .long CHECKSUM
  
-
-.section .bss
-.align 16
+/*
+*	Allocate initial stack
+*/
+.section .bootstrap_stack, "aw", @nobits
 stack_bottom:
 .skip 16384 # 16 KiB
 stack_top:
- 
-.section .text
-.include "./src/kernel/Memory/GDT/gdt.s"
-.include "./src/kernel/irs_table.s"
-.include "./src/kernel/irq_table.s"
-.include "./src/kernel/Interrupts/idt/idt.s"
-.include "./src/kernel/Memory/paging.s"
-.include "./src/kernel/cpu.s"
 
+/*
+* Preallocate a couple pages to get us bootstrapped 
+* Being carefull to not use any address the bootloader might 
+* be using for its multiboot structures
+*/
+.section .bss, "aw", @nobits
+	.align 4096
+boot_page_directory:
+	.skip 4096
+boot_page_table:
+	.skip 4096
+# More page tables may be required
+
+# Entry point
+.section .multiboot.text, "a"
 .global _start
-.type _start, @function
+.type _start, @function 
 _start:
+	# Get physical address of the boot_page_table
+	movl $(boot_page_table - 0xC0000000), %edi
+	# Map address 0
+	movl $0, %esi
+	# Map 1023 pages the 1024th being the VGA text buffer
+	movl $1023, %ecx
+
+1:	# Map the kernel 
+	cmpl $_kernel_start, %esi
+	jl 2f
+	cmpl $(_kernel_end - 0xC0000000), %esi
+	jge 3f
+
+	# Map physical address as "present and writable"
+	movl %esi, %edx
+	orl $0x003, %edx
+	movl %edx, (%edi)
+
+2: # Size of page is 4096 bytes
+	addl $4096, %esi
+	# Size of entries in boot_page_table is 4 bytes
+	addl $4, %edi 
+	# Loop to the next entry if we haven't finished.
+	loop 1b
+
+3:	# Map VGA video memory to 0xC03FF00 as "present, writable"
+	movl $(0x000B8000 | 0x003), boot_page_table - 0xC0000000 + 1023 * 4
+
+
+	# IMPORTANT NOTE FROM WIKI.OSDEV.ORG/HIGHER_HALF_X86_BARE_BONES
+
+	# The page table is used at both page directory entry 0 (virtually from 0x0
+	# to 0x3FFFFF) (thus identity mapping the kernel) and page directory entry
+	# 768 (virtually from 0xC0000000 to 0xC03FFFFF) (thus mapping it in the
+	# higher half). The kernel is identity mapped because enabling paging does
+	# not change the next instruction, which continues to be physical. The CPU
+	# would instead page fault if there was no identity mapping.\
+	
+	# Map the page table to both virtual addresss 0x00000000 and 0xC0000000
+	movl $(boot_page_table - 0xC0000000 + 0x003), boot_page_directory - 0xC0000000 + 0
+	movl $(boot_page_table - 0xC0000000 + 0x003), boot_page_directory - 0xC0000000 + 768 * 4
+
+	# Set cr3 to the address of the boot_page_directory
+	movl $(boot_page_directory - 0xC0000000), %ecx
+	movl %ecx, %cr3
+
+	# Enable paging and the write-protect bit
+	movl %cr0, %ecx
+	orl $0x80010000, %ecx
+	movl %ecx, %cr0
+
+	# Jump to higher half with an absolute jump
+	lea 4f, %ecx
+	jmp *%ecx
+
+.section .text
+4:
+	# At this point, paging is fully set up and enabled
+isPaging:
+	# Unmap the identity mapping as it is now unnecessary 
+	movl $0, boot_page_directory + 0
+
+	# Reload cr3 to force tlb flush 
+	movl %cr3, %ecx
+	movl %ecx, %cr3
+
 	/*Setup the stack pointer to point to the beginning of our stack */
 	/* I believe its a high address growing down to lower adress for the stack on x86*/
 	mov $stack_top, %esp
@@ -44,16 +118,15 @@ _start:
 
 	/* push the magic value */
 	pushl %eax
-	
-	call early_main
 
+	call early_main
 
 	mov %cr0, %eax 
 	or $1, %eax
-	mov %eax, %cr0
+	mov %eax, %cr0 
 
 	
-	call kernel_main
+	//call kernel_main
 
 
 	cli
@@ -61,6 +134,11 @@ _start:
 	jmp 1b
 
 
-.size _start, . - _start
+.include "./src/kernel/Memory/GDT/gdt.s"
+.include "./src/kernel/irs_table.s"
+.include "./src/kernel/irq_table.s"
+.include "./src/kernel/Interrupts/idt/idt.s"
+.include "./src/kernel/Memory/paging.s"
+.include "./src/kernel/cpu.s"
 
 

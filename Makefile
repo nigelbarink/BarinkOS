@@ -3,7 +3,7 @@ EMULATOR = qemu-system-i386
 AS = ${HOME}/opt/cross/bin/i686-elf-as
 CC = ${HOME}/opt/cross/bin/i686-elf-gcc
 CPP = ${HOME}/opt/cross/bin/i686-elf-g++ 
-CFLAGS =  -ffreestanding -O2 -Wall -Wextra
+CFLAGS =  -ffreestanding -Og -ggdb  -Wall -Wextra
 
 OFILES =$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o $(BUILD_DIR)/memory.o  $(BUILD_DIR)/paging.o	$(BUILD_DIR)/pit.o 	$(BUILD_DIR)/time.o	$(BUILD_DIR)/keyboard.o	 $(BUILD_DIR)/io.o 	$(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/sv-terminal.o $(BUILD_DIR)/string.o  
 
@@ -34,11 +34,14 @@ iso: clean_iso clean build
 	grub-mkrescue -o build/barinkOS.iso root
 	
 run: all
-	$(EMULATOR)  -kernel $(BUILD_DIR)/myos.bin -serial stdio -vga std -display gtk -m 2G -cpu core2duo 
+	$(EMULATOR) -cdrom build/barinkOS.iso -serial stdio -vga std -display gtk -m 2G -cpu core2duo
+
+debug: all
+	$(EMULATOR) -cdrom build/barinkOS.iso -serial stdio -vga std -display gtk -m 2G -cpu core2duo -s -d int
 
 build_kernel: $(OBJ_LINK_LIST)
 	$(CC) -T $(SRC_DIR)/kernel//linker.ld -o $(BUILD_DIR)/myos.bin \
-	 -ffreestanding -O2 -nostdlib $(OBJ_LINK_LIST) -lgcc
+	 -ffreestanding -ggdb -Og -nostdlib $(OBJ_LINK_LIST) -lgcc
 
 build_x86_64: 
 	$(AS) $(SRC_DIR)/cgc/x86_64/crti.s -o $(BUILD_DIR)/crti_64.o
