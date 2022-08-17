@@ -128,9 +128,24 @@ void irs_handler (registers regs) {
         case 14:
             // Page Fault Exception #PF
             printf("#PF\n");
-            printf("EIP: 0x%x\n", regs.eip);
-            printf("EAX: 0x%x\n", regs.eax);
-            printf("EBP: 0x%x\n", regs.ebp);
+
+            printf("EIP: 0x%x\n", regs.eip); // Points to faulting instruction ???
+            printf("EAX: 0x%x\n", regs.eax); 
+            printf("EBP: 0x%x\n", regs.ebp); // Base pointer pointing to the bottom of the stack 
+ 
+
+            // Error code of 32 bits are on the stack
+            // CR2 register contains the 32-bit linear address that generated the exception
+            // See Intel Software Developers manual Volume 3A Part 1 page 236 for more info
+                   
+
+            /*
+                Check the error code to figure out what happened here
+            */
+
+
+            
+    
         break;
         
         case 16:

@@ -11,6 +11,20 @@ GetCR0:
 	pop %ebp
 	ret
 
+.globl GetCR4
+GetCR4:
+	push %ebp
+	mov %esp, %ebp
+
+	xor %eax, %eax
+	mov %cr4, %eax 
+
+	mov %ebp, %esp 
+	pop %ebp
+	ret
+
+
+
 .globl GetEFLAGS
 GetEFLAGS:
 	push %ebp 

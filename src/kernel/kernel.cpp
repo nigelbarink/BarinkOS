@@ -105,8 +105,9 @@ extern "C" void early_main(unsigned long magic, unsigned long addr){
 
 
 
-       // memAlloc.free_block((void*) memory);
-        InitializePaging();
+        //memAlloc.free_block((void*) memory);
+        //InitializePaging();
+        IdentityMap();
         Enable();
     }
     

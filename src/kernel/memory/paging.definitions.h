@@ -6,8 +6,6 @@
     also 64 bit mode.
 */
 
-
-
 #define MAX_DIRECTORY_ENTRIES 1024
 #define MAX_PAGE_TABLE_ENTRIES 1024
 #define MAX_PAGES 1024
@@ -19,6 +17,9 @@
 #define PageTableEntry uint32_t
 
 
+#define KERNEL_VRT_MEMORY_BEGIN 0xC0000000
+#define KERNEL_VRT_MEMORY_END   0xCFFFFFFF
+#define PAGE_SIZE  4096;
 
 
 // NOTE: FIXME: I am fairly certain these masks are off by one!

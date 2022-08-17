@@ -7,6 +7,8 @@
 extern "C" void loadPageDirectory (uint32_t* addr );
 extern "C" void enablePaging();
 
+
+void IdentityMap();
 void InitializePaging();
 
 void Enable();
