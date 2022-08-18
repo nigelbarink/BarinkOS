@@ -5,4 +5,6 @@ isodir/
 root/
 *.iso
 *.img
+*.sym
+
 

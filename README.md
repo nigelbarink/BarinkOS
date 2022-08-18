@@ -16,6 +16,11 @@ W.I.P - Working on interrupt handling
 
 ![Multiboot integration](screenshots/multiboot.png) \
 Multiboot information can be read by the kernel.
+
+![Page faulting](screenshots/PageFault.png) \
+Enabled paging and am getting page faults!
+
+
 ________________________
 
 ### The goal

@@ -48,6 +48,8 @@ extern "C" void early_main(unsigned long magic, unsigned long addr){
     // Reload CR3 to force a flush
     asm("movl %cr3, %ecx;" "movl %ecx, %cr3" );
     */
+
+    printf("DEBUG:\n Magic: 0x%x\n MBT_addr: 0x%x\n", magic, addr);
     /**
      * Check Multiboot magic number
      * NOTE: Printf call should not be a thing this early on ...
@@ -61,12 +63,12 @@ extern "C" void early_main(unsigned long magic, unsigned long addr){
      * Show a little banner for cuteness
      */
     printf("|===    BarinkOS       ===|\n");
-    
+    const uint32_t KERNEL_BASE_ADDR = 0xC0000000;
     /**
      * Use the address given as an argument as the pointer
      * to a Multiboot information structure.
      */
-        multiboot_info_t* mbt = (multiboot_info_t*) addr;
+        multiboot_info_t* mbt = (multiboot_info_t*) (addr + KERNEL_BASE_ADDR);
 
     /**
      * Construct our own bootInfo structure

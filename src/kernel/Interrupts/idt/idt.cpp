@@ -122,31 +122,29 @@ void irs_handler (registers regs) {
             // General Protection Exception #GP
             printf("#GP\n");
 
-
-            printf("ERR_CODE: 0x%x", regs.err_code);
+            printf("Accessing memory caused a general protectuion exception.\n");
             
-            if( regs.err_code & 0x1)
-            {
-                printf("Originated externally!");
-            }
+            printf("Fault due to entry at index: %d", (regs.err_code >> 3 & 0xFFF ) );
 
             if(regs.err_code & 0x3 >> 1 == 0   ){
-                printf("Index references GDT");
+                printf("* Index references GDT");
             }
             if(regs.err_code & 0x3 >> 1 == 1  ){
-                printf("Index references IDT");
+                printf("* Index references IDT");
             }
 
             if(regs.err_code & 0x3 >> 1 == 2   ){
-                printf("Index references LDT");
+                printf("* Index references LDT");
             }
 
             if(regs.err_code & 0x3 >> 1 == 4  ){
-                printf("Index references IDT");
+                printf("* Index references IDT");
             }
 
-
-            printf("Index: ", (regs.err_code >> 3 & 0xFFF ) );
+            if( regs.err_code & 0x1)
+            {
+                printf("* Originated externally!");
+            }
 
             __asm__("cli;" "1: hlt;" "jmp 1b;");
 
@@ -157,7 +155,7 @@ void irs_handler (registers regs) {
             printf("#PF\n");
 
             FaultingAddress = GetCR2();
-            printf("Faulting instruction adddress: 0x%x\n", FaultingAddress);
+            printf("Accessing the linear address 0x%x resulted in a page fault!\n\n", FaultingAddress);
         
             // Error code of 32 bits are on the stack
             // CR2 register contains the 32-bit linear virtual address that generated the exception
@@ -171,27 +169,27 @@ void irs_handler (registers regs) {
             #define PF_ERR_SHADOW_STACK_BIT 0x7
             #define PF_ERR_SOFTWARE_GUARD_EXTENSION_BIT 0xE
 
-            printf("Determining cause of fault...\n");
+            printf("REASON: \n\n");
 
          
             if (regs.err_code & PF_ERR_PRESENT_BIT ){
-                printf("Page protection violation!\n");
+                printf("* Page protection violation!\n");
             } else{
-                printf("page not-present!\n");
+                printf("* Page not-present!\n");
             }
 
             if(regs.err_code & PF_ERR_WRITE_BIT){
-                printf("Write access violation!\n");
+                printf("* Write access violation!\n");
             } else{
-                printf("Read access violation!\n");
+                printf("* Read access violation!\n");
             }
 
             if(regs.err_code & PF_ERR_USER_BIT){
-                printf("Violation from user-space (CPL=3)\n");
+                printf("* Violation from user-space (CPL=3)\n");
             }
 
             if(regs.err_code & PF_ERR_INSTRUCTION_FETCH_BIT){
-                printf("Caused by an instruction fetch. \n");
+                printf("* Caused by an instruction fetch. \n");
             }
 
             /*
