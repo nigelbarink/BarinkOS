@@ -60,3 +60,15 @@ extern "C" uint32_t GetCR4();
 
 #define GET_PSE_BIT(CONTROL_REGISTER_4) (CONTROL_REGISTER_4&0x4)
 #define GET_PAE_BIT(CONTROL_REGISTER_4) (CONTROL_REGISTER_4&0x5)
+
+/*
+*       CONTROL_REGISTER_2 FUNCTIONS
+*/
+
+extern "C" uint32_t GetCR2();
+
+/*
+*       CONTROL_REGISTER_3 FUNCTIONS
+*/
+
+extern "C" uint32_t GetCR3();

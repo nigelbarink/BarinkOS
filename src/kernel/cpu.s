@@ -37,3 +37,27 @@ GetEFLAGS:
 	mov %ebp, %esp
 	pop %ebp
 	ret
+
+.globl GetCR2
+GetCR2:
+	push %ebp
+	mov %esp, %ebp
+
+	xor %eax, %eax
+	mov %cr2, %eax
+	
+	mov %ebp, %esp
+	pop %ebp
+	ret
+	
+.globl GetCR3
+GetCR3:
+	push %ebp
+	mov %esp, %ebp
+
+	xor %eax, %eax
+	mov %cr3, %eax
+	
+	mov %ebp, %esp
+	pop %ebp
+	ret

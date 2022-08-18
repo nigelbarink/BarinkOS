@@ -28,7 +28,7 @@ extern "C"
 #include "time.h"
 #include "SuperVisorTerminal/superVisorTerminal.h"
 
-#define CHECK_FLAG(flags, bit) ((flags) & (1 <<(bit)))
+#define CHECK_FLAG(flag, bit) ( flag & (1 << bit ))
 #define PANIC(message) {return;} 
 
 

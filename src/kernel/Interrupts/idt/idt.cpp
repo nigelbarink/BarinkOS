@@ -1,9 +1,10 @@
 #include "idt.h"
 #include "../../Drivers/PIT/pit.h"
 #include "../../Drivers/PS-2/keyboard.h"
-
+#include "../../cpu.h"
 IDT_entry idt_table[256];
 IDT_ptr idt_ptr;
+
 
 void set_id_entry (uint8_t num , uint32_t base, uint16_t sel,  uint8_t flags){
     idt_table[num].offset_1 = base & 0xFFFF;
@@ -15,7 +16,7 @@ void set_id_entry (uint8_t num , uint32_t base, uint16_t sel,  uint8_t flags){
 };
 
 void irs_handler (registers regs) {
-     
+     uint32_t FaultingAddress;
         //printf("(IRS) Interrupt number: %d \r", regs.int_no);
         switch (regs.int_no)
         {
@@ -120,28 +121,83 @@ void irs_handler (registers regs) {
         case 13:
             // General Protection Exception #GP
             printf("#GP\n");
-            printf("EIP: 0x%x\n", regs.eip);
-            printf("EAX: 0x%x\n", regs.eax);
-            printf("EBP: 0x%x\n", regs.ebp);
+
+
+            printf("ERR_CODE: 0x%x", regs.err_code);
+            
+            if( regs.err_code & 0x1)
+            {
+                printf("Originated externally!");
+            }
+
+            if(regs.err_code & 0x3 >> 1 == 0   ){
+                printf("Index references GDT");
+            }
+            if(regs.err_code & 0x3 >> 1 == 1  ){
+                printf("Index references IDT");
+            }
+
+            if(regs.err_code & 0x3 >> 1 == 2   ){
+                printf("Index references LDT");
+            }
+
+            if(regs.err_code & 0x3 >> 1 == 4  ){
+                printf("Index references IDT");
+            }
+
+
+            printf("Index: ", (regs.err_code >> 3 & 0xFFF ) );
+
+            __asm__("cli;" "1: hlt;" "jmp 1b;");
+
         break;
         
         case 14:
             // Page Fault Exception #PF
             printf("#PF\n");
 
-            printf("EIP: 0x%x\n", regs.eip); // Points to faulting instruction ???
-            printf("EAX: 0x%x\n", regs.eax); 
-            printf("EBP: 0x%x\n", regs.ebp); // Base pointer pointing to the bottom of the stack 
- 
-
+            FaultingAddress = GetCR2();
+            printf("Faulting instruction adddress: 0x%x\n", FaultingAddress);
+        
             // Error code of 32 bits are on the stack
-            // CR2 register contains the 32-bit linear address that generated the exception
+            // CR2 register contains the 32-bit linear virtual address that generated the exception
             // See Intel Software Developers manual Volume 3A Part 1 page 236 for more info
-                   
+            #define PF_ERR_PRESENT_BIT 0x1
+            #define PF_ERR_WRITE_BIT 0x2
+            #define PF_ERR_USER_BIT 0x3
+            #define PF_ERR_RESERVERD_WRITE_BIT 0x4
+            #define PF_ERR_INSTRUCTION_FETCH_BIT 0x5
+            #define PF_ERR_PROTECTION_KEY_BIT 0x6
+            #define PF_ERR_SHADOW_STACK_BIT 0x7
+            #define PF_ERR_SOFTWARE_GUARD_EXTENSION_BIT 0xE
+
+            printf("Determining cause of fault...\n");
+
+         
+            if (regs.err_code & PF_ERR_PRESENT_BIT ){
+                printf("Page protection violation!\n");
+            } else{
+                printf("page not-present!\n");
+            }
+
+            if(regs.err_code & PF_ERR_WRITE_BIT){
+                printf("Write access violation!\n");
+            } else{
+                printf("Read access violation!\n");
+            }
+
+            if(regs.err_code & PF_ERR_USER_BIT){
+                printf("Violation from user-space (CPL=3)\n");
+            }
+
+            if(regs.err_code & PF_ERR_INSTRUCTION_FETCH_BIT){
+                printf("Caused by an instruction fetch. \n");
+            }
 
             /*
                 Check the error code to figure out what happened here
             */
+            __asm__("cli;" "1: hlt;" "jmp 1b;");
 
 
             

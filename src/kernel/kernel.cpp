@@ -2,8 +2,7 @@
 
 
 extern "C" void kernel_main (BootInfo* bootinfo) {
-    init_serial();
-    //pit_initialise();
+    pit_initialise();
 
     startSuperVisorTerminal(bootinfo);
 }   
@@ -17,9 +16,38 @@ extern "C" void early_main(unsigned long magic, unsigned long addr){
     initGDT();
     kterm_init();
     init_serial();
-    print_serial("Hello Higher half kernel!");
-    printf("DDDDDDDDDDDDDDDD");
-    return;
+    print_serial("Hello Higher half kernel!\n");
+ 
+    init_idt();
+    // Enable interrupts
+    asm volatile("STI");
+    
+    // map the multiboot structure into virtual memory 
+    // so we can gather the necessary data from it.
+   /* const uint32_t KERNEL_BASE_ADDR = 0xC0000000;
+    
+    uint32_t pageDirectoryIndex = (addr + KERNEL_BASE_ADDR)  >> 22;
+    printf("pageDirectoryIndex: %d\n", pageDirectoryIndex);
+
+    uint32_t pageTableIndex = (addr + KERNEL_BASE_ADDR >> 12)  & 0x1FFF;
+    printf("PagTableIndex: %d\n", pageTableIndex);
+
+    printf("boot_page_directory addr: 0x%x\n", &boot_page_directory);
+    printf("boot_page_table addr: 0x%x\n", &boot_page_table);
+
+    uint32_t* pageDirectoryEntry = (uint32_t*) ((uint32_t) &boot_page_directory) +  (pageDirectoryIndex * 4);
+    printf("page_directory_entry addr: 0x%x\n",  pageDirectoryEntry);
+
+    *pageDirectoryEntry  = ( addr & 0xFFFFF000 ) | 0x003;
+
+    uint32_t* page_table_entry = (uint32_t*) ((uint32_t) &boot_page_table)  + ( pageTableIndex * 4);
+    printf("page_table_entry addr: 0x%x\n" , page_table_entry);
+
+    *page_table_entry =  addr | 0x003;
+    
+    // Reload CR3 to force a flush
+    asm("movl %cr3, %ecx;" "movl %ecx, %cr3" );
+    */
     /**
      * Check Multiboot magic number
      * NOTE: Printf call should not be a thing this early on ...
@@ -33,8 +61,7 @@ extern "C" void early_main(unsigned long magic, unsigned long addr){
      * Show a little banner for cuteness
      */
     printf("|===    BarinkOS       ===|\n");
-    printf("Kernel Begin AT(0x%x)", kernel_begin);
-
+    
     /**
      * Use the address given as an argument as the pointer
      * to a Multiboot information structure.
@@ -111,16 +138,11 @@ extern "C" void early_main(unsigned long magic, unsigned long addr){
         //InitializePaging();
         //IdentityMap();
         //Enable();
+    } else{
+        printf("memory flag not set!");
     }
     
-    //initGDT();
-    //init_idt();
-    // Enable interrupts
-    //asm volatile("STI");
-    
-
-    //CheckMBT(  (multiboot_info_t *) addr);
-
+    CheckMBT(  (multiboot_info_t *) addr);
 
     kernel_main(&bootinfo);
     

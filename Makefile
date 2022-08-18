@@ -37,6 +37,7 @@ run: all
 	$(EMULATOR) -cdrom build/barinkOS.iso -serial stdio -vga std -display gtk -m 2G -cpu core2duo
 
 debug: all
+	objcopy --only-keep-debug build/myos.bin kernel.sym
 	$(EMULATOR) -cdrom build/barinkOS.iso -serial stdio -vga std -display gtk -m 2G -cpu core2duo -s -d int
 
 build_kernel: $(OBJ_LINK_LIST)

@@ -10,7 +10,7 @@ void PhysicalMemory::setup( MemoryInfo* memory) {
 
     used_blocks = 0;
 
-    memoryBitMap = (uint32_t*) 0x00a00000;
+    memoryBitMap = (uint32_t*) 0xCCA00000;
 
 
     printf("Maximum Number of blocks: 0x%x, Number of bytes for memMap: 0x%x\n", max_blocks , (max_blocks/8));
