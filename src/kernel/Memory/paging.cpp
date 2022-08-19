@@ -1,7 +1,7 @@
 #include "paging.h"
-PageDirectoryEntry kernel_directory[MAX_DIRECTORY_ENTRIES]__attribute__((aligned(4096)));
+/*PageDirectoryEntry kernel_directory[MAX_DIRECTORY_ENTRIES]__attribute__((aligned(4096)));
 
-PageTableEntry first_page_table[MAX_PAGE_TABLE_ENTRIES]__attribute__((aligned(4096)));
+//PageTableEntry first_page_table[MAX_PAGE_TABLE_ENTRIES]__attribute__((aligned(4096)));
 
 void IdentityMap (){
         printf("\nInit paging\n");
@@ -43,6 +43,7 @@ void InitializePaging()
         Initial kernel page directory
          set all page tables to not present
     */
+   /*
     for (int i = 0; i < MAX_DIRECTORY_ENTRIES; i++)
     {
         kernel_directory[i] = 0x2;
@@ -57,6 +58,7 @@ void InitializePaging()
     uint8_t NUM_PDE = BIOSAddr_Max / (4 * 1024 * 1024);
 
     printf("The first 8MiB require %d Page Directory Entries\n", NUM_PDE);
+    */
 /*
     for( int i = 0; i < NUM_PDE; i++)
     {
@@ -71,7 +73,7 @@ void InitializePaging()
         // add page table as page directory entry 
         kernel_directory[i] =  ( (unsigned int) pagetable ) | 3;
     }
-*/
+
     //  map the kernel space 
     VIRTUAL_ADDRESS Vaddr = KERNEL_VRT_MEMORY_BEGIN;
     PHYSICAL_ADDRESS KernelAddr = kernel_begin;
@@ -82,7 +84,7 @@ void InitializePaging()
     NUM_PDE = KernelSizeInBytes / (4 * 1024* 1024);
     printf("Kernel requires %d Page Directory Entries\n", NUM_PDE);
 
-/*
+
     for(int i = 0; i < NUM_PDE; i++)
     {
         PageTableEntry pageTable [MAX_PAGE_TABLE_ENTRIES] = PhysicalMemory::allocate_block();
@@ -97,7 +99,7 @@ void InitializePaging()
 
 
     }
-    */
+    
 
     
 
@@ -168,3 +170,4 @@ void Enable()
     }
 
 }
+*/

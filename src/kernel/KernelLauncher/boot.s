@@ -28,9 +28,13 @@ stack_top:
 */
 .section .bss, "aw", @nobits
 	.align 4096
+.globl boot_page_directory
 boot_page_directory:
 	.skip 4096
 boot_page_table:
+	.skip 4096
+.globl multiboot_page_table
+multiboot_page_table:
 	.skip 4096
 # More page tables may be required
 
@@ -98,9 +102,9 @@ _start:
 4:
 	# At this point, paging is fully set up and enabled
 isPaging:
-	# Unmap the identity mapping as it is now unnecessary 
+	# Unmap the identity mapping as it is now unnecessary  
 	movl $0, boot_page_directory + 0
-
+	
 	# Reload cr3 to force tlb flush 
 	movl %cr3, %ecx
 	movl %ecx, %cr3
