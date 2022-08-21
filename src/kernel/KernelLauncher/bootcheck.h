@@ -1,7 +1,7 @@
 #pragma once 
 #include "../multiboot.h"
 #define CHECK_FLAG(flags, bit) ((flags) & (1 <<(bit)))
-
+#define __VERBOSE__
 #include "../Terminal/kterm.h"
 
 

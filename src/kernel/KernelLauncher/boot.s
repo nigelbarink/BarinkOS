@@ -47,12 +47,7 @@ _start:
 	movl $(boot_page_table - 0xC0000000), %edi
 	# Map address 0
 	movl $0, %esi
-	# Map 1023 pages the 1024th being the VGA text buffer
-	movl $1023, %ecx
-
-1:	# Map the kernel 
-	cmpl $_kernel_start, %esi
-	jl 2f
+1:	
 	cmpl $(_kernel_end - 0xC0000000), %esi
 	jge 3f
 
@@ -125,12 +120,8 @@ isPaging:
 
 	call early_main
 
-	mov %cr0, %eax 
-	or $1, %eax
-	mov %eax, %cr0 
 
-	
-	//call kernel_main
+
 
 
 	cli

@@ -8,8 +8,10 @@
 #include "../Lib/mem.h"
 #include "../bitmap.h"
 
+// Asumming 32 bit x86 for now!
 #define BLOCK_SIZE 4092
-#define BLOCKS_PER_WORD 32 // A word is 16 bit in x86 machines according to my google search results!
+#define WORD_SIZE 2 
+#define BLOCKS_PER_WORD 32 
 
 #define KB_TO_BLOCKS(x) (x  / BLOCK_SIZE)
 #define IS_ALIGNED(addr, align) !((addr) & ~((align) - 1))

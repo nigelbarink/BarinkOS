@@ -16,6 +16,7 @@ SECTIONS
 
 	.multiboot.text : {
 		*(multiboot.text)
+		*launcher.o(.text)
 	}
 
 	. += 0xC0000000; /* Addresses in the following code need to be above the 3Gb mark */

@@ -5,7 +5,7 @@ CC = ${HOME}/opt/cross/bin/i686-elf-gcc
 CPP = ${HOME}/opt/cross/bin/i686-elf-g++ 
 CFLAGS =  -ffreestanding -Og -ggdb  -Wall -Wextra
 
-OFILES =$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o $(BUILD_DIR)/memory.o  $(BUILD_DIR)/paging.o	$(BUILD_DIR)/pit.o 	$(BUILD_DIR)/time.o	$(BUILD_DIR)/keyboard.o	 $(BUILD_DIR)/io.o 	$(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/sv-terminal.o $(BUILD_DIR)/string.o  
+OFILES =$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o $(BUILD_DIR)/memory.o  $(BUILD_DIR)/paging.o	$(BUILD_DIR)/pit.o 	$(BUILD_DIR)/time.o	$(BUILD_DIR)/keyboard.o	 $(BUILD_DIR)/io.o 	$(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/sv-terminal.o $(BUILD_DIR)/string.o  $(BUILD_DIR)/launcher.o 
 
 SRC_DIR = src
 BUILD_DIR = build
@@ -103,3 +103,6 @@ $(BUILD_DIR)/memory.o:
 
 $(BUILD_DIR)/paging.o:
 	$(CPP) -c $(SRC_DIR)/kernel/Memory/paging.cpp -o $(BUILD_DIR)/paging.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+$(BUILD_DIR)/launcher.o:
+	$(CPP) -c $(SRC_DIR)/kernel/KernelLauncher/launcher.cpp -o $(BUILD_DIR)/launcher.o $(CFLAGS) -fno-exceptions -fno-rtti

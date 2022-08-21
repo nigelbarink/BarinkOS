@@ -102,11 +102,13 @@ void PhysicalMemory::deallocate_region(uint32_t  StartAddress , uint32_t size ) 
 
 
 void mapMultibootMemoryMap( MemoryInfo* memInfo , multiboot_info_t *mbt) {
-    printf("mmap_addr = 0x%x, mmap_length = 0x%x\n",
-    (unsigned) mbt->mmap_addr, (unsigned) mbt->mmap_length);
+
+    printf("mmap_addr = 0x%x, mmap_length = 0x%x\n", (unsigned) mbt->mmap_addr , (unsigned) mbt->mmap_length );
+
+
     multiboot_memory_map_t *mmap = (multiboot_memory_map_t*) mbt->mmap_addr;
 
-    for (;  (unsigned long) mmap < mbt->mmap_addr + mbt->mmap_length;  mmap = (multiboot_memory_map_t *) ((unsigned long) mmap + mmap->size + sizeof(mmap->size))){
+    for (;  (unsigned long) mmap <  mbt->mmap_addr + mbt->mmap_length;  mmap = (multiboot_memory_map_t *) ((unsigned long) mmap + mmap->size + sizeof(mmap->size))){
 
             if ( mmap->type == MULTIBOOT_MEMORY_AVAILABLE){
         

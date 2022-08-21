@@ -7,6 +7,9 @@ extern "C" uint32_t multiboot_page_table;
 
 const uint32_t KERNEL_BASE_ADDR = 0xC0000000;
 extern "C" void early_main(unsigned long magic, unsigned long addr){
+
+    // Convert MBI address to higher quarter kernel space
+    addr += KERNEL_BASE_ADDR;
     /** 
      * Initialize terminal interface 
      * NOTE: This should be done later on , the magic value should be checked first.
@@ -20,7 +23,6 @@ extern "C" void early_main(unsigned long magic, unsigned long addr){
     // Enable interrupts
     asm volatile("STI");
 
-    map_multiboot_info_structure(addr);
    
     printf("DEBUG:\n Magic: 0x%x\n MBT_addr: 0x%x\n", magic, addr);
     /**
@@ -78,7 +80,7 @@ extern "C" void early_main(unsigned long magic, unsigned long addr){
         printf("Kernel Begin Pointer: 0x%x, Kernel end pointer: 0x%x\n", &kernel_begin , &kernel_end );
        
        
-        multiboot_memory_map_t *mmap = (multiboot_memory_map_t*) mbt->mmap_addr;
+        multiboot_memory_map_t *mmap = (multiboot_memory_map_t*) (mbt->mmap_addr + KERNEL_BASE_ADDR) ;
 
         for (;  (unsigned long) mmap < mbt->mmap_addr + mbt->mmap_length;  mmap = (multiboot_memory_map_t *) ((unsigned long) mmap + mmap->size + sizeof(mmap->size))){
 
@@ -120,8 +122,10 @@ extern "C" void early_main(unsigned long magic, unsigned long addr){
         printf("memory flag not set!");
     }
     
-    CheckMBT(  (multiboot_info_t *) addr);
-
+    CheckMBT( (multiboot_info_t *) addr);
+	asm volatile("mov %cr0, %eax ");
+    asm volatile("or $1, %eax");
+    asm volatile("mov %eax, %cr0");
     kernel_main(&bootinfo);
     
 }
