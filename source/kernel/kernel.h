@@ -12,9 +12,9 @@ extern "C"
 #include "multiboot.h"
 #include "bootinfo.h"
 
-#include "Memory/memory.h"
+#include "Memory/PhysicalMemoryManager.h"
 #include "Memory/memoryinfo.h"
-#include "Memory/paging.h"
+#include "Memory/VirtualMemoryManager.h"
 #include "KernelLauncher/bootcheck.h"
 
 #include "Memory/GDT/gdtc.h"
@@ -32,3 +32,15 @@ extern "C"
 #define PANIC(message) {return;} 
 
 
+void map_multiboot_info_structure(unsigned long addr);
+
+extern "C" void kernel_main (BootInfo* bootinfo);
+
+extern "C" const void* kernel_begin;
+extern "C" const void* kernel_end;
+
+extern "C" uint32_t boot_page_directory;
+extern "C" uint32_t multiboot_page_table;
+
+
+const uint32_t KERNEL_BASE_ADDR = 0xC0000000;

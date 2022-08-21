@@ -31,7 +31,7 @@ void CheckMBT ( multiboot_info_t*  mbt  ){
         if (CHECK_FLAG ( mbi->flags,2))
         {
 #ifdef  __VERBOSE__
-            printf("cmdline = %s\n", (char *) mbi->cmdline);
+            printf("cmdline = %s\n", (char *) (mbi->cmdline + 0xC0000000));
 #endif
         }
 

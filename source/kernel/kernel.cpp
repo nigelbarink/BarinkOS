@@ -1,11 +1,5 @@
 #include "kernel.h"
 
-void map_multiboot_info_structure(unsigned long addr);
-extern "C" void kernel_main (BootInfo* bootinfo);
-extern "C" uint32_t boot_page_directory;
-extern "C" uint32_t multiboot_page_table;
-
-const uint32_t KERNEL_BASE_ADDR = 0xC0000000;
 extern "C" void early_main(unsigned long magic, unsigned long addr){
 
     // Convert MBI address to higher quarter kernel space
@@ -63,7 +57,7 @@ extern "C" void early_main(unsigned long magic, unsigned long addr){
         MemoryInfo meminfo = {};
         bootinfo.memory = &meminfo;
  
-        mapMultibootMemoryMap(bootinfo.memory , mbt);        
+        ///mapMultibootMemoryMap(bootinfo.memory , mbt);        
         printf("Memory size: 0x%x bytes\n", bootinfo.memory->TotalMemory );
 
        /*

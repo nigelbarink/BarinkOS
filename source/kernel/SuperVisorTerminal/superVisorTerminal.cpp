@@ -39,7 +39,7 @@ void startSuperVisorTerminal(BootInfo* bootinfo){
                 // Show memory layout
                 printf("========= Memory ==========\n");
                 printf("Kernel MemoryMap:\n");
-                printf("kernel: 0x%x - 0x%x\n", &kernel_begin , &kernel_end);         
+                //printf("kernel: 0x%x - 0x%x\n", &kernel_begin , &kernel_end);         
                 printf("Frames used: 0x%x blocks of 4 KiB\n", 0);  
                 const int bytesInGiB = 1073741824;
                 int64_t bytesLeft = (bootinfo->memory->TotalMemory % bytesInGiB) / bytesInGiB;
