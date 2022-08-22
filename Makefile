@@ -5,7 +5,7 @@ CC = ${HOME}/opt/cross/bin/i686-elf-gcc
 CPP = ${HOME}/opt/cross/bin/i686-elf-g++ 
 CFLAGS =  -ffreestanding -Og -ggdb  -Wall -Wextra
 
-OFILES =$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o $(BUILD_DIR)/memory.o  $(BUILD_DIR)/paging.o	$(BUILD_DIR)/pit.o 	$(BUILD_DIR)/time.o	$(BUILD_DIR)/keyboard.o	 $(BUILD_DIR)/io.o 	$(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/sv-terminal.o $(BUILD_DIR)/string.o  $(BUILD_DIR)/launcher.o 
+OFILES =$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o $(BUILD_DIR)/memory.o  $(BUILD_DIR)/paging.o	$(BUILD_DIR)/pit.o 	$(BUILD_DIR)/time.o	$(BUILD_DIR)/keyboard.o	 $(BUILD_DIR)/io.o 	$(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/sv-terminal.o $(BUILD_DIR)/string.o  $(BUILD_DIR)/prekernel.o
 
 SRC_DIR = source
 BUILD_DIR = build
@@ -30,7 +30,7 @@ clean_iso:
 iso: clean_iso clean build
 	mkdir -p root/boot/grub
 	cp build/myos.bin root/boot/myos.bin
-	cp src/grub.cfg root/boot/grub/grub.cfg
+	cp source/grub.cfg root/boot/grub/grub.cfg
 	grub-mkrescue -o build/barinkOS.iso root
 	
 run: all
@@ -58,13 +58,13 @@ $(BUILD_DIR)/kterm.o:
 	$(CPP) -c $(SRC_DIR)/kernel/Terminal/kterm.cpp  -o $(BUILD_DIR)/kterm.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/boot.o:
-	$(AS) $(SRC_DIR)/kernel/KernelLauncher/boot.s -o $(BUILD_DIR)/boot.o
+	$(AS) $(SRC_DIR)/kernel/Boot/boot.s -o $(BUILD_DIR)/boot.o
 
 $(BUILD_DIR)/crti.o:
-	$(AS) $(SRC_DIR)/kernel/KernelLauncher/crti.s -o $(BUILD_DIR)/crti.o
+	$(AS) $(SRC_DIR)/kernel/crti.s -o $(BUILD_DIR)/crti.o
 
 $(BUILD_DIR)/crtn.o:
-	$(AS) $(SRC_DIR)/kernel/KernelLauncher/crtn.s -o $(BUILD_DIR)/crtn.o
+	$(AS) $(SRC_DIR)/kernel/crtn.s -o $(BUILD_DIR)/crtn.o
 
 $(BUILD_DIR)/io.o:
 		$(CPP) -c $(SRC_DIR)/kernel/io.cpp  -o $(BUILD_DIR)/io.o $(CFLAGS) -fno-exceptions -fno-rtti
@@ -104,5 +104,5 @@ $(BUILD_DIR)/memory.o:
 $(BUILD_DIR)/paging.o:
 	$(CPP) -c $(SRC_DIR)/kernel/Memory/VirtualMemoryManager.cpp -o $(BUILD_DIR)/paging.o $(CFLAGS) -fno-exceptions -fno-rtti
 
-$(BUILD_DIR)/launcher.o:
-	$(CPP) -c $(SRC_DIR)/kernel/KernelLauncher/launcher.cpp -o $(BUILD_DIR)/launcher.o $(CFLAGS) -fno-exceptions -fno-rtti
+$(BUILD_DIR)/prekernel.o:
+	$(CPP) -c $(SRC_DIR)/kernel/PreKernel/prekernel.cpp -o $(BUILD_DIR)/prekernel.o $(CFLAGS) -fno-exceptions -fno-rtti

@@ -43,6 +43,14 @@ multiboot_page_table:
 .global _start
 .type _start, @function 
 _start:
+
+	/* push the pointer to the Multiboot information structure*/
+	pushl %ebx
+
+	/* push the magic value */
+	pushl %eax
+	call testLauncher
+
 	# Get physical address of the boot_page_table
 	movl $(boot_page_table - 0xC0000000), %edi
 	# Map address 0
@@ -112,11 +120,7 @@ isPaging:
 	pushl $0 
 	popf 
 
-	/* push the pointer to the Multiboot information structure*/
-	pushl %ebx
 
-	/* push the magic value */
-	pushl %eax
 
 	call early_main
 
@@ -129,11 +133,11 @@ isPaging:
 	jmp 1b
 
 
-.include "./src/kernel/Memory/GDT/gdt.s"
-.include "./src/kernel/irs_table.s"
-.include "./src/kernel/irq_table.s"
-.include "./src/kernel/Interrupts/idt/idt.s"
-.include "./src/kernel/Memory/paging.s"
-.include "./src/kernel/cpu.s"
+.include "./source/kernel/Memory/GDT/gdt.s"
+.include "./source/kernel/irs_table.s"
+.include "./source/kernel/irq_table.s"
+.include "./source/kernel/Interrupts/idt/idt.s"
+.include "./source/kernel/Memory/paging.s"
+.include "./source/kernel/cpu.s"
 
 
