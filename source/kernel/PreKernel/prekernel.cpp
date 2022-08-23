@@ -25,6 +25,8 @@ extern "C" void testLauncher  ( unsigned long magic, multiboot_info_t* mbi) {
   if (CHECK_FLAG (mbi->flags, 1))
   {
         BIB->bootDeviceID = mbi->boot_device;
+  } else{
+        BIB->bootDeviceID = 0x11111111;
   }
 
   /* Are mods_* valid? */
@@ -36,7 +38,7 @@ extern "C" void testLauncher  ( unsigned long magic, multiboot_info_t* mbi) {
 
 
       for(i = 0, mod = (multiboot_module_t *) mbi->mods_addr; i < mbi->mods_count; i++ , mod++){
-       
+                
       }
   }
 
@@ -60,29 +62,51 @@ extern "C" void testLauncher  ( unsigned long magic, multiboot_info_t* mbi) {
           BIB->ValidELFHeader = false;
   }
 /*
-        If we got a memory map from our bootloader we 
-        should be parsing it to find out the memory regions available.
-    */
-    if (CHECK_FLAG(mbi->flags, 6))
-    {  
+If we got a memory map from our bootloader we 
+should be parsing it to find out the memory regions available.
+*/
+if (CHECK_FLAG(mbi->flags, 6))
+{  
         BIB->PhysicalMemoryMapAvailable = true;
+        BIB->MemoryMap = (MemoryInfoBlock*) MemoryMapHeap_pptr;
         multiboot_memory_map_t *mmap = (multiboot_memory_map_t*) (mbi->mmap_addr) ;
-
-        for (;  (unsigned long) mmap < mbi->mmap_addr + mbi->mmap_length;  mmap = (multiboot_memory_map_t *) ((unsigned long) mmap + mmap->size + sizeof(mmap->size))){
-
-            if ( mmap->type == MULTIBOOT_MEMORY_AVAILABLE){
-                  
-            } else{
-               
-               
-            }
-          
-            
-        } 
+        auto MemoryMapEnd =  mbi->mmap_addr + mbi->mmap_length;
         
-    } else{
+        auto CurrentInfoBlock = BIB->MemoryMap;
+      
+        
+        while((unsigned long) mmap < MemoryMapEnd){
+
+                CurrentInfoBlock->Base_addr = mmap->addr;
+                CurrentInfoBlock->Memory_Size = mmap->len;
+                
+
+                if(mmap->type == MULTIBOOT_MEMORY_AVAILABLE)
+                        CurrentInfoBlock->type &= 0x1;
+                if(mmap->type == MULTIBOOT_MEMORY_ACPI_RECLAIMABLE)
+                        CurrentInfoBlock->type &= 0x2;
+                if(mmap->type == MULTIBOOT_MEMORY_RESERVED)
+                        CurrentInfoBlock->type &= 0x4;
+                if(mmap->type == MULTIBOOT_MEMORY_NVS)
+                        CurrentInfoBlock->type &= 0x8;
+                if(mmap->type == MULTIBOOT_MEMORY_BADRAM)
+                        CurrentInfoBlock->type &= 0x10;
+                
+
+                // continue to the next block
+                mmap = (multiboot_memory_map_t *) ((unsigned long) mmap + mmap->size + sizeof(mmap->size));
+              
+              CurrentInfoBlock->next = (MemoryInfoBlock*) ((uint32_t)CurrentInfoBlock) + sizeof(MemoryInfoBlock);
+              CurrentInfoBlock = CurrentInfoBlock->next;
+
+        }
+
+        CurrentInfoBlock->next = (MemoryInfoBlock*) 0x0;
+
+} else
+{
         BIB->PhysicalMemoryMapAvailable = false;
-    }
+}
     
   /* Draw diagonal blue line */
   if (CHECK_FLAG (mbi->flags, 12)){
