@@ -53,6 +53,9 @@ void SetupPhysicalMemoryManager( BootInfoBlock* Bootinfo) {
 
     printf("kernel size in memory: 0x%x\n", kernel_size);
     allocate_region((uint32_t)&kernel_begin, kernel_size);
+
+    printf("allocate BIOS region");
+    allocate_region (0x0000000, 0x00100000);
 }
 
 // NOTE: This can only give blocks of 4kb at a time!

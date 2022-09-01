@@ -1,14 +1,14 @@
 #pragma once
 #include <stdint.h>
 #include "../../Terminal/kterm.h"
-typedef enum ScanCodeSet{
+enum ScanCodeSet {
     None            =   0,
     ScanCodeSet1    =   1,
     ScanCodeSet2    =   2,
     ScanCodeSet3    =   3,
 };
 
-typedef enum Modifiers{
+enum Modifiers {
     LSHIFT  =   1,
     RSHIFT  =   2,
 
