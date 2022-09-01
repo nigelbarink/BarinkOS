@@ -5,7 +5,7 @@
 #define CHECK_FLAG(flags, bit) ((flags) & (1 <<(bit)))
 
 
-extern "C" void testLauncher  ( unsigned long magic, multiboot_info_t* mbi) {
+extern "C" void prekernelSetup  ( unsigned long magic, multiboot_info_t* mbi) {
   
   // Create the bootInfoBlock at its location
   BootInfoBlock* BIB = (BootInfoBlock*) BootInfoBlock_pptr;
@@ -74,23 +74,25 @@ if (CHECK_FLAG(mbi->flags, 6))
         
         auto CurrentInfoBlock = BIB->MemoryMap;
       
-        
-        while((unsigned long) mmap < MemoryMapEnd){
+        uint32_t RAM_size = 0;
 
+        while((unsigned long) mmap < MemoryMapEnd){
+                BIB->map_size += sizeof(MemoryInfoBlock);
                 CurrentInfoBlock->Base_addr = mmap->addr;
                 CurrentInfoBlock->Memory_Size = mmap->len;
                 
 
                 if(mmap->type == MULTIBOOT_MEMORY_AVAILABLE)
-                        CurrentInfoBlock->type &= 0x1;
+                        CurrentInfoBlock->type |= 0x1;
+                        RAM_size += mmap->len;
                 if(mmap->type == MULTIBOOT_MEMORY_ACPI_RECLAIMABLE)
-                        CurrentInfoBlock->type &= 0x2;
+                        CurrentInfoBlock->type |= 0x2;
                 if(mmap->type == MULTIBOOT_MEMORY_RESERVED)
-                        CurrentInfoBlock->type &= 0x4;
+                        CurrentInfoBlock->type |= 0x4;
                 if(mmap->type == MULTIBOOT_MEMORY_NVS)
-                        CurrentInfoBlock->type &= 0x8;
+                        CurrentInfoBlock->type |= 0x8;
                 if(mmap->type == MULTIBOOT_MEMORY_BADRAM)
-                        CurrentInfoBlock->type &= 0x10;
+                        CurrentInfoBlock->type |= 0x10;
                 
 
                 // continue to the next block
@@ -102,7 +104,7 @@ if (CHECK_FLAG(mbi->flags, 6))
         }
 
         CurrentInfoBlock->next = (MemoryInfoBlock*) 0x0;
-
+        BIB->MemorySize = RAM_size;
 } else
 {
         BIB->PhysicalMemoryMapAvailable = false;

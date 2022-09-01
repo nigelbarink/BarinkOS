@@ -4,9 +4,11 @@ extern "C" void early_main()
     /*
      * Initialize terminal interface 
      */ 
-    initGDT();
+
 
     kterm_init();
+    initGDT();
+
 
     init_serial();
     print_serial("Hello Higher half kernel!\n");
@@ -21,7 +23,7 @@ extern "C" void early_main()
     printf("|===    BarinkOS       ===|\n");
     printf("Kernel End Addr: 0x%x\n" , &kernel_end + KERNEL_BASE_ADDR);
 
-    uint32_t PageDirectoryEntryIndex = ((uint32_t)&kernel_end + KERNEL_BASE_ADDR ) >> 2 ;
+    uint32_t PageDirectoryEntryIndex = ((uint32_t)&kernel_end + KERNEL_BASE_ADDR ) >> 22 ;
 
     uint32_t PageTableEntryIndex = (((uint32_t)&kernel_end + KERNEL_BASE_ADDR) >> 12) & 0x1FFF;
     
@@ -38,6 +40,8 @@ extern "C" void early_main()
 
     BootInfoBlock* BootInfo = (BootInfoBlock*) ( BootInfoBlock_pptr + 0xC0000000 );
 
+
+    printf("Size of BootInfoBlock: %d bytes\n", sizeof(BootInfoBlock));
     printf("Bootloader information:\n");
     if( BootInfo->ValidELFHeader )
     {
@@ -57,70 +61,57 @@ extern "C" void early_main()
     if(BootInfo->PhysicalMemoryMapAvailable)
     {
         printf("- Physical Memory Map available!\n");
-
+        printf("MemoryInfoheap size : %d bytes\n", BootInfo->map_size);
         // Print the memory regions 
         MemoryInfoBlock* currentBlock = (MemoryInfoBlock*) ((uint32_t)BootInfo->MemoryMap + KERNEL_BASE_ADDR) ;
   
-        kterm_setcolor(VGA_COLOR_RED);
-        printf("size of MemoryInfoBlock: 0x%x\n", sizeof(MemoryInfoBlock));
-        kterm_setcolor(VGA_COLOR_CYAN);
-        printf("Kernel End is at address: 0x%x\n", &kernel_end);
-        printf("BootInfo is at address: 0x%x\n", BootInfo);
-        printf("map is at address: 0x%x\n", currentBlock + KERNEL_BASE_ADDR);
-        kterm_setcolor(VGA_COLOR_WHITE);
+        printf( "Starting address: 0x%x\n", currentBlock);
         while( (uint32_t)currentBlock->next != 0x0 )
         {
-            kterm_setcolor(VGA_COLOR_CYAN);
-            printf("map is at address: 0x%x\n", ( (uint32_t)currentBlock  ));
-            kterm_setcolor(VGA_COLOR_WHITE);
-      
-           /* 
-            uint32_t pageDirectoryIndex = ((uint32_t)&currentBlock )  >> 22;
-            printf("pageDirectoryIndex: %d\n", pageDirectoryIndex);
-
-            uint32_t pageTableIndex = ((uint32_t)&currentBlock  >> 12)  & 0x1FFF;
-            printf("PagTableIndex: %d\n", pageTableIndex);
-            */
-
-            //printf("boot_page_directory addr: 0x%x\n", &boot_page_directory);
-            //printf("boot_page_table addr: 0x%x\n", &multiboot_page_table);
-            printf("Memory Region: \n");
-
             if(IS_AVAILABLE_MEM(currentBlock->type)){
                 //printf("AVAILABLE RAM\n");
             }
             else if(IS_ACPI_MEM(currentBlock->type)){
-                printf("ACPI MEMORY\n");   
+                //printf("ACPI MEMORY\n");   
             }
             else if(IS_RESERVED_MEM(currentBlock->type)){
-                printf("RESERVED MEMORY\n");
+               // printf("RESERVED MEMORY\n");
             }
             else if(IS_NVS_MEMORY(currentBlock->type)){
-                printf("NVS MEMORY \n");
+               // printf("NVS MEMORY \n");
             }
             else if(IS_BADRAM_MEMORY(currentBlock->type)){
-                printf("BADRAM MEMORY \n");
+               // printf("BADRAM MEMORY \n");
             }
             else {
               //  printf("(TYPE 0x%x )TYPE NOT SPECIFIED\n", currentBlock->type);
             }
-            
-           // printf("Base address: 0x%x, Memory size: 0x%x\n", currentBlock->Base_addr, currentBlock->Memory_Size);
 
             currentBlock = (MemoryInfoBlock*) ((uint32_t)currentBlock->next + KERNEL_BASE_ADDR );
           
         }
-        
 
+        // Setup PhysicalMemoryManagement
+        SetupPhysicalMemoryManager(BootInfo);
+        // Small test!
 
+        void* block = allocate_block();
+        void* block2 = allocate_block();
+        printf("Allocated addresss 1: 0x%x 2: 0x%x\n", (uint32_t)block ,(uint32_t)block2);
+        free_block(block);
+        free_block(block2);
+        void* block3 = allocate_block();
+        printf("Allocated addresss 3: 0x%x\n", (uint32_t)block3);
+        free_block(block3);
     }
     
 	asm volatile("mov %cr0, %eax ");
     asm volatile("or $1, %eax");
-    asm volatile("mov %eax, %cr0");
+    asm volatile("mov %eax, %cr0"); // re-enable protected mode ? 
     kernel_main();
     
 }
+
 
 void map_multiboot_info_structure(unsigned long addr){
     // map the multiboot structure into virtual memory 
@@ -150,6 +141,7 @@ void map_multiboot_info_structure(unsigned long addr){
 }
 
 void PhysicalMemoryAllocatorTest(){
+
 #ifdef UNIT_TESTS
        // test alloc_block
         uint8_t* memory = (uint8_t*) memAlloc.allocate_block();

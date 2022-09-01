@@ -35,7 +35,7 @@ _start:
 
 	/* push the magic value */
 	pushl %eax
-	call testLauncher
+	call prekernelSetup
 
 	# Get physical address of the boot_page_table
 	movl $(boot_page_table - 0xC0000000), %edi
@@ -59,7 +59,6 @@ _start:
 
 3:	# Map VGA video memory to 0xC03FF00 as "present, writable"
 	movl $(0x000B8000 | 0x003), boot_page_table - 0xC0000000 + 1023 * 4
-
 
 	# IMPORTANT NOTE FROM WIKI.OSDEV.ORG/HIGHER_HALF_X86_BARE_BONES
 

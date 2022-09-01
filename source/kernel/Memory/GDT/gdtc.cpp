@@ -51,7 +51,7 @@ void initGDT(){
       gdtDescriptor.limit = ((sizeof(SegmentDescriptor ) * 5 ) - 1);
       gdtDescriptor.base = (unsigned int) &GlobalDescriptorTable;
 
-
+      printf("GDT at address 0x%x, with an size of 0x%x bytes\n" , (unsigned int)GlobalDescriptorTable, sizeof(GlobalDescriptorTable));
 
       LoadGlobalDescriptorTable();
 
