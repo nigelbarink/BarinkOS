@@ -14,6 +14,7 @@ void* malloc(size_t size)
     printf("Received request for %d bytes of memory", size);
     heap_block* current = start;
 
+    // look for a free block
     while(current <  start + heap_size)
     {
         if(current->size >= size && current->Used == false )
@@ -33,7 +34,7 @@ void* malloc(size_t size)
 
     // If we are here we need more memory so we should 
     // probably ask the VMM for more 
-    // TODO: ask for more memory
+    // TODO: ask for more memory | Extend kernel heap
     
 }
 

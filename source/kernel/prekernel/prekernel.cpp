@@ -16,6 +16,7 @@ extern "C" void prekernelSetup  ( unsigned long magic, multiboot_info_t* mbi) {
   if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
   {
         BIB->MapIsInvalid = true;
+        // crash
         return;
   } else{
         BIB->MapIsInvalid = false;

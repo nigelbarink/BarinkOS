@@ -1,5 +1,5 @@
 #include "pit.h"
-#include "../../Terminal/kterm.h"
+
 uint32_t pit_tick = 0;
 
 

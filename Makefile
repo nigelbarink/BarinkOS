@@ -5,7 +5,7 @@ CC = ${HOME}/opt/cross/bin/i686-elf-gcc
 CPP = ${HOME}/opt/cross/bin/i686-elf-g++ 
 CFLAGS =  -ffreestanding -Og -ggdb  -Wall -Wextra
 
-OFILES =$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o $(BUILD_DIR)/memory.o  $(BUILD_DIR)/paging.o	$(BUILD_DIR)/pit.o 	$(BUILD_DIR)/time.o	$(BUILD_DIR)/keyboard.o	 $(BUILD_DIR)/io.o 	$(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/sv-terminal.o $(BUILD_DIR)/string.o  $(BUILD_DIR)/prekernel.o
+OFILES =$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o $(BUILD_DIR)/memory.o  $(BUILD_DIR)/paging.o	$(BUILD_DIR)/pit.o 	$(BUILD_DIR)/time.o	$(BUILD_DIR)/keyboard.o	 $(BUILD_DIR)/io.o 	$(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/sv-terminal.o $(BUILD_DIR)/string.o  $(BUILD_DIR)/prekernel.o $(BUILD_DIR)/cpu.o
 
 SRC_DIR = source
 BUILD_DIR = build
@@ -55,7 +55,7 @@ $(BUILD_DIR)/kernel.o:
 	$(CPP) -c $(SRC_DIR)/kernel/kernel.cpp -o $(BUILD_DIR)/kernel.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/kterm.o:
-	$(CPP) -c $(SRC_DIR)/kernel/Terminal/kterm.cpp  -o $(BUILD_DIR)/kterm.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/terminal/kterm.cpp  -o $(BUILD_DIR)/kterm.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/boot.o:
 	$(AS) $(SRC_DIR)/kernel/boot/boot.s -o $(BUILD_DIR)/boot.o
@@ -71,38 +71,41 @@ $(BUILD_DIR)/io.o:
 
 
 $(BUILD_DIR)/idt.o:
-	$(CPP) -c $(SRC_DIR)/kernel/Interrupts/idt/idt.cpp -o $(BUILD_DIR)/idt.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/interrupts/idt/idt.cpp -o $(BUILD_DIR)/idt.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/gdtc.o:
-	$(CPP) -c $(SRC_DIR)/kernel/Memory/GDT/gdtc.cpp -o $(BUILD_DIR)/gdtc.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/memory/gdt/gdtc.cpp -o $(BUILD_DIR)/gdtc.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 
 $(BUILD_DIR)/pic.o:
-	$(CPP) -c $(SRC_DIR)/kernel/Drivers/PIC/pic.cpp -o $(BUILD_DIR)/pic.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/drivers/pic/pic.cpp -o $(BUILD_DIR)/pic.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/string.o:
-	$(CC) -c $(SRC_DIR)/kernel/Lib/string.c  -o $(BUILD_DIR)/string.o $(CFLAGS) -std=gnu99
+	$(CC) -c $(SRC_DIR)/kernel/lib/string.c  -o $(BUILD_DIR)/string.o $(CFLAGS) -std=gnu99
 
 
 $(BUILD_DIR)/pit.o:
-	$(CPP) -c $(SRC_DIR)/kernel/Drivers/PIT/pit.cpp  -o $(BUILD_DIR)/pit.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/drivers/pit/pit.cpp  -o $(BUILD_DIR)/pit.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 
 $(BUILD_DIR)/keyboard.o:
-	$(CPP) -c $(SRC_DIR)/kernel/Drivers/PS-2/keyboard.cpp  -o $(BUILD_DIR)/keyboard.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/drivers/ps-2/keyboard.cpp  -o $(BUILD_DIR)/keyboard.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 
 $(BUILD_DIR)/time.o:
 	$(CPP) -c $(SRC_DIR)/kernel/time.cpp  -o $(BUILD_DIR)/time.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/sv-terminal.o:
-	$(CPP) -c $(SRC_DIR)/kernel/SuperVisorTerminal/superVisorTerminal.cpp  -o $(BUILD_DIR)/sv-terminal.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/supervisorterminal/superVisorTerminal.cpp  -o $(BUILD_DIR)/sv-terminal.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/memory.o:
-	$(CPP) -c $(SRC_DIR)/kernel/Memory/PhysicalMemoryManager.cpp  -o $(BUILD_DIR)/memory.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/memory/PhysicalMemoryManager.cpp  -o $(BUILD_DIR)/memory.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/paging.o:
-	$(CPP) -c $(SRC_DIR)/kernel/Memory/VirtualMemoryManager.cpp -o $(BUILD_DIR)/paging.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/memory/VirtualMemoryManager.cpp -o $(BUILD_DIR)/paging.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/prekernel.o:
-	$(CPP) -c $(SRC_DIR)/kernel/PreKernel/prekernel.cpp -o $(BUILD_DIR)/prekernel.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/prekernel/prekernel.cpp -o $(BUILD_DIR)/prekernel.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+$(BUILD_DIR)/cpu.o:
+	$(CPP) -c $(SRC_DIR)/kernel/cpu.cpp -o $(BUILD_DIR)/cpu.o $(CFLAGS) -fno-exceptions -fno-rtti

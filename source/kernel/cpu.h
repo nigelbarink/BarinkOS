@@ -9,19 +9,18 @@ C++ interface for the cpu.s assembly file.
 ©Nigel Barink - 2022 
 */
 
-
 /*
 *       EFLAGS FUNCTIONS
 */
 
-extern "C" uint32_t GetEFLAGS();
+uint32_t GetEFLAGS();
 
 
 
 /*
 *       CONTROL_REGISTER_0 FUNCTIONS
 */
-extern "C" uint32_t GetCR0();
+uint32_t GetCR0();
 
 /*
  struct CR0_Register  {
@@ -57,7 +56,7 @@ extern "C" uint32_t GetCR0();
 *       CONTROL_REGISTER_4 FUNCTIONS
 */
 
-extern "C" uint32_t GetCR4();
+uint32_t GetCR4();
 
 #define GET_PSE_BIT(CONTROL_REGISTER_4) (CONTROL_REGISTER_4&0x4)
 #define GET_PAE_BIT(CONTROL_REGISTER_4) (CONTROL_REGISTER_4&0x5)
@@ -66,10 +65,10 @@ extern "C" uint32_t GetCR4();
 *       CONTROL_REGISTER_2 FUNCTIONS
 */
 
-extern "C" uint32_t GetCR2();
+uint32_t GetCR2();
 
 /*
 *       CONTROL_REGISTER_3 FUNCTIONS
 */
 
-extern "C" uint32_t GetCR3();
+uint32_t GetCR3();

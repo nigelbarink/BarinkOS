@@ -1,8 +1,8 @@
 #pragma once
 #include <stddef.h>
-#include "../PreKernel/bootstructure.h"
-#include "../Terminal/kterm.h"
-#include "../Lib/mem.h"
+#include "../prekernel/bootstructure.h"
+#include "../terminal/kterm.h"
+#include "../lib/mem.h"
 #include "../bitmap.h"
 
 // Asumming i386 for now!
@@ -14,8 +14,8 @@
 struct PhysicalMemoryManagerInfoBlock
 {
     uint32_t* memoryBitMap;
-    size_t pmmap_size;
-    size_t max_blocks;
+    uint32_t pmmap_size;
+    uint32_t max_blocks;
     int used_blocks;
 };
 

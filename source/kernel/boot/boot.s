@@ -17,6 +17,7 @@ stack_top:
 .globl boot_page_directory
 boot_page_directory:
 	.skip 4096
+.globl boot_page_table
 boot_page_table:
 	.skip 4096
 .globl multiboot_page_table
@@ -60,15 +61,6 @@ _start:
 3:	# Map VGA video memory to 0xC03FF00 as "present, writable"
 	movl $(0x000B8000 | 0x003), boot_page_table - 0xC0000000 + 1023 * 4
 
-	# IMPORTANT NOTE FROM WIKI.OSDEV.ORG/HIGHER_HALF_X86_BARE_BONES
-
-	# The page table is used at both page directory entry 0 (virtually from 0x0
-	# to 0x3FFFFF) (thus identity mapping the kernel) and page directory entry
-	# 768 (virtually from 0xC0000000 to 0xC03FFFFF) (thus mapping it in the
-	# higher half). The kernel is identity mapped because enabling paging does
-	# not change the next instruction, which continues to be physical. The CPU
-	# would instead page fault if there was no identity mapping.\
-	
 	# Map the page table to both virtual addresss 0x00000000 and 0xC0000000
 	movl $(boot_page_table - 0xC0000000 + 0x003), boot_page_directory - 0xC0000000 + 0
 	movl $(boot_page_table - 0xC0000000 + 0x003), boot_page_directory - 0xC0000000 + 768 * 4
@@ -112,10 +104,9 @@ isPaging:
 	jmp 1b
 
 
-.include "./source/kernel/Memory/GDT/gdt.s"
+.include "./source/kernel/memory/gdt/gdt.s"
 .include "./source/kernel/irs_table.s"
 .include "./source/kernel/irq_table.s"
-.include "./source/kernel/Interrupts/idt/idt.s"
-.include "./source/kernel/cpu.s"
+.include "./source/kernel/interrupts/idt/idt.s"
 
 

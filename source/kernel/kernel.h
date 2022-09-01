@@ -1,27 +1,27 @@
 #pragma once
 extern "C" 
 {
-   #include "Lib/string.h" 
+   #include "lib/string.h" 
 }
 #include "definitions.h"
 
-#include "Drivers/VGA/VBE.h"
-#include "Terminal/kterm.h"
+#include "drivers/vga/VBE.h"
+#include "terminal/kterm.h"
 
-#include "Memory/PhysicalMemoryManager.h"
-#include "Memory/VirtualMemoryManager.h"
+#include "memory/PhysicalMemoryManager.h"
+#include "memory/VirtualMemoryManager.h"
 
-#include "Memory/GDT/gdtc.h"
-#include "Interrupts/idt/idt.h"
+#include "memory/gdt/gdtc.h"
+#include "interrupts/idt/idt.h"
 
-#include "Drivers/PIT/pit.h"
+#include "drivers/pit/pit.h"
 #include "io.h"
 #include "cpu.h"
 #include "serial.h"
 
 #include "time.h"
-#include "SuperVisorTerminal/superVisorTerminal.h"
-#include "PreKernel/bootstructure.h"
+#include "supervisorterminal/superVisorTerminal.h"
+#include "prekernel/bootstructure.h"
 
 #define CHECK_FLAG(flag, bit) ( flag & (1 << bit ))
 #define PANIC(message) {return;} 

@@ -1,11 +1,6 @@
 #include "kernel.h"
 extern "C" void early_main()
 {
-    /*
-     * Initialize terminal interface 
-     */ 
-
-
     kterm_init();
     initGDT();
 
@@ -64,10 +59,11 @@ extern "C" void early_main()
         printf("MemoryInfoheap size : %d bytes\n", BootInfo->map_size);
         // Print the memory regions 
         MemoryInfoBlock* currentBlock = (MemoryInfoBlock*) ((uint32_t)BootInfo->MemoryMap + KERNEL_BASE_ADDR) ;
-  
+
         printf( "Starting address: 0x%x\n", currentBlock);
         while( (uint32_t)currentBlock->next != 0x0 )
         {
+            printf("CurrentBlock: 0x%x \n", (uint32_t ) currentBlock );
             if(IS_AVAILABLE_MEM(currentBlock->type)){
                 //printf("AVAILABLE RAM\n");
             }
@@ -91,11 +87,12 @@ extern "C" void early_main()
           
         }
 
+        printf("Starting physical memory management setup\n");
         // Setup PhysicalMemoryManagement
         SetupPhysicalMemoryManager(BootInfo);
      
     }
-    
+    printf("Enable Protected mode and jump to kernel main\n");
 	asm volatile("mov %cr0, %eax ");
     asm volatile("or $1, %eax");
     asm volatile("mov %eax, %cr0"); // re-enable protected mode ? 

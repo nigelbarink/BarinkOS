@@ -1,6 +1,6 @@
 #pragma once 
 #include "PhysicalMemoryManager.h"
-#include "../Terminal/kterm.h"
+#include "../terminal/kterm.h"
 #include "../cpu.h"
 
 void AllocatePage(uint32_t v_addr );

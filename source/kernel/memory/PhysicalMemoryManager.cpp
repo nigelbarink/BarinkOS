@@ -1,29 +1,33 @@
 #include "./PhysicalMemoryManager.h"
 
 PhysicalMemoryManagerInfoBlock* PMMInfoBlock;
+extern uint32_t* boot_page_directory;
+extern uint32_t* boot_page_table;
 
 const uint32_t KERNEL_OFFSET = 0xC0000000;
 void SetupPhysicalMemoryManager( BootInfoBlock* Bootinfo) {
-
-    PMMInfoBlock = (PhysicalMemoryManagerInfoBlock*) ((uint32_t)MemoryMapHeap_pptr + Bootinfo->map_size + 0xC0000000);
-
+    // NOTE: Physical memory map will override the boot info for now!
+    PMMInfoBlock = (PhysicalMemoryManagerInfoBlock*) (&BootInfoBlock_pptr + KERNEL_OFFSET );
+    printf("Setting up physical memory infoblock (0x%x) \n", (uint32_t)&PMMInfoBlock);
     /*
         Every byte contains 8 pages
         A page is 4096 kib 
         Every block (1 bit) represent an page 
     */
-    // calculate the maximum number of blocks
-    PMMInfoBlock->max_blocks =Bootinfo->MemorySize / BLOCK_SIZE / 8;
-    PMMInfoBlock->used_blocks = 0;
 
+    // Calculate the maximum number of blocks
+    printf("Maxblocks at address(0x%x)\n" , (uint32_t)&(PMMInfoBlock->max_blocks));
+
+    int maximum_blocks = (uint32_t)Bootinfo->MemorySize / BLOCK_SIZE / 8;
+    printf("Set bitmap block maximum: %d\n", maximum_blocks);
+    PMMInfoBlock->max_blocks = maximum_blocks;
+
+    printf("Set used blocks to zero\n");
+    PMMInfoBlock->used_blocks = 0;
+    
+    printf("Determine memory bit map address");
     // put the map after the gdt
     PMMInfoBlock->memoryBitMap = (uint32_t*) ( 0xC010b100) ;
-
-    // // Page in the address space please 
-    // uint32_t PDEI =  0xC020a000 >> 22;
-    // uint32_t PTEI = (0xC020a000 >> 12) & 0x1FFF;
-    // printf("PDEI: %d, PTEI: %d\n", PDEI, PTEI);
-
     
     printf("Maximum num blocks: %d \n",PMMInfoBlock->max_blocks);
     //Size of memory map 
@@ -54,7 +58,7 @@ void SetupPhysicalMemoryManager( BootInfoBlock* Bootinfo) {
     printf("kernel size in memory: 0x%x\n", kernel_size);
     allocate_region((uint32_t)&kernel_begin, kernel_size);
 
-    printf("allocate BIOS region");
+    printf("allocate BIOS region\n");
     allocate_region (0x0000000, 0x00100000);
 }
 
