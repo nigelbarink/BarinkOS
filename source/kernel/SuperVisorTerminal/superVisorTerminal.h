@@ -4,6 +4,5 @@
 #include "../Drivers/PIT/pit.h"
 #include "../Drivers/PS-2/keyboard.h"
 #include "../Memory/PhysicalMemoryManager.h"
-#include "../bootinfo.h"
 
-void startSuperVisorTerminal(BootInfo * );
+void startSuperVisorTerminal();

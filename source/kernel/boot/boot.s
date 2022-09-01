@@ -1,4 +1,4 @@
-.include "./source/kernel/Boot/Multiboot.S"
+.include "./source/kernel/boot/multiboot.s"
 /*
 *	Allocate initial stack
 */
@@ -116,7 +116,6 @@ isPaging:
 .include "./source/kernel/irs_table.s"
 .include "./source/kernel/irq_table.s"
 .include "./source/kernel/Interrupts/idt/idt.s"
-.include "./source/kernel/Memory/paging.s"
 .include "./source/kernel/cpu.s"
 
 

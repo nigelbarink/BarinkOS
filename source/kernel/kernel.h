@@ -8,10 +8,7 @@ extern "C"
 #include "Drivers/VGA/VBE.h"
 #include "Terminal/kterm.h"
 
-#include "bootinfo.h"
-
 #include "Memory/PhysicalMemoryManager.h"
-#include "Memory/memoryinfo.h"
 #include "Memory/VirtualMemoryManager.h"
 
 #include "Memory/GDT/gdtc.h"

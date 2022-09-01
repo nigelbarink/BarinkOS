@@ -1,4 +1,5 @@
-#pragma once 
+#pragma once
+#include <stdint.h>
 
 /*
 Based on Intel specifications.

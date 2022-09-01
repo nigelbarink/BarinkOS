@@ -58,7 +58,7 @@ $(BUILD_DIR)/kterm.o:
 	$(CPP) -c $(SRC_DIR)/kernel/Terminal/kterm.cpp  -o $(BUILD_DIR)/kterm.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/boot.o:
-	$(AS) $(SRC_DIR)/kernel/Boot/boot.s -o $(BUILD_DIR)/boot.o
+	$(AS) $(SRC_DIR)/kernel/boot/boot.s -o $(BUILD_DIR)/boot.o
 
 $(BUILD_DIR)/crti.o:
 	$(AS) $(SRC_DIR)/kernel/crti.s -o $(BUILD_DIR)/crti.o
