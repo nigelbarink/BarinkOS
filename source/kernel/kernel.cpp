@@ -39,13 +39,17 @@ extern "C" void early_main()
 {
     init_serial();
     print_serial("Hello Higher half kernel!\n");
+
     kterm_init();
+
+    printf("Allocated blocks: %d \n", GetUsedBlocks());
+
     initGDT();
     init_idt();
+
     // Enable interrupts
     asm volatile("STI");
    
-    ProcessBootInfo(); 
 
     initHeap();
 
@@ -75,33 +79,4 @@ extern "C" void early_main()
 
     kernel_main();
     
-}
-
-void ProcessBootInfo(){
-    uint32_t BootInfoStruct = BootInfoBlock_pptr + 0xC0000000;
-    BootInfoBlock* BootInfo = (BootInfoBlock*) ( BootInfoBlock_pptr + 0xC0000000 );
-
-    if( BootInfo->ValidELFHeader )
-    {
-        // NOTE: Do something with it.. (Store it , process it etc...)
-    }
-
-    if(BootInfo->EnabledVBE)
-    {
-       // NOTE: Do something with it.. (Store it , process it etc...)
-    }
-
-    if(BootInfo->ValidSymbolTable)
-    {
-        // NOTE: Do something with it.. (Store it , process it etc...)
-        // printf("- Valid Symbol Table available at 0x%x.\n Tab Size: %d, str Size: %d\n", BootInfo->SymbolTableAddr, BootInfo->SymbolTabSize, BootInfo->SymbolStrSize);
-    }
-
-    if(BootInfo->PhysicalMemoryMapAvailable)
-    {   
-        
-       
-        SetupPhysicalMemoryManager(BootInfo);
-    }
-
 }

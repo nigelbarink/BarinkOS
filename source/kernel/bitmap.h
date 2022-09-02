@@ -2,7 +2,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-
 inline void bitmap_set( uint32_t* map , int index )
 {
     map[index/32] |= (1 << (index % 32));
@@ -24,7 +23,6 @@ inline uint32_t bitmap_first_unset( uint32_t* map , int map_size)
             for(int j = 0 ; j < 32 ; j++){
                 if ( (map[i] & (0x00000001 << j)) > 0)
                 {
-                    printf("Found bit: byte 0x%x , bit 0x%x\n", i , j);
                     return (i*32)+j;
                 }
             }

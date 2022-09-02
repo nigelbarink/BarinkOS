@@ -39,8 +39,3 @@ struct BootInfoBlock {
     uint32_t MemorySize ;
 
 };
-
-
-const uint32_t pke = ((uint32_t)&kernel_end) - 0xC0000000;
-const uint32_t BootInfoBlock_pptr = pke + 1000   - sizeof(BootInfoBlock);
-const uint32_t MemoryMapHeap_pptr = pke + 0x1;

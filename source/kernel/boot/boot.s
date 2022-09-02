@@ -27,16 +27,9 @@ multiboot_page_table:
 
 # Entry point
 .section .multiboot.text, "a"
-.global _start
+.globl _start
 .type _start, @function 
 _start:
-
-	/* push the pointer to the Multiboot information structure*/
-	pushl %ebx
-
-	/* push the magic value */
-	pushl %eax
-	call prekernelSetup
 
 	# Get physical address of the boot_page_table
 	movl $(boot_page_table - 0xC0000000), %edi
@@ -82,8 +75,15 @@ _start:
 4:
 	# At this point, paging is fully set up and enabled
 isPaging:
+	/* push the pointer to the Multiboot information structure*/
+	pushl %ebx
+
+	/* push the magic value */
+	pushl %eax
+	call prekernelSetup
+
 	# Unmap the identity mapping as it is now unnecessary  
-	//movl $0, boot_page_directory + 0
+	movl $0, boot_page_directory + 0
 	
 	# Reload cr3 to force tlb flush 
 	movl %cr3, %ecx
@@ -96,6 +96,7 @@ isPaging:
 	/*Reset EFLAGS*/
 	pushl $0 
 	popf 
+
 
 	call early_main
 

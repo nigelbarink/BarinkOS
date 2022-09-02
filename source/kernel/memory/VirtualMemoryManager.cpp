@@ -1,5 +1,5 @@
 #include "VirtualMemoryManager.h"
-
+#define ALIGN(addr, align) (((addr) & ~((align) - 1 )) + (align))
 extern uint32_t boot_page_directory[1024] ;
 extern uint32_t boot_page_table[1024];
 

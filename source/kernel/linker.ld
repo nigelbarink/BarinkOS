@@ -8,20 +8,16 @@ SECTIONS
  
 	_kernel_start	= .;
 	kernel_begin	= .; /*  For legacy reasons */
-
-
+	
 	.multiboot.data : {
 		*(.multiboot.data)
 	}
 
 	.multiboot.text : {
 		*(multiboot.text)
-		*prekernel.o(.text)
 	}
 
 	. += 0xC0000000; /* Addresses in the following code need to be above the 3Gb mark */
-
-
 	.text ALIGN (4K) : AT (ADDR (.text) - 0xC0000000)
 	{
 		*(.text)
