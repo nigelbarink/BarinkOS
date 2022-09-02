@@ -5,7 +5,7 @@ CC = ${HOME}/opt/cross/bin/i686-elf-gcc
 CPP = ${HOME}/opt/cross/bin/i686-elf-g++ 
 CFLAGS =  -ffreestanding -Og -ggdb  -Wall -Wextra
 
-OFILES =$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o $(BUILD_DIR)/memory.o  $(BUILD_DIR)/paging.o	$(BUILD_DIR)/pit.o 	$(BUILD_DIR)/time.o	$(BUILD_DIR)/keyboard.o	 $(BUILD_DIR)/io.o 	$(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/sv-terminal.o $(BUILD_DIR)/string.o  $(BUILD_DIR)/prekernel.o $(BUILD_DIR)/cpu.o
+OFILES =$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o $(BUILD_DIR)/memory.o  $(BUILD_DIR)/paging.o	$(BUILD_DIR)/pit.o 	$(BUILD_DIR)/time.o	$(BUILD_DIR)/keyboard.o	 $(BUILD_DIR)/io.o 	$(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/sv-terminal.o $(BUILD_DIR)/string.o  $(BUILD_DIR)/prekernel.o $(BUILD_DIR)/cpu.o $(BUILD_DIR)/KHeap.o
 
 SRC_DIR = source
 BUILD_DIR = build
@@ -51,24 +51,15 @@ build_x86_64:
 clean: 
 	rm -f $(BUILD_DIR)/myos.bin $(INTERNAL_OBJS)
 
+# C++ definition -> Object files
 $(BUILD_DIR)/kernel.o:
 	$(CPP) -c $(SRC_DIR)/kernel/kernel.cpp -o $(BUILD_DIR)/kernel.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/kterm.o:
 	$(CPP) -c $(SRC_DIR)/kernel/terminal/kterm.cpp  -o $(BUILD_DIR)/kterm.o $(CFLAGS) -fno-exceptions -fno-rtti
 
-$(BUILD_DIR)/boot.o:
-	$(AS) $(SRC_DIR)/kernel/boot/boot.s -o $(BUILD_DIR)/boot.o
-
-$(BUILD_DIR)/crti.o:
-	$(AS) $(SRC_DIR)/kernel/crti.s -o $(BUILD_DIR)/crti.o
-
-$(BUILD_DIR)/crtn.o:
-	$(AS) $(SRC_DIR)/kernel/crtn.s -o $(BUILD_DIR)/crtn.o
-
 $(BUILD_DIR)/io.o:
-		$(CPP) -c $(SRC_DIR)/kernel/io.cpp  -o $(BUILD_DIR)/io.o $(CFLAGS) -fno-exceptions -fno-rtti
-
+	$(CPP) -c $(SRC_DIR)/kernel/io.cpp  -o $(BUILD_DIR)/io.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/idt.o:
 	$(CPP) -c $(SRC_DIR)/kernel/interrupts/idt/idt.cpp -o $(BUILD_DIR)/idt.o $(CFLAGS) -fno-exceptions -fno-rtti
@@ -76,21 +67,17 @@ $(BUILD_DIR)/idt.o:
 $(BUILD_DIR)/gdtc.o:
 	$(CPP) -c $(SRC_DIR)/kernel/memory/gdt/gdtc.cpp -o $(BUILD_DIR)/gdtc.o $(CFLAGS) -fno-exceptions -fno-rtti
 
-
 $(BUILD_DIR)/pic.o:
 	$(CPP) -c $(SRC_DIR)/kernel/drivers/pic/pic.cpp -o $(BUILD_DIR)/pic.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/string.o:
-	$(CC) -c $(SRC_DIR)/kernel/lib/string.c  -o $(BUILD_DIR)/string.o $(CFLAGS) -std=gnu99
-
+	$(CPP) -c $(SRC_DIR)/kernel/lib/string.cpp  -o $(BUILD_DIR)/string.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/pit.o:
 	$(CPP) -c $(SRC_DIR)/kernel/drivers/pit/pit.cpp  -o $(BUILD_DIR)/pit.o $(CFLAGS) -fno-exceptions -fno-rtti
 
-
 $(BUILD_DIR)/keyboard.o:
 	$(CPP) -c $(SRC_DIR)/kernel/drivers/ps-2/keyboard.cpp  -o $(BUILD_DIR)/keyboard.o $(CFLAGS) -fno-exceptions -fno-rtti
-
 
 $(BUILD_DIR)/time.o:
 	$(CPP) -c $(SRC_DIR)/kernel/time.cpp  -o $(BUILD_DIR)/time.o $(CFLAGS) -fno-exceptions -fno-rtti
@@ -104,8 +91,22 @@ $(BUILD_DIR)/memory.o:
 $(BUILD_DIR)/paging.o:
 	$(CPP) -c $(SRC_DIR)/kernel/memory/VirtualMemoryManager.cpp -o $(BUILD_DIR)/paging.o $(CFLAGS) -fno-exceptions -fno-rtti
 
+$(BUILD_DIR)/KHeap.o:
+	$(CPP) -c $(SRC_DIR)/kernel/memory/KernelHeap.cpp -o $(BUILD_DIR)/KHeap.o $(CFLAGS) -fno-exceptions -fno-rtti
+
 $(BUILD_DIR)/prekernel.o:
 	$(CPP) -c $(SRC_DIR)/kernel/prekernel/prekernel.cpp -o $(BUILD_DIR)/prekernel.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/cpu.o:
 	$(CPP) -c $(SRC_DIR)/kernel/cpu.cpp -o $(BUILD_DIR)/cpu.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+
+# Assembly -> Object files
+$(BUILD_DIR)/boot.o:
+	$(AS) $(SRC_DIR)/kernel/boot/boot.s -o $(BUILD_DIR)/boot.o
+
+$(BUILD_DIR)/crti.o:
+	$(AS) $(SRC_DIR)/kernel/crti.s -o $(BUILD_DIR)/crti.o
+
+$(BUILD_DIR)/crtn.o:
+	$(AS) $(SRC_DIR)/kernel/crtn.s -o $(BUILD_DIR)/crtn.o

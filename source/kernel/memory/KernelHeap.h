@@ -1,6 +1,7 @@
 #pragma once 
+#include <stddef.h>
 #include <stdint.h>
-
+#include "../terminal/kterm.h"
 
 void initHeap();
 

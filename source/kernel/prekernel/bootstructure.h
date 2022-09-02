@@ -40,6 +40,7 @@ struct BootInfoBlock {
 
 };
 
-// TODO Put the BootInfoBlock 1MB above the kernel.
-const uint32_t BootInfoBlock_pptr = (uint32_t)&kernel_end - 0xC0000000 + 0x1;
-const uint32_t MemoryMapHeap_pptr = BootInfoBlock_pptr + sizeof(BootInfoBlock);
+
+const uint32_t pke = ((uint32_t)&kernel_end) - 0xC0000000;
+const uint32_t BootInfoBlock_pptr = pke + 1000   - sizeof(BootInfoBlock);
+const uint32_t MemoryMapHeap_pptr = pke + 0x1;

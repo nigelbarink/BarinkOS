@@ -4,7 +4,7 @@
 struct heap_block{
     uint8_t Used;
     uint32_t Size;
-}
+};
 
 uint32_t heap_size;
 heap_block* start ;
@@ -17,7 +17,7 @@ void* malloc(size_t size)
     // look for a free block
     while(current <  start + heap_size)
     {
-        if(current->size >= size && current->Used == false )
+        if(current->Size >= size && current->Used == false )
         {
             // We found a spot 
             // Set the spot to in-use 
@@ -42,11 +42,12 @@ void free(void* addr)
 {
     // clear the free boolean that corresponds to this adddress
     // This should be fairly simple
-    heap_block* allocatedBlock = addr - sizeof(heap_block);
-    allocate_block->Used = false;
+    heap_block* allocatedBlock = (heap_block*)(addr - sizeof(heap_block));
+    allocatedBlock->Used = false;
 }
 
 void initHeap()
 {
+    // NOTE: What to do now??
     
 }

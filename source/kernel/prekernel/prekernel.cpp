@@ -99,9 +99,8 @@ if (CHECK_FLAG(mbi->flags, 6))
                 // continue to the next block
                 mmap = (multiboot_memory_map_t *) ((unsigned long) mmap + mmap->size + sizeof(mmap->size));
               
-              CurrentInfoBlock->next = (MemoryInfoBlock*) ((uint32_t)CurrentInfoBlock) + sizeof(MemoryInfoBlock);
+              CurrentInfoBlock->next = (MemoryInfoBlock*) CurrentInfoBlock + 16;
               CurrentInfoBlock = CurrentInfoBlock->next;
-
         }
 
         CurrentInfoBlock->next = (MemoryInfoBlock*) 0x0;

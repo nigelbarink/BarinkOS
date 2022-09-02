@@ -1,6 +1,9 @@
 #include "VirtualMemoryManager.h"
+
 extern uint32_t boot_page_directory[1024] ;
 extern uint32_t boot_page_table[1024];
+
+
 void AllocatePage(uint32_t vaddr)
 {
     uint32_t page_aligned_address = ALIGN(vaddr, 4096);
@@ -60,6 +63,7 @@ void Map (  uint32_t vaddr, uint32_t paddr)
     // allocate a page at  virtual address
     int PageDirectoryEntryIndex = vaddr >> 22;
     int PageTableEntryIndex = (vaddr >> 12) & 0x1FFF;
+
 }
 
 void Unmap(uint32_t vaddr)

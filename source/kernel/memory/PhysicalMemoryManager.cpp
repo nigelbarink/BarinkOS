@@ -1,14 +1,17 @@
 #include "./PhysicalMemoryManager.h"
 
-PhysicalMemoryManagerInfoBlock* PMMInfoBlock;
+const uint32_t KERNEL_OFFSET = 0xC0000000;
 extern uint32_t* boot_page_directory;
 extern uint32_t* boot_page_table;
+extern uint32_t* multiboot_page_table;
 
-const uint32_t KERNEL_OFFSET = 0xC0000000;
-void SetupPhysicalMemoryManager( BootInfoBlock* Bootinfo) {
-    // NOTE: Physical memory map will override the boot info for now!
-    PMMInfoBlock = (PhysicalMemoryManagerInfoBlock*) (&BootInfoBlock_pptr + KERNEL_OFFSET );
-    printf("Setting up physical memory infoblock (0x%x) \n", (uint32_t)&PMMInfoBlock);
+PhysicalMemoryManagerInfoBlock* PMMInfoBlock;
+
+void SetupPhysicalMemoryManager( BootInfoBlock* Bootinfo) 
+{
+
+    // NOTE: We should move our bitmap to just after the end of our kernel instead
+    PMMInfoBlock = (PhysicalMemoryManagerInfoBlock*) ( ((uint32_t)MemoryMapHeap_pptr + 80 ) + KERNEL_OFFSET );
     /*
         Every byte contains 8 pages
         A page is 4096 kib 
@@ -16,41 +19,33 @@ void SetupPhysicalMemoryManager( BootInfoBlock* Bootinfo) {
     */
 
     // Calculate the maximum number of blocks
-    printf("Maxblocks at address(0x%x)\n" , (uint32_t)&(PMMInfoBlock->max_blocks));
-
     int maximum_blocks = (uint32_t)Bootinfo->MemorySize / BLOCK_SIZE / 8;
-    printf("Set bitmap block maximum: %d\n", maximum_blocks);
     PMMInfoBlock->max_blocks = maximum_blocks;
-
-    printf("Set used blocks to zero\n");
     PMMInfoBlock->used_blocks = 0;
     
-    printf("Determine memory bit map address");
     // put the map after the gdt
     PMMInfoBlock->memoryBitMap = (uint32_t*) ( 0xC010b100) ;
     
-    printf("Maximum num blocks: %d \n",PMMInfoBlock->max_blocks);
     //Size of memory map 
     uint32_t memMap_size = PMMInfoBlock->max_blocks / 8;
-    printf("Memory map size: %d\n", memMap_size);
-    printf("Address of memory map 0x%x\n", PMMInfoBlock->memoryBitMap);
     // Set all places in memory as free
     memset(PMMInfoBlock->memoryBitMap, 0xFF, memMap_size  ); 
+    MemoryInfoBlock* currentBlock = (MemoryInfoBlock*) ((uint32_t)Bootinfo->MemoryMap + 0xC0000000) ;
 
-    // Loop over memory map and allocate physical locations 
-    // that are already in use 
-    MemoryInfoBlock* currentBlock = (MemoryInfoBlock*) ((uint32_t)Bootinfo->MemoryMap + KERNEL_OFFSET) ;
-    printf("Starting address: 0x%x\n", currentBlock);
-    while( (uint32_t) currentBlock->next != 0x0)
+    printf( "Starting address: 0x%x\n", currentBlock);
+    while( (uint32_t)currentBlock->next != 0x0 )
     {
+        
         if(IS_AVAILABLE_MEM(currentBlock->type)){
-            printf("skip!\n");
-        } else {   
-            printf("allocate region 0x%x of size 0x%x\n" , currentBlock->Base_addr, currentBlock->Memory_Size);       
-            allocate_region((uint32_t) currentBlock->Base_addr, currentBlock->Memory_Size);
+           printf("skip!\n");
+        }
+        else{
+            printf("allocate region 0x%x of size %d bytes\n", currentBlock->Base_addr, currentBlock->Memory_Size);
+            // allocate_region( currentBlock->Base_addr, currentBlock->Memory_Size); // allocate region causes #PF Exception
         }
 
-        currentBlock = (MemoryInfoBlock*) ((uint32_t)currentBlock->next + KERNEL_OFFSET );
+        currentBlock = (MemoryInfoBlock*) ((uint32_t)currentBlock->next + 0xC0000000 );
+        
     }
 
     uint32_t kernel_size = ((uint32_t)&kernel_end - (uint32_t)&kernel_begin ) - KERNEL_OFFSET;

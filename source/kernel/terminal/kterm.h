@@ -6,9 +6,8 @@
 #include "../drivers/vga/colors.h"
 #include "../io.h"
 
-extern "C"{
-    #include "../lib/string.h"
-}
+#include "../lib/string.h"
+
 
 void kterm_init();
 
@@ -34,12 +33,4 @@ int get_cursor_y (uint16_t cursor_pos);
 
 
 void printf ( const char *format, ...);
-
-//static void itoa (char *buf, int base, int d);
-
-#define KernelTag "[Kernel]: "
-#define AS_KERNEL() (  kterm_setcolor(VGA_COLOR_LIGHT_BLUE),\
-                       kterm_write(KernelTag, 10 ), \
-                       kterm_resetcolor())
-
 
