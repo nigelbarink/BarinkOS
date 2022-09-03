@@ -8,11 +8,11 @@ needs to be done. It is a expansion on the features markdown file which describe
 to do on a more in depth level.
 
 ## --
-[ ] Setup paging  \
+[x] Setup paging  \
 [ ] HELP command   
-[ ] Setup a proper HEAP \
+[x] Setup a proper HEAP \
 [ ] Setup a proper Stack \
-[ ] Setup KMalloc and KFree \
+[x] Setup KMalloc and KFree \
 [ ] Merge Functioning Feature branches into sandboxKernelDev \
 [ ] Remove merged feature branches \
 [ ] Merge sandboxKernelDev with dev \

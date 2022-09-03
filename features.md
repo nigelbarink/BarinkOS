@@ -18,9 +18,9 @@
 <input type="checkbox" /> Virtual filesystem \
 <input type="checkbox" checked/> Keyboard support ( P/S2 Keyboard) \
 <input type="checkbox" checked/> Physical memory management \
-<input type="checkbox" />  Paging \
-<input type="checkbox" /> Virtual memory management \
-<input type="checkbox" /> The heap: allocating memory at runtime (malloc and free) is almost impossible to go without. \
+<input type="checkbox" checked/>  Paging \
+<input type="checkbox" checked/> Virtual memory management \
+<input type="checkbox" checked/> The heap: allocating memory at runtime (malloc and free) is almost impossible to go without. \
 <input type="checkbox" /> Enable SIMD Extensions (SSE)
 
 <input type="checkbox" /> Hardware Management system
