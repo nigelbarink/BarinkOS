@@ -5,6 +5,7 @@
 #include "../lib/mem.h"
 #include "../bitmap.h"
 
+#define BLOCK_SIZE 4092 
 
 
 void SetupPhysicalMemoryManager(uint32_t mapAddress, uint32_t memorySize);

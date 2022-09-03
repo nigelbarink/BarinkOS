@@ -1,5 +1,4 @@
 #include "./PhysicalMemoryManager.h"
-#define BLOCK_SIZE 4092 
 #define IS_ALIGNED(addr, align) !((addr) & ~((align) - 1))
 #define ALIGN(addr, align) (((addr) & ~((align) - 1 )) + (align))
 
@@ -28,7 +27,7 @@ void SetupPhysicalMemoryManager(uint32_t mapAddress, uint32_t memorySize )
     printf("Bitmap size: %d bytes\n",bitmap_size);
 
     // Set blocks used to zero
-    used_blocks = 0;
+    used_blocks = max_blocks;
     
     // set the address of the memory bitmap
     memoryBitMap = (uint32_t*) mapAddress;

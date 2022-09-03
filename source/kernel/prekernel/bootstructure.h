@@ -11,13 +11,7 @@ extern "C" const uint32_t kernel_end;
 #define IS_NVS_MEMORY(MEM_TYPE) MEM_TYPE & 0x8
 #define IS_BADRAM_MEMORY(MEM_TYPE) MEM_TYPE & 0x10
            
-struct MemoryInfoBlock {
-    uint32_t Base_addr ;
-    uint32_t Memory_Size;
-    MemoryInfoBlock* next;
-    uint8_t  type;
 
-};
 struct BootInfoBlock {
     bool MapIsInvalid;
     uint32_t bootDeviceID ;
@@ -32,10 +26,5 @@ struct BootInfoBlock {
     bool ValidELFHeader;
 
     bool EnabledVBE;
-
-    bool PhysicalMemoryMapAvailable;
-    MemoryInfoBlock* MemoryMap;
-    uint32_t map_size;
-    uint32_t MemorySize ;
 
 };

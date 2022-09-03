@@ -38,11 +38,9 @@ extern "C" void kernel_main ()
 extern "C" void early_main()
 {
     init_serial();
-    print_serial("Hello Higher half kernel!\n");
 
     kterm_init();
-
-    printf("Allocated blocks: %d \n", GetUsedBlocks());
+    printf("Allocated blocks: 0x%x \n", GetUsedBlocks());
 
     initGDT();
     init_idt();
@@ -53,8 +51,12 @@ extern "C" void early_main()
 
     initHeap();
 
+    printf("TRY ALLOCATING 4 BYTES\n");
+    uint32_t* MyVariable = (uint32_t*) malloc(4); // allocate 4 bytes using my heap
+    free(MyVariable);
+
     // test heap allocation
-    /*
+    
     struct KernelInfo {
         int bar;
         bool foo;
@@ -64,9 +66,10 @@ extern "C" void early_main()
 
     MyInfo->bar = 6;
     MyInfo->foo = false;
-
+    printf("bar contains %d\n", MyInfo->bar);
     free(MyInfo);
-    */
+    
+
 
     printf("Enable Protected mode and jump to kernel main\n");
 
