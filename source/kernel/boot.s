@@ -21,11 +21,11 @@ stack_bottom:
 stack_top:
  
 .section .text
-.include "./src/kernel/gdt/gdt.s"
-.include "./src/kernel/irs_table.s"
-.include "./src/kernel/irq_table.s"
-.include "./src/kernel/idt/idt.s"
-.include "./src/kernel/memory/paging.s"
+.include "./source/kernel/gdt/gdt.s"
+.include "./source/kernel/irs_table.s"
+.include "./source/kernel/irq_table.s"
+.include "./source/kernel/idt/idt.s"
+.include "./source/kernel/memory/paging.s"
 
 
 .global _start

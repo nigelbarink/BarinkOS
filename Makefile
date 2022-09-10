@@ -27,7 +27,7 @@ $(BUILD_DIR)/sv-terminal.o \
 
 
 
-SRC_DIR = src
+SRC_DIR = source
 BUILD_DIR = build
 
 CRTBEGIN_OBJ = $(shell $(CC) $(CFLAGS) -print-file-name=crtbegin.o)
@@ -50,7 +50,7 @@ clean_iso:
 iso: clean_iso clean build
 	mkdir -p root/boot/grub
 	cp build/myos.bin root/boot/myos.bin
-	cp src/grub.cfg root/boot/grub/grub.cfg
+	cp source/grub.cfg root/boot/grub/grub.cfg
 	grub-mkrescue -o build/barinkOS.iso root
 run: all
 	virtualboxvm --startvm "BarinkOS_test"
@@ -62,7 +62,7 @@ test_iso:
 	$(EMULATOR)  -boot d -cdrom $(BUILD_DIR)/barinkOS.iso -serial stdio -vga std -display gtk -m 2G -cpu core2duo 
 
 build_kernel: $(OBJ_LINK_LIST)
-	$(CC) -T $(SRC_DIR)/kernel//linker.ld -o $(BUILD_DIR)/myos.bin \
+	$(CC) -T $(SRC_DIR)/kernel/linker.ld -o $(BUILD_DIR)/myos.bin \
 	 -ffreestanding -O2 -nostdlib $(OBJ_LINK_LIST) -lgcc
 
 build_x86_64: 
