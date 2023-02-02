@@ -60,6 +60,9 @@ test:
 
 test_iso: 
 	$(EMULATOR)  -boot d -cdrom $(BUILD_DIR)/barinkOS.iso -serial stdio -vga std -display gtk -m 2G -cpu core2duo 
+test_disk:
+	$(EMULATOR) -boot d -drive format=raw,file=disk.img -serial stdio -vga std -display gtk -m 2G -cpu core2duo 
+
 
 build_kernel: $(OBJ_LINK_LIST)
 	$(CC) -T $(SRC_DIR)/kernel/linker.ld -o $(BUILD_DIR)/myos.bin \
