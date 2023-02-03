@@ -12,9 +12,10 @@ unsigned short inw_p(unsigned short ){
 // TODO: implement me!
         return 0;
 }
-unsigned int inl(unsigned short ){
-// TODO: implement me!
-        return 0;
+uint32_t inl( int port  ){
+        unsigned int data;
+        asm volatile ("inl %w1, %0": "=a" (data): "d" (port));
+        return data;
 }
 unsigned int inl_p(unsigned short ){
 // TODO: implement me!
@@ -31,9 +32,12 @@ void outw(unsigned short , unsigned short ){
 void outw_p(unsigned short , unsigned short ){
 
 }
-void outl(unsigned int , unsigned short ){
 
+void outl( int port , uint32_t data ){
+        asm volatile ("outl %0, %1" :: "a" (data), "dn"(port));
 }
+
+
 void outl_p(unsigned int , unsigned short ){
 
 }

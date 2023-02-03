@@ -36,7 +36,7 @@ _start:
 	# Map address 0
 	movl $0, %esi
 1:	
-	cmpl $(_kernel_end - 0xC0000000), %esi
+	cmpl $(kernel_end - 0xC0000000), %esi
 	jge 3f
 
 	# Map physical address as "present and writable"

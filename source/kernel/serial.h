@@ -1,7 +1,7 @@
 #pragma once
 
 #include "terminal/kterm.h"
-#include "io.h"
+#include "drivers/io/io.h"
 #define PORT 0x3f8 
 static int init_serial() {
 
@@ -30,27 +30,27 @@ static int init_serial() {
    return 0;
 }
 
-int is_transmit_empty() {
+inline int is_transmit_empty() {
    return inb(PORT + 5) & 0x20;
 }
  
-void write_serial(char a) {
+inline void write_serial(char a) {
    while (is_transmit_empty() == 0);
  
    outb(PORT,a);
 }
 
-int serial_received() {
+inline int serial_received() {
    return inb(PORT + 5) & 1;
 }
  
-char read_serial() {
+inline char read_serial() {
    while (serial_received() == 0);
  
    return inb(PORT);
 }
 
-void print_serial(const char* string ){
+inline void print_serial(const char* string ){
     for(size_t i = 0; i < strlen(string); i ++){
         write_serial(string[i]);
     }

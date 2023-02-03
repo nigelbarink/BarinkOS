@@ -8,8 +8,6 @@ size_t strlen(const char* str) {
     return len;
 }
 
-
-
 int strncmp ( const char* str1, const char* str2, size_t num ){
     for( int i = 0; i < num ; i++){
         

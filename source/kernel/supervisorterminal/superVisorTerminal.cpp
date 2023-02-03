@@ -1,7 +1,7 @@
 #include "superVisorTerminal.h"
-
+bool isRunning = true;
 void startSuperVisorTerminal(){
-    while (true){
+    while (isRunning){
            
            printf("SUPERVISOR:>$ " );
             int characterCount = 0;
@@ -38,11 +38,18 @@ void startSuperVisorTerminal(){
             {
                 // Show memory layout
                 printf("========= Memory ==========\n");
-                printf("Not Available!\n");
                 printf("Kernel MemoryMap:\n");
-                printf("Frames used: -- \n");   
-                printf("Available Memory:-- \n");
-                printf("Reserved Memory: -- bytes\n");
+                printf("kernel: 0x%x - 0x%x\n", &kernel_begin , &kernel_end);         
+                printf("Frames used: 0x%x blocks of 4 KiB\n", 0);  
+                const int bytesInGiB = 1073741824;
+                //int64_t bytesLeft = (bootinfo->memory->TotalMemory % bytesInGiB) / bytesInGiB;
+                //int64_t effectiveNumberOfGib = bootinfo->memory->TotalMemory / bytesInGiB;
+
+                //int64_t GiBs = effectiveNumberOfGib + bytesLeft;  
+
+                //printf("Available Memory: %d bytes, %d GiB\n",  bootinfo->memory->TotalMemory, GiBs );
+                //printf("Reserved Memory: %d bytes\n",  bootinfo->memory->ReservedMemory);
+
             }
             else if(strncmp("TEST", command, characterCount) == 0)
             {
@@ -56,10 +63,14 @@ void startSuperVisorTerminal(){
                 printf("Kernel v%d\n", 0);
 
             }
-            else if(strncmp("CLEAR", command, characterCount) == 0)
+              else if(strncmp("CLEAR", command, characterCount) == 0)
             {
                 kterm_init();
                 printf("|===    BarinkOS       ===|\n");
+            }
+            else if(strncmp("FAT", command, characterCount) == 0){
+                isRunning = false;
+                continue;
             }
             else
             {

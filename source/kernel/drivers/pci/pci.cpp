@@ -1,108 +1,247 @@
 #include "pci.h"
 
-uint16_t ConfigReadWord (uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset){
+#define PCI_BUS_ADDR_SHIFT 16
+#define PCI_DEVICE_ADDR_SHIFT  11
+#define PCI_FUNCTION_ADDR_SHIFT 8
+#define PCI_ENABLE_ADDR_SHIFT 31
+
+const char* GetClassCodeName (uint64_t ClassCode ) {
+ 
+    switch (ClassCode)
+    {
+        case 0x0 :
+            return "Unclassified";
+        break;
+
+        case 0x1:                 
+            return "Mass Storage Controller";
+        break;
+
+        case 0x2: 
+            return "Network Controller";
+        break;
+
+        case 0x3:          
+            return "Display Controller"; 
+        break;
+
+        case 0x4:          
+            return "Multimedia Controller";
+        break;
+
+        case 0x5:      
+            return "Memory Controller";
+        break;
+    
+        case 0x6:            
+            return "Bridge";
+        break;
+
+        case 0x7 :                    
+            return "Simple Communication Controller";
+        break;
+
+        case 0x8:
+            return "Base System Peripheral"; 
+        break;
+
+        case 0x9:          
+            return "Input Device Controller";
+        break;  
+
+        case 0xA:
+            return "Docking station";
+        break;  
+        case 0xB:                
+            return "Processor";
+        break;   
+        
+        case 0xC:                 
+            return "Serial Bus Controller";
+        break; 
+        
+        case 0xD:                         
+            return "Wireless Controller";
+        break;  
+        
+        case 0xE:                            
+            return "Intelligent Controller";
+        break;   
+        
+        case 0xF:         
+            return "Satellite Communication Controller";
+        break;
+
+        case 0x10:
+            return "Encryption Controller";
+        break;  
+        
+        case 0x11:       
+            return "Signal Processing Controller";
+        break;
+
+        case 0x12:
+            return "Processing Accelerator";
+        break;
+
+        case 0x13:   
+            return "Non-Essential Instrumentation"; 
+        break;
+
+        default:
+            return "Unknown";
+            break;
+        }
+    
+}
+
+const char* getVendor( uint32_t VendorID){
+    switch (VendorID)
+    {
+        case 0x8086:
+            return "Intel Corporation";
+            break;
+        
+        case 0x10DE:
+            return "NVIDIA Corporation";
+            break;
+
+        case 0x1022:
+            return "Advanced Micro Devices, Inc.[AMD]";
+            break;
+
+        case 0x1002:
+            return "Advanced Micor Devices, Inc.[AMD/ATI]";
+            break;
+
+        default:
+            return "Vendor Unkown";
+            break;
+    }
+
+}
+
+uint32_t ConfigReadWord ( PCIBusAddress& PCIDeviceAddress , uint8_t offset){
+    outl(CONFIG_ADDRESS , PCIDeviceAddress.getAddress() | offset );
+    return inl(CONFIG_DATA);
+}
+
+uint32_t ConfigReadWord (uint8_t bus, uint8_t device, uint8_t func, uint8_t offset){
     uint32_t address;
-    uint32_t lbus = (uint32_t) bus;
-    uint32_t lslot = (uint32_t) slot;
-    uint32_t lfunc = (uint32_t) func;
-    uint16_t tmp = 0;
 
-    /* Create configuration address as per Figure 1 */
-    address = (uint32_t) ((lbus << 16) |  (lslot << 11) | (lfunc << 8) | (offset & 0xFC) |((uint32_t) 0x80000000) );
-    /*write out the address */ 
+    address = (uint32_t) (
+        ((uint32_t) 1 << PCI_ENABLE_ADDR_SHIFT) |
+        ((uint32_t)bus << PCI_BUS_ADDR_SHIFT) |
+        ((uint32_t)device << PCI_DEVICE_ADDR_SHIFT) |
+        ((uint32_t)func << PCI_FUNCTION_ADDR_SHIFT) | 
+        offset );
+
     outl(CONFIG_ADDRESS, address);
-    /* read in the data */
-    /* (offset & 2 ) * 8 ) = o will choosse the first word of the 32 bits register*/
-    tmp = (uint16_t)((inl(CONFIG_DATA)) >> ((offset & 2) * 8) & 0xFFFF);
-    return (tmp);
+
+    
+    return inl(CONFIG_DATA);
 }
 
-uint16_t CheckVendor (uint8_t bus, uint8_t slot) {
-    uint16_t vendor, device;
-    /* 
-        Try and read the first configuration register. Since there ar no
-        vendors that == 0xFFFF, it must be a non-existent device.
-    */
-   if((vendor = ConfigReadWord(bus, slot, 0,0)) != 0xFFFF) {
-       device = ConfigReadWord(bus, slot, 0,2);
-        // Possible read more config values ...
-   } return (vendor);
+uint8_t GetHeaderType( PCIBusAddress& PCIDeviceAddress ){
+    uint32_t header_information = ConfigReadWord(PCIDeviceAddress , 0xC);
+    return (uint8_t) (
+        ((header_information >> 16) //Get higher half
+        & 0x00FF) // Select the last two bytes
+        & 0x7F ); // Mask bit 7 as it indicates if the device is a mulit function device!
 }
 
-void checkDevice (uint8_t bus, uint8_t device ) {
-    uint8_t function = 0;
+uint16_t GetClassCodes( PCIBusAddress& PCIDeviceAddress ){
+     uint32_t classcodes = ConfigReadWord(PCIDeviceAddress, 0x8);
+                   return (uint16_t)((uint32_t)classcodes >> 16); 
+                  
+}
 
-    uint16_t vendorID = CheckVendor(bus, device);
-    if (vendorID == 0xFFFF) {
-        return;
-    }
+bool IsMultiFunctionDevice(PCIBusAddress& PCIDeviceAddress){
+    uint32_t header_information = ConfigReadWord(PCIDeviceAddress, 0xC);
+    return (((header_information>>16) 
+            & 0x80) 
+            >> 7  );
+}
 
-    checkFunction (bus, device, function );
-    headerType = getHeaderType(bus, device, function );
-    if( (headerType & 0x80) != 0) {
-        /* It is  a multi-function device, so check remaining functions */
-        for (function = 1; function < 8; function++){
-            if (CheckVendor(bus, device)!= 0xFFFF){
-                checkFunction(bus, device, function );
-            } 
-        }
-    }
+void PrintPCIDeviceInfo (PCIBusAddress& PCIDeviceAddress)
+{
+    uint32_t DeviceID =  (GetDevice(PCIDeviceAddress.bus, PCIDeviceAddress.device, PCIDeviceAddress.function) >> 16);
+    uint32_t VendorID  = GetDevice(PCIDeviceAddress.bus, PCIDeviceAddress.device, PCIDeviceAddress.function) & 0xFFFF;
+    printf("Device found!\n");
+    printf("Bus: %d, Device: %d, function: %d \n", PCIDeviceAddress.bus, PCIDeviceAddress.device, PCIDeviceAddress.function);
+    printf("DeviceID: 0x%x, Vendor: %s\n", 
+     DeviceID
+    , getVendor(VendorID)  );
+
+    
+
+
+    uint8_t header_type = GetHeaderType(PCIDeviceAddress);
+    printf( "Header type: 0x%x\n", header_type);
+
+    uint16_t deviceClasses = GetClassCodes(PCIDeviceAddress);
+    printf("class: %s, subClass: %d\n\n", GetClassCodeName((deviceClasses >>8)), deviceClasses & 0xFF);
 
 }
 
+void PCI_Enumerate(){
+            int devicesFound = 0;
+        // loop through all possible busses, devices and their functions;
+        for( int bus = 0 ; bus < 256 ; bus++)
+        {
+            
+            for(int device = 0; device < 32 ; device ++)
+            {
+                 
+                
+                int function = 0;
 
-void checkFunction (uint8_t bus, uint8_t device, uint8_t function ){
-    uint8_t baseClass;
-    uint8_t subClass;
-    uint8_t secondaryBus;
+                //uint64_t DeviceIdentify = ConfigReadWord(bus, device, function,0x0);
+                uint32_t DeviceID = GetDevice(bus, device, function) >> 16;
 
-    baseClass = getBaseClass(bus, device, function);
-    subClass = getSubClass (bus, device, function );
-    if ( (baseClass == 0x06) && (subClass == 0x04)){
-        secondaryBus = getSecondaryBus(bus,device, function);
-        checkBus(secondaryBus);
-    }
-}
+                
+
+                if( DeviceID != 0xFFFF){
+                    PCIBusAddress busAddress =
+                        PCIBusAddress{bus, device, function };
+
+                    PrintPCIDeviceInfo(busAddress);
+
+                    // iterate over the functions if it is a multi function device!
+                    if( IsMultiFunctionDevice(busAddress) ){
+                        printf("Multi function device! \n");
+                        printf("Check remaining Functions\n");
+                        for ( function = 1  ; function < 8; function++)
+                        {
+                            uint32_t DeviceID = GetDevice(bus, device, function) >> 16;
+
+                            if( DeviceID != 0xFFFF){
+                                PCIBusAddress busAddress2 = PCIBusAddress{bus, device, function};
+                                PrintPCIDeviceInfo(busAddress2);
+                                devicesFound++;
+                            }
+                        }
+                    
+                    }
 
 
-// Brute-force scan
-void checkAllBuses (){
-    uint16_t bus;
-    uint8_t device;
 
-    for(bus = 0; bus < 256; bus++){
-        for(device = 0; device < 32; device++){
-            checkDevice(bus,device);
-        }
-    }
-}
 
-// Recursive scan
-void checkBus (uint8_t bus){
-    uint8_t device;
-
-    for(device = 0; device < 32; device ++){
-        checkDevice(bus,device);
-    }
-}
-
-void checkAllBuses(){
-    uint8_t function; 
-    uint8_t bus;
-
-    headerType = getHeaderType(0,0,0);
-    if ( (headerType & 0x80) == 0 ){
-        /* Single PCI host controller */
-        checkBus(0);
-    } else{
-        /* Multiple PCI host controllers */
-        for (function = 0; function < 8; function++){
-            if( CheckVendor(0,0) != 0xFFFF) {
-                break;
+                    devicesFound++;            
+                }
             }
-            bus = function;
-            checkBus(bus);
+            
         }
-    }
 
+        printf("Found %d PCI devices!\n", devicesFound);
+}
+
+uint8_t GetProgIF (PCIBusAddress& PCIDeviceAddress){
+    uint32_t data = ConfigReadWord(PCIDeviceAddress, 0x8);
+    return ((data >> 8) & 0xFF);
+}
+
+uint32_t ReadBAR ( PCIBusAddress& PCIDeviceAddress, int bar_number){
+    int offsetToBar = 0x10 + (bar_number* 0x4);
+    return ConfigReadWord(PCIDeviceAddress, offsetToBar); 
 }

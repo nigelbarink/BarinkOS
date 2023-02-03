@@ -1,7 +1,6 @@
 #pragma once 
 #include <stdint.h>
-#include "../../io.h"
-#include "../../terminal/kterm.h"
+#include "../io/io.h"
 #define PIT_DATA_0 0x40
 #define PIT_DATA_1 0x41
 #define PIT_DATA_2 0x42

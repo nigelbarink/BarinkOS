@@ -20,6 +20,14 @@ Multiboot information can be read by the kernel.
 ![Page faulting](screenshots/PageFault.png) \
 Enabled paging and am getting page faults!
 
+![PCI enumeration](screenshots/PCIBusEnumeration.png) \
+Enumerating the PCI bus 
+
+![ATAPI CD-ROM Identification](screenshots/CD-ROM_Identify.png) \
+Correctly identified our ATAPI device 🎉
+
+![Reading Files from FAT-16](screenshots/ReadingFilesFromFAT16.png) \
+Reading a file from a FAT-16 Formatted drive 
 
 ________________________
 

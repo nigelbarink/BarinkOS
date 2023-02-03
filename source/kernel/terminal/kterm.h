@@ -4,9 +4,10 @@
 #include <stdbool.h>
 
 #include "../drivers/vga/colors.h"
-#include "../io.h"
-
-#include "../lib/string.h"
+#include "../drivers/io/io.h"
+extern "C" {
+#include "../../lib/include/string.h"
+}
 
 
 void kterm_init();

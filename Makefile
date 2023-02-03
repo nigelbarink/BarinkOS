@@ -5,7 +5,7 @@ CC = ${HOME}/opt/cross/bin/i686-elf-gcc
 CPP = ${HOME}/opt/cross/bin/i686-elf-g++ 
 CFLAGS =  -ffreestanding -Og -ggdb  -Wall -Wextra
 
-OFILES =$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o $(BUILD_DIR)/memory.o  $(BUILD_DIR)/paging.o	$(BUILD_DIR)/pit.o 	$(BUILD_DIR)/time.o	$(BUILD_DIR)/keyboard.o	 $(BUILD_DIR)/io.o 	$(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/sv-terminal.o $(BUILD_DIR)/string.o  $(BUILD_DIR)/prekernel.o $(BUILD_DIR)/cpu.o $(BUILD_DIR)/KHeap.o
+OFILES =$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o $(BUILD_DIR)/memory.o  $(BUILD_DIR)/paging.o	$(BUILD_DIR)/pit.o 	$(BUILD_DIR)/time.o	$(BUILD_DIR)/keyboard.o	 $(BUILD_DIR)/io.o 	$(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/sv-terminal.o $(BUILD_DIR)/string.o  $(BUILD_DIR)/prekernel.o $(BUILD_DIR)/cpu.o $(BUILD_DIR)/KHeap.o $(BUILD_DIR)/pci.o $(BUILD_DIR)/pcidevice.o $(BUILD_DIR)/atapiDevice.o $(BUILD_DIR)/ataDevice.o $(BUILD_DIR)/rsdp.o 
 
 SRC_DIR = source
 BUILD_DIR = build
@@ -32,13 +32,19 @@ iso: clean_iso clean build
 	cp build/myos.bin root/boot/myos.bin
 	cp source/grub.cfg root/boot/grub/grub.cfg
 	grub-mkrescue -o build/barinkOS.iso root
-	
 run: all
-	$(EMULATOR) -cdrom build/barinkOS.iso -serial stdio -vga std -display gtk -m 2G -cpu core2duo
-
+	virtualboxvm --startvm "BarinkOS_test"
 debug: all
 	objcopy --only-keep-debug build/myos.bin kernel.sym
 	$(EMULATOR) -cdrom build/barinkOS.iso -serial stdio -vga std -display gtk -m 2G -cpu core2duo -s -d int
+test:
+	$(EMULATOR)  -kernel $(BUILD_DIR)/myos.bin -serial stdio -vga std -display gtk -m 2G -cpu core2duo 
+
+test_iso: 
+	$(EMULATOR)  -boot d -cdrom $(BUILD_DIR)/barinkOS.iso -serial stdio -vga std -display gtk -m 2G -cpu core2duo 
+test_disk:
+	$(EMULATOR) -boot d -drive format=raw,file=build/disk.img -serial stdio -vga std -display gtk -m 2G -cpu core2duo 
+
 
 build_kernel: $(OBJ_LINK_LIST)
 	$(CC) -T $(SRC_DIR)/kernel//linker.ld -o $(BUILD_DIR)/myos.bin \
@@ -59,7 +65,7 @@ $(BUILD_DIR)/kterm.o:
 	$(CPP) -c $(SRC_DIR)/kernel/terminal/kterm.cpp  -o $(BUILD_DIR)/kterm.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/io.o:
-	$(CPP) -c $(SRC_DIR)/kernel/io.cpp  -o $(BUILD_DIR)/io.o $(CFLAGS) -fno-exceptions -fno-rtti
+		$(CPP) -c $(SRC_DIR)/kernel/drivers/io/io.cpp  -o $(BUILD_DIR)/io.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/idt.o:
 	$(CPP) -c $(SRC_DIR)/kernel/interrupts/idt/idt.cpp -o $(BUILD_DIR)/idt.o $(CFLAGS) -fno-exceptions -fno-rtti
@@ -71,10 +77,29 @@ $(BUILD_DIR)/pic.o:
 	$(CPP) -c $(SRC_DIR)/kernel/drivers/pic/pic.cpp -o $(BUILD_DIR)/pic.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/string.o:
-	$(CPP) -c $(SRC_DIR)/kernel/lib/string.cpp  -o $(BUILD_DIR)/string.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CC) -c $(SRC_DIR)/lib/include/string.c  -o $(BUILD_DIR)/string.o $(CFLAGS) -std=gnu99
+
+$(BUILD_DIR)/PhysicalMemoryManager.o:
+	$(CPP) -c $(SRC_DIR)/kernel/memory/PhysicalMemoryManager.cpp  -o $(BUILD_DIR)/PhysicalMemoryManager.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+$(BUILD_DIR)/pci.o:
+	$(CPP) -c $(SRC_DIR)/kernel/drivers/pci/pci.cpp  -o $(BUILD_DIR)/pci.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+$(BUILD_DIR)/pcidevice.o:
+	$(CPP) -c $(SRC_DIR)/kernel/drivers/pci/pciDevice.cpp  -o $(BUILD_DIR)/pcidevice.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+$(BUILD_DIR)/atapiDevice.o:
+	$(CPP) -c $(SRC_DIR)/kernel/drivers/atapi/atapiDevice.cpp  -o $(BUILD_DIR)/atapiDevice.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+$(BUILD_DIR)/ataDevice.o:
+	$(CPP) -c $(SRC_DIR)/kernel/drivers/ata/ataDevice.cpp  -o $(BUILD_DIR)/ataDevice.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+$(BUILD_DIR)/rsdp.o:
+	$(CPP) -c $(SRC_DIR)/kernel/drivers/acpi/rsdp.cpp  -o $(BUILD_DIR)/rsdp.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/pit.o:
 	$(CPP) -c $(SRC_DIR)/kernel/drivers/pit/pit.cpp  -o $(BUILD_DIR)/pit.o $(CFLAGS) -fno-exceptions -fno-rtti
+
 
 $(BUILD_DIR)/keyboard.o:
 	$(CPP) -c $(SRC_DIR)/kernel/drivers/ps-2/keyboard.cpp  -o $(BUILD_DIR)/keyboard.o $(CFLAGS) -fno-exceptions -fno-rtti

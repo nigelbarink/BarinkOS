@@ -1,6 +1,6 @@
 #include "KernelHeap.h"
 #include "VirtualMemoryManager.h"
-
+extern "C" const uint32_t kernel_end;
 // Size of heap meta data is 5 bytes 
 struct heap_block{
     uint8_t Used;

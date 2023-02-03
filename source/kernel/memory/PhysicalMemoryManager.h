@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include "../prekernel/bootstructure.h"
 #include "../terminal/kterm.h"
-#include "../lib/mem.h"
+#include "../../lib/include/mem.h"
 #include "../bitmap.h"
 
 #define BLOCK_SIZE 4092 

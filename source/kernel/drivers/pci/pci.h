@@ -1,58 +1,38 @@
 #pragma once
 #include <stdint.h>
-#include "io.h"
+#include "../io/io.h"
+#include "../../terminal/kterm.h"
+#include "pciDevice.h"
+
 // Configuration Space Access Mechanism #1
 #define CONFIG_ADDRESS 0xCF8 // Configuration adress that is to be accessed
 #define CONFIG_DATA 0xCFC // Will do the actual configuration operation
 
-/*
-CONFIG_ADDRESS 
-
-32 bit register 
-
-bit 31      Enable bit      (Should CONFIG_DATA be translatedc to configuration cycles)      
-bit 30 - 24 Reserved    
-bit 23 - 16 Bus Number      (Choose a specific PCI BUS)
-bit 15 - 11 Device Number   (Selects specific device one the pci bus)
-bit 10 - 8  Function Number (Selects a specific function in a device)
-bit 7 -  0  Register Offset (Offset in the configuration space of 256 Bytes ) NOTE: lowest two bits will always be zero 
-
-*/
+extern const char* ClassCodeTable [0x13];
 
 
-/* 
-PCI Device structure
 
-Register    offset  bits 31-24  bits 23-16  bits 15-8   bits 7-0
-00          00      Device ID   <----       Vendor  ID  <-------
-01          04      Status      <----       Command     <-------
-02          08      Class code  Sub class   Prog IF     Revision ID
-03          0C      BIST        Header Type Ltncy Timer Cache line Size
-04          10      Base address #0 (BAR0) 
-05          14      Base address #1 (BAR1) 
-06          18      Base address #2 (BAR2) 
-07          1C      Base address #3 (BAR3)
-08          20      Base address #4 (BAR4)
-09          24      Base address #5 (BAR5)
-0A          28      Cardbus CIS Pointer
-0B          2C      Subsystem ID <------   Subsystem Vendor ID  <-------
-0C          30      Expansion ROM base address
-0D          34      Reserved     <-------   Capabilities Pointer <------
-0E          38      Reserved    <-------    <--------   <--------
-0F          3C      Max ltncy   Min Grant   Interrupt PIN   Interrupt Line
+// Note: this could be used to make the api for receiving PCI class codes a bit 
+// nicer.
+struct ClassCodes {
+    uint8_t ClassCode;
+    uint8_t DeviceClass;
+}__attribute__((packed));
 
-*/
+uint32_t ConfigReadWord (uint8_t bus, uint8_t device, uint8_t func, uint8_t offset);
+uint32_t ConfigReadWord ( PCIBusAddress& PCIDeviceAddress , uint8_t offset);
 
+ inline uint64_t GetDevice (int bus, int device, int function ){
+     return ConfigReadWord(bus, device, function,0x0);
+ }
 
-/*
-The idea for now is to support the minimal things necessary to find ATA supported drives
- */
+uint8_t GetHeaderType( PCIBusAddress& PCIDeviceAddress );
 
+uint16_t GetClassCodes( PCIBusAddress& PICDeviceAddress );
+const char* getVendor( uint64_t VendorID);
+const char* GetClassCodeName (uint64_t ClassCode );
 
-// Lets write some boiler plate configuration code
+uint8_t GetProgIF (PCIBusAddress& PCIDeviceAddress);
+void PCI_Enumerate();
 
-uint16_t ConfigReadWord (uint8_t bus, uint8_t slot, uint8_t func, uint8_t offset);
-
-uint16_t CheckVendor (uint8_t bus, uint8_t slot);
-
-void checkDevice (uint8_t bus, uint8_t device );
+uint32_t ReadBAR ( PCIBusAddress& PCIDeviceAddress, int bar_number);
