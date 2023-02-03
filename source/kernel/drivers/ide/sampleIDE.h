@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h> 
-#include "../tty/kterm.h"
+#include "../../tty/kterm.h"
 #include "sampleIDE.definitions.h"
 #include "ideCommands.h"
 

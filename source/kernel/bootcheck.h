@@ -1,5 +1,5 @@
 #pragma once 
-#include "bootloader/multiboot.h"
+#include "boot/multiboot.h"
 #define CHECK_FLAG(flags, bit) ((flags) & (1 <<(bit)))
 
 #include "tty/kterm.h"

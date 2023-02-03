@@ -95,17 +95,17 @@ $(BUILD_DIR)/io.o:
 
 
 $(BUILD_DIR)/idt.o:
-	$(CPP) -c $(SRC_DIR)/kernel/idt/idt.cpp -o $(BUILD_DIR)/idt.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/interrupts/idt/idt.cpp -o $(BUILD_DIR)/idt.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/gdtc.o:
 	$(CPP) -c $(SRC_DIR)/kernel/gdt/gdtc.cpp -o $(BUILD_DIR)/gdtc.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 
 $(BUILD_DIR)/pic.o:
-	$(CPP) -c $(SRC_DIR)/kernel/pic/pic.cpp -o $(BUILD_DIR)/pic.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/drivers/pic/pic.cpp -o $(BUILD_DIR)/pic.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/string.o:
-	$(CC) -c $(SRC_DIR)/libc/include/string.c  -o $(BUILD_DIR)/string.o $(CFLAGS) -std=gnu99
+	$(CC) -c $(SRC_DIR)/lib/include/string.c  -o $(BUILD_DIR)/string.o $(CFLAGS) -std=gnu99
 
 $(BUILD_DIR)/PhysicalMemoryManager.o:
 	$(CPP) -c $(SRC_DIR)/kernel/memory/PhysicalMemoryManager.cpp  -o $(BUILD_DIR)/PhysicalMemoryManager.o $(CFLAGS) -fno-exceptions -fno-rtti
@@ -114,7 +114,7 @@ $(BUILD_DIR)/pci.o:
 	$(CPP) -c $(SRC_DIR)/kernel/drivers/IO/PCI/pci.cpp  -o $(BUILD_DIR)/pci.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/pcidevice.o:
-	$(CPP) -c $(SRC_DIR)/kernel/pci/pciDevice.cpp  -o $(BUILD_DIR)/pcidevice.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/drivers/pci/pciDevice.cpp  -o $(BUILD_DIR)/pcidevice.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/atapiDevice.o:
 	$(CPP) -c $(SRC_DIR)/kernel/drivers/IO/atapi/atapiDevice.cpp  -o $(BUILD_DIR)/atapiDevice.o $(CFLAGS) -fno-exceptions -fno-rtti
@@ -127,7 +127,7 @@ $(BUILD_DIR)/rsdp.o:
 	$(CPP) -c $(SRC_DIR)/kernel/drivers/ACPI/rsdp.cpp  -o $(BUILD_DIR)/rsdp.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/pit.o:
-	$(CPP) -c $(SRC_DIR)/kernel/pit.cpp  -o $(BUILD_DIR)/pit.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/drivers/pit/pit.cpp  -o $(BUILD_DIR)/pit.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 
 $(BUILD_DIR)/keyboard.o:

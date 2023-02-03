@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h> 
 #include "../pci/pciDevice.h"
-#include "../tty/kterm.h"
+#include "../../tty/kterm.h"
 #include "ideCommands.h"
 #include "sampleIDE.h"
 

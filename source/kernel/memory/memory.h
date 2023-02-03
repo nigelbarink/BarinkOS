@@ -3,9 +3,9 @@
 #include <stddef.h>
 
 #include "memoryinfo.h"
-#include "../bootloader/multiboot.h"
+#include "../boot/multiboot.h"
 #include "../tty/kterm.h"
-#include "../../libc/include/mem.h"
+#include "../../lib/include/mem.h"
 #include "../kstructures/bitmap.h"
 
 #define BLOCK_SIZE 4092

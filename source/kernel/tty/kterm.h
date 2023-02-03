@@ -8,7 +8,7 @@
 #include "../drivers/IO/io.h"
 
 extern "C"{
-    #include "./../../libc/include/string.h"
+    #include "./../../lib/include/string.h"
 }
 
 void kterm_init();

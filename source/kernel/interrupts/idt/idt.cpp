@@ -1,6 +1,6 @@
 #include "idt.h"
-#include "../pit.h"
-#include "../keyboard/keyboard.h"
+#include "../../drivers/pit/pit.h"
+#include "../../keyboard/keyboard.h"
 
 IDT_entry idt_table[256];
 IDT_ptr idt_ptr;

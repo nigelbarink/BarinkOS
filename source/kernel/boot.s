@@ -24,7 +24,7 @@ stack_top:
 .include "./source/kernel/gdt/gdt.s"
 .include "./source/kernel/irs_table.s"
 .include "./source/kernel/irq_table.s"
-.include "./source/kernel/idt/idt.s"
+.include "./source/kernel/interrupts/idt/idt.s"
 .include "./source/kernel/memory/paging.s"
 
 

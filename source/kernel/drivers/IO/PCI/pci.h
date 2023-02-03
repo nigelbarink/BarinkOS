@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include "../io.h"
 #include "../../../tty/kterm.h"
-#include "../../../pci/pciDevice.h"
+#include "../../pci/pciDevice.h"
 
 // Configuration Space Access Mechanism #1
 #define CONFIG_ADDRESS 0xCF8 // Configuration adress that is to be accessed
