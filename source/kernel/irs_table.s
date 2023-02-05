@@ -225,7 +225,6 @@ irs31:
 	push $31
 	jmp irs_common
 
-
 irs_common:
 	pusha 				# Pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
 
