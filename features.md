@@ -29,7 +29,6 @@
 <input type="checkbox" /> USTAR Filesystem ( For its simplicity this is very likely the first filesystem the OS is going to support) \
 <input type="checkbox" /> ACPI support ( Or some other basic way to support shutdown, reboot and possibly hibernation ) \
 <input type="checkbox" /> ATAPI support \
-<input type="checkbox" /> Keyboard support ( P/S2 Keyboard) \
 <input type="checkbox" checked/> Memory Management (MMU)   
 <input type="checkbox" /> Hardware Management system
 
@@ -49,3 +48,4 @@
 <input type="checkbox" /> Basic Window server/client \
 <input type="checkbox" /> EXT2 Filesystem 
 <input type="checkbox" /> USTAR Filesystem \
+<input type="checkbox" /> FAT16 Filesystem \

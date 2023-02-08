@@ -6,9 +6,13 @@
 #define KERNEL_DATA_SEGMENT   2
 #define USER_CODE_SEGMENT     3
 #define USER_DATA_SEGMENT     4
+#define TASK_STATE_SEGMENT    5
 
-SegmentDescriptor GlobalDescriptorTable[5];
+SegmentDescriptor GlobalDescriptorTable[6];
 GlobalDescriptorTableDescriptor gdtDescriptor;
+tss32 TaskStateSegment = {};
+
+
 
 void add_descriptor(int which , unsigned long base, unsigned long limit, unsigned char access, unsigned char granularity ){
    GlobalDescriptorTable[which].base_low = (base & 0xFFFF );
@@ -21,7 +25,6 @@ void add_descriptor(int which , unsigned long base, unsigned long limit, unsigne
    GlobalDescriptorTable[which].granularity |= (granularity & 0xF0);
    GlobalDescriptorTable[which].access = access;
 
-
 }
 
 
@@ -29,9 +32,9 @@ void add_descriptor(int which , unsigned long base, unsigned long limit, unsigne
 
 void initGDT(){
 
-#ifdef __VERBOSE__
+
       printf("Init GDT!\n");
-#endif
+
       // NULL segment
       add_descriptor(NULL_SEGMENT, 0,0,0,0);
 
@@ -42,16 +45,18 @@ void initGDT(){
       add_descriptor(KERNEL_DATA_SEGMENT, 0, 0xFFFFFFFF, 0x92, 0xCF);      
 
       // User Code Segment
-      // TODO:
+      add_descriptor(USER_CODE_SEGMENT, 0, 0xFFFFFFFF, 0xFA, 0xCF);
       
       // User Data Segement
-      // TODO: 
+      add_descriptor(USER_DATA_SEGMENT, 0, 0xFFFFFFFF, 0xF2, 0xCF);
+
+      // Task Segment Descriptor
+      add_descriptor(TASK_STATE_SEGMENT, (unsigned long)&TaskStateSegment, sizeof(TaskStateSegment), 0x89, 0x0);
       
       // init Gdt Descriptor
       gdtDescriptor.limit = ((sizeof(SegmentDescriptor ) * 5 ) - 1);
-      gdtDescriptor.base = (unsigned int) &GlobalDescriptorTable;
+      gdtDescriptor.base = (unsigned int) (&GlobalDescriptorTable);
 
-      printf("GDT at address 0x%x, with an size of 0x%x bytes\n" , (unsigned int)GlobalDescriptorTable, sizeof(GlobalDescriptorTable));
 
       LoadGlobalDescriptorTable();
 

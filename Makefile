@@ -5,7 +5,7 @@ CC = ${HOME}/opt/cross/bin/i686-elf-gcc
 CPP = ${HOME}/opt/cross/bin/i686-elf-g++ 
 CFLAGS =  -ffreestanding -Og -ggdb  -Wall -Wextra
 
-OFILES =$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o $(BUILD_DIR)/memory.o  $(BUILD_DIR)/paging.o	$(BUILD_DIR)/pit.o 	$(BUILD_DIR)/time.o	$(BUILD_DIR)/keyboard.o	 $(BUILD_DIR)/io.o 	$(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/sv-terminal.o $(BUILD_DIR)/string.o  $(BUILD_DIR)/prekernel.o $(BUILD_DIR)/cpu.o $(BUILD_DIR)/KHeap.o $(BUILD_DIR)/pci.o $(BUILD_DIR)/pcidevice.o $(BUILD_DIR)/atapiDevice.o $(BUILD_DIR)/ataDevice.o $(BUILD_DIR)/rsdp.o 
+OFILES =$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o $(BUILD_DIR)/memory.o  $(BUILD_DIR)/paging.o	$(BUILD_DIR)/pit.o 	$(BUILD_DIR)/time.o	$(BUILD_DIR)/keyboard.o	 $(BUILD_DIR)/io.o 	$(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/sv-terminal.o $(BUILD_DIR)/string.o  $(BUILD_DIR)/prekernel.o $(BUILD_DIR)/cpu.o $(BUILD_DIR)/KHeap.o $(BUILD_DIR)/pci.o $(BUILD_DIR)/pcidevice.o $(BUILD_DIR)/atapiDevice.o $(BUILD_DIR)/ataDevice.o $(BUILD_DIR)/rsdp.o $(BUILD_DIR)/acpi.o
 
 SRC_DIR = source
 BUILD_DIR = build
@@ -36,12 +36,12 @@ run: all
 	virtualboxvm --startvm "BarinkOS_test"
 debug: all
 	objcopy --only-keep-debug build/myos.bin kernel.sym
-	$(EMULATOR) -cdrom build/barinkOS.iso -serial stdio -vga std -display gtk -m 2G -cpu core2duo -s -d int
+	$(EMULATOR) -cdrom build/barinkOS.iso -serial stdio -vga std -display gtk -m 2G -cpu core2duo -s -d int -no-shutdown -no-reboot
 test:
-	$(EMULATOR)  -kernel $(BUILD_DIR)/myos.bin -serial stdio -vga std -display gtk -m 2G -cpu core2duo 
+	$(EMULATOR)  -kernel $(BUILD_DIR)/myos.bin -serial stdio -vga std -display gtk -m 2G -cpu core2duo -d int -no-shutdown -no-reboot
 
 test_iso: 
-	$(EMULATOR)  -boot d -cdrom $(BUILD_DIR)/barinkOS.iso -serial stdio -vga std -display gtk -m 2G -cpu core2duo 
+	$(EMULATOR)  -boot d -cdrom $(BUILD_DIR)/barinkOS.iso -serial stdio -vga std -display gtk -m 2G -cpu core2duo -d int -no-reboot -no-shutdown
 test_disk:
 	$(EMULATOR) -boot d -drive format=raw,file=build/disk.img -serial stdio -vga std -display gtk -m 2G -cpu core2duo 
 
@@ -97,6 +97,9 @@ $(BUILD_DIR)/ataDevice.o:
 $(BUILD_DIR)/rsdp.o:
 	$(CPP) -c $(SRC_DIR)/kernel/drivers/acpi/rsdp.cpp  -o $(BUILD_DIR)/rsdp.o $(CFLAGS) -fno-exceptions -fno-rtti
 
+$(BUILD_DIR)/acpi.o:
+	$(CPP) -c $(SRC_DIR)/kernel/drivers/acpi/acpi.cpp -o $(BUILD_DIR)/acpi.o $(CFLAGS) -fno-exceptions -fno-rtti
+
 $(BUILD_DIR)/pit.o:
 	$(CPP) -c $(SRC_DIR)/kernel/drivers/pit/pit.cpp  -o $(BUILD_DIR)/pit.o $(CFLAGS) -fno-exceptions -fno-rtti
 
@@ -124,6 +127,7 @@ $(BUILD_DIR)/prekernel.o:
 
 $(BUILD_DIR)/cpu.o:
 	$(CPP) -c $(SRC_DIR)/kernel/cpu.cpp -o $(BUILD_DIR)/cpu.o $(CFLAGS) -fno-exceptions -fno-rtti
+
 
 
 # Assembly -> Object files

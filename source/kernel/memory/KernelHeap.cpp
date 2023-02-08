@@ -63,26 +63,24 @@ void free(void* addr)
 
 void initHeap()
 {
-    // put the start of our kernel heap 1 page after the kernel_end address
-    // Lets calculate the address 
-    printf("FIND SUITABLE HEAP_ADDRESS\n");
-    uint32_t alligned_k_end = (uint32_t) &kernel_end + ((uint32_t)&kernel_end % BLOCK_SIZE == 0 ? 4096 : 0);
-    uint32_t HEAP_ADDRESS = (uint32_t) alligned_k_end + 4096;
-    printf("HEAP_ADDRESS: 0x%x\n", HEAP_ADDRESS);
-
-    // NOTE: we can't check if the mapping has failed or not here!
-    AllocatePage(HEAP_ADDRESS);
-    start = (heap_block*) HEAP_ADDRESS;
+    void* HEAP_ADDRESS = allocate_block();
+    printf("0x%x HEAP Paddr\n", HEAP_ADDRESS);
+ 
+    Immediate_Map((uint32_t)HEAP_ADDRESS + 0xC0000000, (uint32_t)HEAP_ADDRESS );
+    start = (heap_block*) ((uint32_t)HEAP_ADDRESS + 0xC0000000);
     heap_size = 4096;
 
     printf("Clear heap\n");
     // Clear the heap 
     printf("set at 0x%x %d bytes to zero\n", start , heap_size);
+
     memset((void*)start, 0x00,  heap_size /4);
+
 
     printf("Init first heap block\n");
     // initialzie 
     start->Size = heap_size - sizeof(heap_block);
+
     start->Used = false;
 
 }

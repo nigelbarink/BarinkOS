@@ -27,8 +27,6 @@ struct RSDT{
     uint32_t PointerToSDT[]; // Length of array : (header.Length - sizeof(header))/ 4
 }__attribute__((packed));
 
-
-//NOTE: only scans EBDA enough to find RSD PTR in QEMU
 RSDPTR* FindRSD();
 
 void printRSD(RSDPTR* rsd);

@@ -83,7 +83,7 @@ isPaging:
 	call prekernelSetup
 
 	# Unmap the identity mapping as it is now unnecessary  
-	movl $0, boot_page_directory + 0
+	# movl $0, boot_page_directory + 0
 	
 	# Reload cr3 to force tlb flush 
 	movl %cr3, %ecx

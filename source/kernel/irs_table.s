@@ -1,233 +1,62 @@
+.code32
 /*
 * Interupt handlers
 */
 
-.globl irs0
-irs0:
-	cli 
-	push $0
-	push $0
-	jmp irs_common
+.macro ISR_NOERRORCODE NAME, VECTOR
+	.globl irs\NAME
+	irs\NAME:
+		cli 
+		push $0
+		push \VECTOR
+		jmp irs_common
+.endm
 
-.globl irs1
-irs1:
-	cli 
-	push $0
-	push $1
-	jmp irs_common
+.macro ISR_ERROCODE NAME, VECTOR
+	.globl irs\NAME
+	irs\NAME:
+		cli
+		push \VECTOR
+		jmp irs_common
+.endm
 
-.globl irs2
-irs2:
-	cli 
-	push $0
-	push $2
-	jmp irs_common
 
-.globl irs3
-irs3:
-	cli 
-	push $0
-	push $3
-	jmp irs_common
+ISR_NOERRORCODE 0 $0
+ISR_NOERRORCODE 1 $1
+ISR_NOERRORCODE 2 $2
+ISR_NOERRORCODE 3 $3
+ISR_NOERRORCODE 4 $4
+ISR_NOERRORCODE 5 $5
+ISR_NOERRORCODE 6 $6
+ISR_NOERRORCODE 7 $7
+ISR_NOERRORCODE 8 $8
+ISR_NOERRORCODE 9 $9
+ISR_NOERRORCODE 10 $10
+ISR_NOERRORCODE 11 $11
+ISR_NOERRORCODE 12 $12
+ISR_NOERRORCODE 13 $13
+ISR_NOERRORCODE 14 $14
+ISR_NOERRORCODE 15 $15
+ISR_NOERRORCODE 16 $16
+ISR_NOERRORCODE 17 $17
+ISR_NOERRORCODE 18 $18
+ISR_NOERRORCODE 19 $19
+ISR_NOERRORCODE 20 $20
+ISR_NOERRORCODE 21 $21
+ISR_NOERRORCODE 22 $22
+ISR_NOERRORCODE 23 $23
+ISR_NOERRORCODE 24 $24
+ISR_NOERRORCODE 25 $25
+ISR_NOERRORCODE 26 $26
+ISR_NOERRORCODE 27 $27
+ISR_NOERRORCODE 28 $28
+ISR_NOERRORCODE 29 $29
+ISR_NOERRORCODE 30 $30
+ISR_NOERRORCODE 31 $31
 
-.globl irs4
-irs4:
-	cli 
-	push $0
-	push $4
-	jmp irs_common
-
-.globl irs5
-irs5:
-	cli 
-	push $0
-	push $5
-	jmp irs_common
-
-.globl irs6
-irs6:
-	cli 
-	push $0
-	push $6
-	jmp irs_common
-
-.globl irs7
-irs7:
-	cli 
-	push $0
-	push $7
-	jmp irs_common
-
-.globl irs8
-irs8:
-	cli 
-	push $0
-	push $8
-	jmp irs_common
-
-.globl irs9
-irs9:
-	cli 
-	push $0
-	push $9
-	jmp irs_common
-
-.globl irs10
-irs10:
-	cli 
-	push $0
-	push $10
-	jmp irs_common
-
-.globl irs11
-irs11:
-	cli 
-	push $0
-	push $11
-	jmp irs_common
-
-.globl irs12
-irs12:
-	cli 
-	push $0
-	push $12
-	jmp irs_common
-
-.globl irs13
-irs13:
-	cli 
-	push $13
-	jmp irs_common
-
-.globl irs14
-irs14:
-	cli 
-	push $0
-	push $14
-	jmp irs_common
-
-.globl irs15
-irs15:
-	cli 
-	push $0
-	push $15
-	jmp irs_common
-
-.globl irs16
-irs16:
-	cli 
-	push $0
-	push $16
-	jmp irs_common
-
-.globl irs17
-irs17:
-	cli 
-	push $0
-	push $17
-	jmp irs_common
-
-.globl irs18
-irs18:
-	cli 
-	push $0
-	push $18
-	jmp irs_common
-
-.globl irs19
-irs19:
-	cli 
-	push $0
-	push $19
-	jmp irs_common
-
-.globl irs20
-irs20:
-	cli 
-	push $0
-	push $20
-	jmp irs_common
-
-.globl irs21
-irs21:
-	cli 
-	push $0
-	push $21
-	jmp irs_common
-
-.globl irs22
-irs22:
-	cli 
-	push $0
-	push $22
-	jmp irs_common
-
-.globl irs23
-irs23:
-	cli 
-	push $0
-	push $23
-	jmp irs_common
-
-.globl irs24
-irs24:
-	cli 
-	push $0
-	push $24
-	jmp irs_common
-
-.globl irs25
-irs25:
-	cli 
-	push $0
-	push $25
-	jmp irs_common
-
-.globl irs26
-irs26:
-	cli 
-	push $0
-	push $26
-	jmp irs_common
-
-.globl irs27
-irs27:
-	cli 
-	push $0
-	push $27
-	jmp irs_common
-
-.globl irs28
-irs28:
-	cli 
-	push $0
-	push $28
-	jmp irs_common
-
-.globl irs29
-irs29:
-	cli 
-	push $0
-	push $29
-	jmp irs_common
-
-.globl irs30
-irs30:
-	cli 
-	push $0
-	push $30
-	jmp irs_common
-
-.globl irs31
-irs31:
-	cli 
-	push $0
-	push $31
-	jmp irs_common
 
 irs_common:
 	pusha 				# Pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
-
 
 	mov %ds, %ax
 	push %eax
@@ -239,17 +68,20 @@ irs_common:
 	mov %ax, %es
 	mov %ax, %fs
 	mov %ax, %gs
+	
+	mov %esp, %eax
+	push %eax 
 
 	call irs_handler
-
+	
 	pop %eax
-
-	mov %ax, %ds
-	mov %ax, %es
-	mov %ax, %fs
-	mov %ax, %gs
+	pop %ebx		// reload ther orignal data segment descriptor
+	mov %bx, %ds
+	mov %bx, %es
+	mov %bx, %fs
+	mov %bx, %gs
 
 	popa
-	add  $8, %esp  # cleans push error and irs code
-	sti
+	add  $12, %esp  # cleans push error and irs code
+
 	iret # pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP

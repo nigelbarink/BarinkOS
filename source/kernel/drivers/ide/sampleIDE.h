@@ -155,7 +155,7 @@ inline void init_IDE( uint32_t BAR0, uint32_t BAR1,uint32_t BAR2, uint32_t BAR3,
 
 
 // 3- Detect ATA-ATAPI Devices:
-void DetectDevices(){
+inline void DetectDevices(){
    int i, j, k, count = 0;
 
    for (i = 0; i < 2; i++)
@@ -228,7 +228,7 @@ void DetectDevices(){
 }
 
 
-void Detect_IO_Ports(uint32_t BAR0, uint32_t BAR1,uint32_t BAR2, uint32_t BAR3, uint32_t BAR4){
+inline void Detect_IO_Ports(uint32_t BAR0, uint32_t BAR1,uint32_t BAR2, uint32_t BAR3, uint32_t BAR4){
     // 1 Detect I/O Ports which interface an IDE Controller
 
    // Based on the implementation within serenity

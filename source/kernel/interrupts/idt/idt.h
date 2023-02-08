@@ -36,7 +36,7 @@ extern "C" {
 
     void irq_handler (registers regs);
 
-    void irs_handler (registers regs);
+    void irs_handler (registers* regs);
 
     extern void irs0 ();
     extern void irs1 ();

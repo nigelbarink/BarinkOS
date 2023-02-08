@@ -185,7 +185,11 @@ void PrintPCIDeviceInfo (PCIBusAddress& PCIDeviceAddress)
 }
 
 void PCI_Enumerate(){
-            int devicesFound = 0;
+
+
+        int devicesFound = 0;
+
+        printf("Start finding devices, Found: %d devices");
         // loop through all possible busses, devices and their functions;
         for( int bus = 0 ; bus < 256 ; bus++)
         {

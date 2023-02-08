@@ -2,8 +2,7 @@
 #include "../../drivers/pit/pit.h"
 #include "../../drivers/ps-2/keyboard.h"
 #include "../../cpu.h"
-#include "../../drivers/ps-2/keyboard.h"
-
+#include "../../memory/VirtualMemoryManager.h"
 IDT_entry idt_table[256];
 IDT_ptr idt_ptr;
 
@@ -17,25 +16,25 @@ void set_id_entry (uint8_t num , uint32_t base, uint16_t sel,  uint8_t flags){
 
 };
 
-void irs_handler (registers regs) {
+void irs_handler (registers* regs) {
      uint32_t FaultingAddress;
         //printf("(IRS) Interrupt number: %d \r", regs.int_no);
-        switch (regs.int_no)
+        switch (regs->int_no)
         {
         case 0:
             // Divide Error #DE
             printf("#DE\n");
-            printf("EIP: 0x%x\n", regs.eip);
-            printf("EAX: 0x%x\n", regs.eax);
-            printf("EBP: 0x%x\n", regs.ebp);
+            printf("EIP: 0x%x\n", regs->eip);
+            printf("EAX: 0x%x\n", regs->eax);
+            printf("EBP: 0x%x\n", regs->ebp);
         break;
         
         case 1:
             // Debug Exception #DB
             printf("#DB\n");
-            printf("EIP: 0x%x\n", regs.eip);
-            printf("EAX: 0x%x\n", regs.eax);
-            printf("EBP: 0x%x\n", regs.ebp);
+            printf("EIP: 0x%x\n", regs->eip);
+            printf("EAX: 0x%x\n", regs->eax);
+            printf("EBP: 0x%x\n", regs->ebp);
         break;
 
         case 2:
@@ -46,49 +45,50 @@ void irs_handler (registers regs) {
         case 3:
             // Breakpoint Exception #BP
             printf("#BP\n");
-            printf("EIP: 0x%x\n", regs.eip);
-            printf("EAX: 0x%x\n", regs.eax);
-            printf("EBP: 0x%x\n", regs.ebp);
+            printf("EIP: 0x%x\n", regs->eip);
+            printf("EAX: 0x%x\n", regs->eax);
+            printf("EBP: 0x%x\n", regs->ebp);
         break;
         
         case 4:
             // Overflow Exception #OF
             printf("#OF\n");
-            printf("EIP: 0x%x\n", regs.eip);
-            printf("EAX: 0x%x\n", regs.eax);
-            printf("EBP: 0x%x\n", regs.ebp);
+            printf("EIP: 0x%x\n", regs->eip);
+            printf("EAX: 0x%x\n", regs->eax);
+            printf("EBP: 0x%x\n", regs->ebp);
         break;
         
         case 5:
             // BOUND Range Exceeded Exception #BR
             printf("#BR\n");
-            printf("EIP: 0x%x\n", regs.eip);
-            printf("EAX: 0x%x\n", regs.eax);
-            printf("EBP: 0x%x\n", regs.ebp);
+            printf("EIP: 0x%x\n", regs->eip);
+            printf("EAX: 0x%x\n", regs->eax);
+            printf("EBP: 0x%x\n", regs->ebp);
         break;
         
         case 6:
             // Invalid OpCode Exception #UD 
             printf("#UD\n");
-            printf("EIP: 0x%x\n", regs.eip);
-            printf("EAX: 0x%x\n", regs.eax);
-            printf("EBP: 0x%x\n", regs.ebp);
+            printf("EIP: 0x%x\n", regs->eip);
+            printf("EAX: 0x%x\n", regs->eax);
+            printf("EBP: 0x%x\n", regs->ebp);
         break;
         
         case 7:
             // Device Not Available Exception  #NM
             printf("#NM\n");
-            printf("EIP: 0x%x\n", regs.eip);
-            printf("EAX: 0x%x\n", regs.eax);
-            printf("EBP: 0x%x\n", regs.ebp);
+            printf("EIP: 0x%x\n", regs->eip);
+            printf("EAX: 0x%x\n", regs->eax);
+            printf("EBP: 0x%x\n", regs->ebp);
         break;
         
         case 8:
             // Double Fault Exception #DF
             printf("#DF\n");
-            printf("EIP: 0x%x\n", regs.eip);
-            printf("EAX: 0x%x\n", regs.eax);
-            printf("EBP: 0x%x\n", regs.ebp);
+            printf("EIP: 0x%x\n", regs->eip);
+            printf("EAX: 0x%x\n", regs->eax);
+            printf("EBP: 0x%x\n", regs->ebp);
+            while(true);
         break;
 
         case 9:
@@ -99,64 +99,74 @@ void irs_handler (registers regs) {
         case 10:
             // Invalid TSS Exception #TS
             printf("#TS\n");
-            printf("EIP: 0x%x\n", regs.eip);
-            printf("EAX: 0x%x\n", regs.eax);
-            printf("EBP: 0x%x\n", regs.ebp);
+            printf("EIP: 0x%x\n", regs->eip);
+            printf("EAX: 0x%x\n", regs->eax);
+            printf("EBP: 0x%x\n", regs->ebp);
+            __asm__("cli;" "1: hlt;" "jmp 1b;");
         break;
 
         case 11:
             // Segment Not Present #NP
             printf("#NP\n");
-            printf("EIP: 0x%x\n", regs.eip);
-            printf("EAX: 0x%x\n", regs.eax);
-            printf("EBP: 0x%x\n", regs.ebp);
+            printf("EIP: 0x%x\n", regs->eip);
+            printf("EAX: 0x%x\n", regs->eax);
+            printf("EBP: 0x%x\n", regs->ebp);
         break;
         
         case 12:
             // Stack Fault Exception #SS
             printf("#SS\n");
-            printf("EIP: 0x%x\n", regs.eip);
-            printf("EAX: 0x%x\n", regs.eax);
-            printf("EBP: 0x%x\n", regs.ebp);
+            printf("EIP: 0x%x\n", regs->eip);
+            printf("EAX: 0x%x\n", regs->eax);
+            printf("EBP: 0x%x\n", regs->ebp);
         break;
         
-        case 13:
+        case 13:{
             // General Protection Exception #GP
             printf("#GP\n");
 
-            printf("Accessing memory caused a general protectuion exception.\n");
-            
-            printf("Fault due to entry at index: %d", (regs.err_code >> 3 & 0xFFF ) );
+            printf("Accessing memory caused a general protection exception.\n");
+            printf("Faulting instruction at addres: 0x%x\n", regs->eip );
+            printf("Error code: 0x%x\n", regs->err_code);
 
-            if(regs.err_code & 0x3 >> 1 == 0   ){
-                printf("* Index references GDT");
-            }
-            if(regs.err_code & 0x3 >> 1 == 1  ){
-                printf("* Index references IDT");
-            }
+            if (regs->err_code != 0){
+                printf("Fault due to entry at index: 0x%x (%d)\n", (regs->err_code >> 3 & 0xFFF ) , regs->err_code);
 
-            if(regs.err_code & 0x3 >> 1 == 2   ){
-                printf("* Index references LDT");
-            }
 
-            if(regs.err_code & 0x3 >> 1 == 4  ){
-                printf("* Index references IDT");
-            }
+                uint8_t table = regs->err_code >> 1 & 0x3 ;
+                
+                if(table == 0   ){
+                    printf("* Index references GDT\n");
+                }
+                if(table == 1  ){
+                    printf("* Index references IDT\n");
+                }
 
-            if( regs.err_code & 0x1)
-            {
-                printf("* Originated externally!");
+                if(table  == 2   ){
+                    printf("* Index references LDT\n");
+                }
+
+                if(table  == 3 ){
+                    printf("* Index references IDT\n");
+                }
+
+                if( regs->err_code & 0x1)
+                {
+                    printf("* Originated externally!\n");
+                }
             }
 
             __asm__("cli;" "1: hlt;" "jmp 1b;");
 
+        }
         break;
         
         case 14:
             // Page Fault Exception #PF
             printf("#PF\n");
-
+            #define ALIGN(addr, align) (((addr) & ~((align) - 1)) + (align))
             FaultingAddress = GetCR2();
+            
             printf("Accessing the linear address 0x%x resulted in a page fault!\n\n", FaultingAddress);
         
             // Error code of 32 bits are on the stack
@@ -174,89 +184,86 @@ void irs_handler (registers regs) {
             printf("REASON: \n\n");
 
          
-            if (regs.err_code & PF_ERR_PRESENT_BIT ){
+            if (regs->err_code & PF_ERR_PRESENT_BIT ){
                 printf("* Page protection violation!\n");
             } else{
                 printf("* Page not-present!\n");
+                Immediate_Map(FaultingAddress, FaultingAddress - 0xC0000000);
+             
             }
 
-            if(regs.err_code & PF_ERR_WRITE_BIT){
+            if(regs->err_code & PF_ERR_WRITE_BIT){
                 printf("* Write access violation!\n");
             } else{
                 printf("* Read access violation!\n");
             }
 
-            if(regs.err_code & PF_ERR_USER_BIT){
+            if(regs->err_code & PF_ERR_USER_BIT){
                 printf("* Violation from user-space (CPL=3)\n");
             }
 
-            if(regs.err_code & PF_ERR_INSTRUCTION_FETCH_BIT){
+            if(regs->err_code & PF_ERR_INSTRUCTION_FETCH_BIT){
                 printf("* Caused by an instruction fetch. \n");
             }
 
-            /*
-                Check the error code to figure out what happened here
-            */
+
             __asm__("cli;" "1: hlt;" "jmp 1b;");
 
-
-            
-    
         break;
         
         case 16:
             // x87 FPU Floating-point Error #MF
             printf("#MF\n");
-            printf("EIP: 0x%x\n", regs.eip);
-            printf("EAX: 0x%x\n", regs.eax);
-            printf("EBP: 0x%x\n", regs.ebp);
+            printf("EIP: 0x%x\n", regs->eip);
+            printf("EAX: 0x%x\n", regs->eax);
+            printf("EBP: 0x%x\n", regs->ebp);
         break;
         
         case 17:
             // Alignment Check Exception #AC
             printf("#AC\n");
-            printf("EIP: 0x%x\n", regs.eip);
-            printf("EAX: 0x%x\n", regs.eax);
-            printf("EBP: 0x%x\n", regs.ebp); 
+            printf("EIP: 0x%x\n", regs->eip);
+            printf("EAX: 0x%x\n", regs->eax);
+            printf("EBP: 0x%x\n", regs->ebp); 
         break;
         
         case 18:
             // Machine-Check Exception #MC
             printf("#MC\n");
-            printf("EIP: 0x%x\n", regs.eip);
-            printf("EAX: 0x%x\n", regs.eax);
-            printf("EBP: 0x%x\n", regs.ebp); 
+            printf("EIP: 0x%x\n", regs->eip);
+            printf("EAX: 0x%x\n", regs->eax);
+            printf("EBP: 0x%x\n", regs->ebp); 
         break;
         
         case 19:
             // SIMD Floating-point Exception #XM
             printf("#XM\n");
-            printf("EIP: 0x%x\n", regs.eip);
-            printf("EAX: 0x%x\n", regs.eax);
-            printf("EBP: 0x%x\n", regs.ebp); 
+            printf("EIP: 0x%x\n", regs->eip);
+            printf("EAX: 0x%x\n", regs->eax);
+            printf("EBP: 0x%x\n", regs->ebp); 
         break;
         
         case 20:
              // Virtualization Exception #VE
             printf("#VE\n");
-            printf("EIP: 0x%x\n", regs.eip);
-            printf("EAX: 0x%x\n", regs.eax);
-            printf("EBP: 0x%x\n", regs.ebp); 
+            printf("EIP: 0x%x\n", regs->eip);
+            printf("EAX: 0x%x\n", regs->eax);
+            printf("EBP: 0x%x\n", regs->ebp); 
         break;
         
         case 21:
              // Control Protection Exception #CP
             printf("#CP\n");
-            printf("EIP: 0x%x\n", regs.eip);
-            printf("EAX: 0x%x\n", regs.eax);
-            printf("EBP: 0x%x\n", regs.ebp); 
+            printf("EIP: 0x%x\n", regs->eip);
+            printf("EAX: 0x%x\n", regs->eax);
+            printf("EBP: 0x%x\n", regs->ebp); 
         break;
 
         default:
             // PANIC!!!
             break;
         }
-
+        
       
         
 }

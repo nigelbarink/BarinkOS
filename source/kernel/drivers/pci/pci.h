@@ -10,8 +10,6 @@
 
 extern const char* ClassCodeTable [0x13];
 
-
-
 // Note: this could be used to make the api for receiving PCI class codes a bit 
 // nicer.
 struct ClassCodes {
