@@ -1,8 +1,8 @@
 #include "idt.h"
-#include "../../drivers/pit/pit.h"
-#include "../../drivers/ps-2/keyboard.h"
-#include "../../cpu.h"
-#include "../../memory/VirtualMemoryManager.h"
+#include "../drivers/pit/pit.h"
+#include "../drivers/ps-2/keyboard.h"
+#include "../cpu.h"
+#include "../memory/VirtualMemoryManager.h"
 IDT_entry idt_table[256];
 IDT_ptr idt_ptr;
 
@@ -327,7 +327,7 @@ void irq_handler (registers regs) {
 
 }
 
-void init_idt(){
+void initidt(){
     // Initialise the IDT pointer
     idt_ptr.length = sizeof(IDT_entry) * 255;
     idt_ptr.base = (uint32_t)&idt_table;

@@ -12,6 +12,7 @@ extern "C"
 #include "memory/VirtualMemoryManager.h"
 #include "memory/KernelHeap.h"
 #include "memory/gdt/gdtc.h"
+#include "memory/TaskStateSegment.h"
 
 #include "supervisorterminal/superVisorTerminal.h"
 
@@ -19,7 +20,8 @@ extern "C"
 #include "drivers/vga/VBE.h"
 #include "drivers/pci/pci.h"
 #include "drivers/pit/pit.h"
-
+#include "drivers/acpi/acpi.h"
+#include "drivers/ide/ide.h"
 
 #include "terminal/kterm.h"
 
@@ -28,15 +30,12 @@ extern "C"
 
 #include "bootcheck.h"
 
-#include "interrupts/idt/idt.h"
+#include "interrupts/idt.h"
 #include "time.h"
 #include "cpu.h"
 #include "serial.h"
 #include "time.h"
 #include "definitions.h"
-
-
-
 
 /*
     Copyright © Nigel Barink 2023
@@ -55,16 +54,22 @@ extern "C" void kernel_main ()
 extern "C" void early_main()
 {
     init_serial();
-
     kterm_init();
-    printf("Allocated blocks: 0x%x \n", GetUsedBlocks());
+
 
     initGDT();
-    init_idt();
+    //setup_tss();
+    initidt();
     
+
     // Enable interrupts
     asm volatile("STI");
-    
+
+    ACPI::initialize();
+    PCI_Enumerate();  
+
+    TestIDEController();      
+
     initHeap(); 
 
     printf("Enable Protected mode and jump to kernel main\n");
@@ -83,7 +88,6 @@ extern "C" void early_main()
     asm volatile("mov %eax, %cr0");
 
     pit_initialise();
-
 
     kernel_main();
     

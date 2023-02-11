@@ -2,10 +2,10 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include "../../drivers/vga/colors.h"
-#include "../../drivers/pic/pic.h"
+#include "../drivers/vga/colors.h"
+#include "../drivers/pic/pic.h"
 
-#include "../../terminal/kterm.h"
+#include "../terminal/kterm.h"
 
 
 extern "C" {
@@ -32,7 +32,7 @@ extern "C" {
 
     extern void idt_flush(uint32_t); 
     void set_id_entry (uint8_t num , uint32_t base, uint16_t sel,  uint8_t flags);
-    void init_idt();
+    void initidt();
 
     void irq_handler (registers regs);
 

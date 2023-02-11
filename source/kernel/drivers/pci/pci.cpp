@@ -114,6 +114,14 @@ const char* getVendor( uint32_t VendorID){
             return "Advanced Micor Devices, Inc.[AMD/ATI]";
             break;
 
+        case 0xbeef:
+            return "VirtualBox Graphics Adapter";
+            break;
+
+        case 0xcafe:
+            return "VirtualBox Guest Service";
+            break;
+
         default:
             return "Vendor Unkown";
             break;
@@ -124,6 +132,16 @@ const char* getVendor( uint32_t VendorID){
 uint32_t ConfigReadWord ( PCIBusAddress& PCIDeviceAddress , uint8_t offset){
     outl(CONFIG_ADDRESS , PCIDeviceAddress.getAddress() | offset );
     return inl(CONFIG_DATA);
+}
+
+uint8_t GetProgIF (PCIBusAddress& PCIDeviceAddress){
+    uint32_t data = ConfigReadWord(PCIDeviceAddress, 0x8);
+    return ((data >> 8) & 0xFF);
+}
+
+uint32_t ReadBAR ( PCIBusAddress& PCIDeviceAddress, int bar_number){
+    int offsetToBar = 0x10 + (bar_number* 0x4);
+    return ConfigReadWord(PCIDeviceAddress, offsetToBar); 
 }
 
 uint32_t ConfigReadWord (uint8_t bus, uint8_t device, uint8_t func, uint8_t offset){
@@ -185,8 +203,7 @@ void PrintPCIDeviceInfo (PCIBusAddress& PCIDeviceAddress)
 }
 
 void PCI_Enumerate(){
-
-
+     
         int devicesFound = 0;
 
         printf("Start finding devices, Found: %d devices");
@@ -196,18 +213,14 @@ void PCI_Enumerate(){
             
             for(int device = 0; device < 32 ; device ++)
             {
-                 
-                
                 int function = 0;
 
-                //uint64_t DeviceIdentify = ConfigReadWord(bus, device, function,0x0);
+                uint64_t DeviceIdentify = ConfigReadWord(bus, device, function,0x0);
                 uint32_t DeviceID = GetDevice(bus, device, function) >> 16;
-
-                
 
                 if( DeviceID != 0xFFFF){
                     PCIBusAddress busAddress =
-                        PCIBusAddress{bus, device, function };
+                    PCIBusAddress{bus, device, function };
 
                     PrintPCIDeviceInfo(busAddress);
 
@@ -228,9 +241,7 @@ void PCI_Enumerate(){
                     
                     }
 
-
-
-
+                    
                     devicesFound++;            
                 }
             }
@@ -240,12 +251,3 @@ void PCI_Enumerate(){
         printf("Found %d PCI devices!\n", devicesFound);
 }
 
-uint8_t GetProgIF (PCIBusAddress& PCIDeviceAddress){
-    uint32_t data = ConfigReadWord(PCIDeviceAddress, 0x8);
-    return ((data >> 8) & 0xFF);
-}
-
-uint32_t ReadBAR ( PCIBusAddress& PCIDeviceAddress, int bar_number){
-    int offsetToBar = 0x10 + (bar_number* 0x4);
-    return ConfigReadWord(PCIDeviceAddress, offsetToBar); 
-}

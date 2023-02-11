@@ -1,17 +1,9 @@
 #include "gdtc.h"
 #include "../../terminal/kterm.h"
 
-#define NULL_SEGMENT          0
-#define KERNEL_CODE_SEGMENT   1
-#define KERNEL_DATA_SEGMENT   2
-#define USER_CODE_SEGMENT     3
-#define USER_DATA_SEGMENT     4
-#define TASK_STATE_SEGMENT    5
 
 SegmentDescriptor GlobalDescriptorTable[6];
 GlobalDescriptorTableDescriptor gdtDescriptor;
-tss32 TaskStateSegment = {};
-
 
 
 void add_descriptor(int which , unsigned long base, unsigned long limit, unsigned char access, unsigned char granularity ){
@@ -32,9 +24,6 @@ void add_descriptor(int which , unsigned long base, unsigned long limit, unsigne
 
 void initGDT(){
 
-
-      printf("Init GDT!\n");
-
       // NULL segment
       add_descriptor(NULL_SEGMENT, 0,0,0,0);
 
@@ -50,14 +39,9 @@ void initGDT(){
       // User Data Segement
       add_descriptor(USER_DATA_SEGMENT, 0, 0xFFFFFFFF, 0xF2, 0xCF);
 
-      // Task Segment Descriptor
-      add_descriptor(TASK_STATE_SEGMENT, (unsigned long)&TaskStateSegment, sizeof(TaskStateSegment), 0x89, 0x0);
-      
       // init Gdt Descriptor
       gdtDescriptor.limit = ((sizeof(SegmentDescriptor ) * 5 ) - 1);
       gdtDescriptor.base = (unsigned int) (&GlobalDescriptorTable);
 
-
       LoadGlobalDescriptorTable();
-
 }

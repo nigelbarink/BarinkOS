@@ -1,8 +1,6 @@
 #include "superVisorTerminal.h"
 #include "../drivers/ata/ataDevice.h"
-#include "../drivers/acpi/acpi.h"
-#include "../drivers/ide/ide.h"
-#include "../PartitionTable/MBR/MasterBootRecord.h"
+#include "../partitiontable/mbr/MasterBootRecord.h"
 #include "../filesystem/FAT/BiosParameterBlock.h"
 #include "../filesystem/FAT/DirectoryEntry.h"
 bool isRunning = true;
@@ -43,18 +41,10 @@ void startSuperVisorTerminal(){
             if( strncmp ("MEMORY" , command , characterCount) == 0 )
             {
                 // Show memory layout
-                printf("========= Memory ==========\n");
+                printf("========= Memory (very inaccurate) ==========\n");
                 printf("Kernel MemoryMap:\n");
                 printf("kernel: 0x%x - 0x%x\n", &kernel_begin , &kernel_end);         
-                printf("Frames used: 0x%x blocks of 4 KiB\n", 0);  
-                const int bytesInGiB = 1073741824;
-                //int64_t bytesLeft = (bootinfo->memory->TotalMemory % bytesInGiB) / bytesInGiB;
-                //int64_t effectiveNumberOfGib = bootinfo->memory->TotalMemory / bytesInGiB;
-
-                //int64_t GiBs = effectiveNumberOfGib + bytesLeft;  
-
-                //printf("Available Memory: %d bytes, %d GiB\n",  bootinfo->memory->TotalMemory, GiBs );
-                //printf("Reserved Memory: %d bytes\n",  bootinfo->memory->ReservedMemory);
+                printf("Frames used: %d blocks of 4 KiB\n", GetUsedBlocks());  
 
             }
             if(strncmp("TEST", command, characterCount) == 0)
@@ -76,14 +66,6 @@ void startSuperVisorTerminal(){
             }
             if(strncmp("FAT", command, characterCount) == 0)
             {
-                printf("ACPI initialize!\n");
-                ///ACPI::initialize();
-
-                // Enumerate the PCI bus
-                printf("PCI Enumeration\n");
-                PCI_Enumerate();  
-                printf("TEST IDE Controller");
-                TestIDEController();      
 
                 int devNumber = 0 ;
                 for ( auto device : ide_devices){
@@ -129,7 +111,7 @@ void startSuperVisorTerminal(){
                         i, PT.Number_sectors_inPartition, PT.PartitionType, mbr->uniqueID,  PT.LBA_partition_start );
                     }
 
-                    // Find the BiosParameter block
+                // Find the BiosParameter block
                 uint16_t biosparameterblock[256];
                 ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, mbr->TableEntries[0].LBA_partition_start, biosparameterblock);
 
@@ -224,8 +206,15 @@ void startSuperVisorTerminal(){
 
 
 
-            if(strncmp("glg", command, characterCount) == 0){
-                printf("Why???");
+            if(strncmp("DEVICES", command, characterCount) == 0){
+                printf("================ CONNECTED DEVICES ===============\n");
+
+
+
+
+
+
+                
             }
 
 
