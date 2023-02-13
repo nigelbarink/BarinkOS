@@ -5,6 +5,7 @@
 .section .bootstrap_stack, "aw", @nobits
 stack_bottom:
 .skip 16384 # 16 KiB
+.globl stack_top
 stack_top:
 
 /*
@@ -75,16 +76,7 @@ _start:
 4:
 	# At this point, paging is fully set up and enabled
 isPaging:
-	/* push the pointer to the Multiboot information structure*/
-	pushl %ebx
 
-	/* push the magic value */
-	pushl %eax
-	call prekernelSetup
-
-	# Unmap the identity mapping as it is now unnecessary  
-	# movl $0, boot_page_directory + 0
-	
 	# Reload cr3 to force tlb flush 
 	movl %cr3, %ecx
 	movl %ecx, %cr3
@@ -96,6 +88,19 @@ isPaging:
 	/*Reset EFLAGS*/
 	pushl $0 
 	popf 
+
+	
+	/* push the pointer to the Multiboot information structure*/
+	pushl %ebx
+
+	/* push the magic value */
+	pushl %eax
+	call prekernelSetup
+
+	# Unmap the identity mapping as it is now unnecessary  
+	# movl $0, boot_page_directory + 0
+	
+
 
 
 	call early_main

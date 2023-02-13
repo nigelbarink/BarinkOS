@@ -34,26 +34,27 @@ struct TaskStateSegment {
 }__attribute__((packed));
 
 
-TaskStateSegment tss0 = {};
+TaskStateSegment tss0 ={};
 
-inline void flush_tss(){
-     asm volatile("mov (5 * 8) |0 , %eax; ltr %ax");
+inline void flush_tss()
+{
+     asm volatile("mov $0x2B, %ax ; ltr %ax");
 }
 
-
 void setup_tss(){
-
-
     // ensure the tss is zero'd
-    //memset((void*)&tss0, 0, sizeof(tss0));
-    tss0.ss0 = (uint32_t) &(GlobalDescriptorTable[KERNEL_DATA_SEGMENT]);
-    uint32_t esp_addr =0 ; 
-    asm volatile ("movl %%esp, %0" : "=a"(esp_addr));
-    tss0.esp0 = esp_addr;
-
+    memset((void*)&tss0, 0, sizeof(tss0));
+    tss0.ss0 =  (uint32_t) &GlobalDescriptorTable[KERNEL_DATA_SEGMENT];
+     
+    extern uint32_t stack_top;
+    tss0.esp0 = (unsigned long)&stack_top;
 
     // Task Segment Descriptor
-    add_descriptor(TASK_STATE_SEGMENT, (unsigned long)&tss0, sizeof(tss0), 0x89, 0x0);
-    flush_tss();
+
+    uint32_t address = (unsigned long) &tss0;
+    uint32_t size = sizeof(tss0);
+    uint32_t limit = (address + size );
+
+    add_descriptor(TASK_STATE_SEGMENT, address, limit- 1, 0xE9, 0x0);
 }
 

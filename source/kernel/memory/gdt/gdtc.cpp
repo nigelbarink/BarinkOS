@@ -40,8 +40,7 @@ void initGDT(){
       add_descriptor(USER_DATA_SEGMENT, 0, 0xFFFFFFFF, 0xF2, 0xCF);
 
       // init Gdt Descriptor
-      gdtDescriptor.limit = ((sizeof(SegmentDescriptor ) * 5 ) - 1);
+      gdtDescriptor.limit = ((sizeof(SegmentDescriptor ) * 6 ) - 1);
       gdtDescriptor.base = (unsigned int) (&GlobalDescriptorTable);
 
-      LoadGlobalDescriptorTable();
 }

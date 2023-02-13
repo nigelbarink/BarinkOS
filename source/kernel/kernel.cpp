@@ -36,6 +36,8 @@ extern "C"
 #include "serial.h"
 #include "time.h"
 #include "definitions.h"
+extern "C"  void LoadGlobalDescriptorTable();
+
 
 /*
     Copyright © Nigel Barink 2023
@@ -50,18 +52,19 @@ extern "C" void kernel_main ()
     startSuperVisorTerminal();
 }   
 
-
 extern "C" void early_main()
 {
     init_serial();
     kterm_init();
 
 
+    setup_tss();
     initGDT();
-    //setup_tss();
     initidt();
-    
-
+    LoadGlobalDescriptorTable();
+    flush_tss();
+    printf("Memory setup complete!\n");
+  
     // Enable interrupts
     asm volatile("STI");
 
@@ -73,7 +76,7 @@ extern "C" void early_main()
     initHeap(); 
 
     printf("Enable Protected mode and jump to kernel main\n");
-
+  
 
     // Set the protected bit of control register 0 
     // this will put the CPU into protected mode

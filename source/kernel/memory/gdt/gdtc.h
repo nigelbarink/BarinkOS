@@ -32,5 +32,4 @@ struct GlobalDescriptorTableDescriptor{
 void add_descriptor(int which , unsigned long base, unsigned long limit, unsigned char access, unsigned char granularity );
 
 
-extern "C" void LoadGlobalDescriptorTable();
 void initGDT();
