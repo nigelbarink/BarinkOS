@@ -21,6 +21,7 @@ extern "C"{
 #include "interrupts/idt.h"
 #include "serial.h"
 extern "C"  void LoadGlobalDescriptorTable();
+extern "C" void jump_usermode();
 
 void set_protected_bit()
 {
@@ -63,18 +64,13 @@ extern "C" void kernel ()
 
     printf("Enable Protected mode and jump to kernel main\n");
 
-    // Set the protected bit of control register 0 
-    // this will put the CPU into protected mode
-    // NOTE: This should really be a assembly procedure 
-    // We cant directly write to control register 0 
-    // therefor we copy the value of control register 0 into eax
-    // once we are done manipulating the value we write the value in 
-    // eax back to control register 0 
+    set_protected_bit();
 
-	asm volatile("mov %cr0, %eax ");
-    asm volatile("or $1, %eax");
-    asm volatile("mov %eax, %cr0");
-
-    pit_initialise();
+#ifdef USERMODE_RELEASE
+    // Lets jump into user mode
+    jump_usermode();
+#else
+    startSuperVisorTerminal();
+#endif
 
 }

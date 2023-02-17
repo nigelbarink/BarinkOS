@@ -8,4 +8,4 @@ extern "C" {
     #include "../../lib/include/string.h"
 }
 
-void startSuperVisorTerminal();
+extern "C" void startSuperVisorTerminal();

@@ -99,11 +99,9 @@ isPaging:
 
 	# Unmap the identity mapping as it is now unnecessary  
 	# movl $0, boot_page_directory + 0
-	
 
 
-
-	call early_main
+	call kernel
 
 	cli
 1:	hlt
@@ -115,4 +113,18 @@ isPaging:
 .include "./source/kernel/irq_table.s"
 .include "./source/kernel/interrupts/idt.s"
 
+.globl jump_usermode
+jump_usermode:
+    mov $((4*8) | 3) , %ax
+    mov %ax, %ds
+    mov %ax, %es
+    mov %ax, %fs
+    mov %ax, %gs
 
+    mov %esp, %eax
+    push $( (3*8) | 3)
+    push %eax
+    pushf
+    push $( ( 3 * 8) | 3)
+    push startSuperVisorTerminal
+    iret

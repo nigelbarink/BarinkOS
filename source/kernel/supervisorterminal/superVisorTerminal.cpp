@@ -4,7 +4,13 @@
 #include "../filesystem/FAT/BiosParameterBlock.h"
 #include "../filesystem/FAT/DirectoryEntry.h"
 bool isRunning = true;
-void startSuperVisorTerminal(){
+extern "C" void startSuperVisorTerminal()
+{
+    /*
+    * Show a little banner for cuteness
+    */
+    printf("|===    BarinkOS       ===|\n");
+
     while (isRunning){
            
            printf("SUPERVISOR:>$ " );
@@ -115,7 +121,7 @@ void startSuperVisorTerminal(){
                 uint16_t biosparameterblock[256];
                 ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, mbr->TableEntries[0].LBA_partition_start, biosparameterblock);
 
-                BiosParameterBlock*  bpb =  (BiosParameterBlock*) biosparameterblock;
+                auto*  bpb =  (BiosParameterBlock*) biosparameterblock;
                 
 
                 printf("\nBPB: Bytes per Sector %d\n", bpb->BytesPerSector );
@@ -138,8 +144,8 @@ void startSuperVisorTerminal(){
                 ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, FATAddress, FAT );
 
                 // Show data in terminal
-                for(int i = 0; i < 256; i++ ) {
-                    printf("%x ", FAT[i]);
+                for(unsigned short i : FAT) {
+                    printf("%x ", i);
                 }
                 kterm_put('\n');
 
@@ -149,33 +155,35 @@ void startSuperVisorTerminal(){
 
                 uint16_t data2 [256];
                 ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, RootDirectoryRegion, data2 );
-                DirectoryEntry* RootDirectory = (DirectoryEntry*) data2;
+                auto* RootDirectory = (DirectoryEntry*) data2;
                 // List files in root
                 for(int i= 0; i < bpb->NumberOfDirectoryEntries ; i++ )
                 {  
-                DirectoryEntry* entry = (DirectoryEntry*)((uint32_t) RootDirectory + (i  * sizeof(DirectoryEntry)));
+                auto* entry = (DirectoryEntry*)((uint32_t) RootDirectory + (i  * sizeof(DirectoryEntry)));
 
                 if( entry->filename[0] == (uint8_t) 0x00 )
                     break; // There are no more entries in this directory or the entry is free
                     
-                if( entry->attribute & 0x01 == 0x01 || entry->attribute & 0x20 == 0x20)
+                if( (entry->attribute & 0x01) == 0x01 || (entry->attribute & 0x20) == 0x20)
                     continue; // Skip listing if hidden or Achieve flag is set
 
                 // Print the filename;
-                for( int n = 0; n < 8; n++ ){
-                    if(entry->filename[n] == 0x20)
+                for(char n : entry->filename){
+                    if(n == 0x20)
                         break;
-                    kterm_put(entry->filename[n]);
-                }kterm_put('\n');
+                    kterm_put(n);
+                }
+                kterm_put('\n');
 
-                for( int n = 0; n < 3; n++){
-                    kterm_put(entry->Extension[n]);
-                }kterm_put('\n');
+                for(unsigned char n : entry->Extension){
+                    kterm_put(n);
+                }
+                kterm_put('\n');
 
                 printf("Attribute: %x \n" , entry->attribute);
                 printf("FileSize: %d Bytes\n", entry->FilesizeInBytes);
 
-                if( entry->FilesizeInBytes != 0x0 || entry->attribute & 0x8 == 0x0){
+                if( entry->FilesizeInBytes != 0x0 || (entry->attribute & 0x8) == 0x0){
                     printf("Show contents");
 
                     printf( "Start cluster of the file: 0x%x\n" , entry->StartingCluster);
@@ -187,11 +195,11 @@ void startSuperVisorTerminal(){
 
                     uint16_t dataBlob [256];
                     ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, sector, dataBlob );
-                    for( int n = 0; n < 256; n++)
+                    for(unsigned short n : dataBlob)
                     {
-                        kterm_put(dataBlob[n] & 0x00ff);
+                        kterm_put(n & 0x00ff);
 
-                        kterm_put(dataBlob[n] >> 8);
+                        kterm_put(n >> 8);
                     }kterm_put('\n');
 
 
