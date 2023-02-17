@@ -91,7 +91,8 @@ extern "C" void startSuperVisorTerminal()
                 };
 
 
-                
+                // FIXME: If no drive is connected we continue trying to read from
+                // a not connected drive! 
                 ATA_DEVICE::Identify((uint16_t) BUS_PORT::Primary, DEVICE_DRIVE::MASTER);
 
                 const int C = 0; 

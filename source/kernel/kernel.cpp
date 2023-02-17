@@ -10,18 +10,19 @@ extern "C"{
 #include "memory/gdt/gdtc.h"
 #include "memory/TaskStateSegment.h"
 #include "supervisorterminal/superVisorTerminal.h"
-
 #include "drivers/vga/VBE.h"
 #include "drivers/pci/pci.h"
 #include "drivers/pit/pit.h"
 #include "drivers/acpi/acpi.h"
 #include "drivers/ide/ide.h"
-
+#include "i386/processor.h"
 #include "terminal/kterm.h"
 #include "interrupts/idt.h"
 #include "serial.h"
+
 extern "C"  void LoadGlobalDescriptorTable();
 extern "C" void jump_usermode();
+
 
 void set_protected_bit()
 {
@@ -57,10 +58,13 @@ extern "C" void kernel ()
 
     pit_initialise();
 
-    ACPI::initialize();
+    // ACPI::initialize();
     PCI::Scan();
 
-    TestIDEController();
+    //TestIDEController();
+
+
+    processor::initialize();
 
     printf("Enable Protected mode and jump to kernel main\n");
 
