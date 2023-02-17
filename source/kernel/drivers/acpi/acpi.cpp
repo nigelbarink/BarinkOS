@@ -9,6 +9,7 @@ void ACPI::initialize(){
     // Find the Root System Description Pointer
     ACPI::rsd_ptr = FindRSD();
     printRSD(rsd_ptr);
+
     //  Get the Root System Description Table
-    ACPI::rsd_table = getRSDT(rsd_ptr);
+    ACPI::rsd_table = getRSDT((RSDPTR*)((uint32_t)rsd_ptr + 0xC00000000));
 }

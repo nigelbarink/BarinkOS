@@ -14,11 +14,11 @@ extern "C"{
 #include "drivers/pci/pci.h"
 #include "drivers/pit/pit.h"
 #include "drivers/acpi/acpi.h"
-#include "drivers/ide/ide.h"
 #include "i386/processor.h"
 #include "terminal/kterm.h"
 #include "interrupts/idt.h"
 #include "serial.h"
+#include "vfs/VFS.h"
 
 extern "C"  void LoadGlobalDescriptorTable();
 extern "C" void jump_usermode();
@@ -54,17 +54,13 @@ extern "C" void kernel ()
 
     // Enable interrupts
     asm volatile("STI");
+
     initHeap();
-
     pit_initialise();
-
-    // ACPI::initialize();
+    // ACPI::initialize(); // FIXME: improper reading of bios memory
     PCI::Scan();
-
-    //TestIDEController();
-
-
     processor::initialize();
+    FileSystem::initialize();
 
     printf("Enable Protected mode and jump to kernel main\n");
 

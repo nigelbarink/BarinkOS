@@ -18,17 +18,16 @@ void printRSD(RSDPTR* rsd){
 }
 
 RSDPTR* FindRSD(){
-    char* memory_byte = (char*) 0x000f2e14;
+    char* memory_byte = (char*) 0xC00f2e14;
     const void* string = "RSD PTR ";
 
-    for( ; (uint32_t) memory_byte < 0x0100000; memory_byte+=10){
+    for( ; (uint32_t) memory_byte < 0xC0100000; memory_byte+=10){
         if( memcmp(memory_byte , string , 8 ) ==  0 ) {
         printf("RSD PTR found at 0x%x !\n", memory_byte);
         break;
         }
     }
 
-    printRSD((RSDPTR*) memory_byte);
     return (RSDPTR*) memory_byte;
 }
 
