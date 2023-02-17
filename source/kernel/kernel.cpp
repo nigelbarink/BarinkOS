@@ -1,22 +1,16 @@
-
-extern "C" 
-{
-   #include "../lib/include/string.h" 
+/*
+    Copyright © Nigel Barink 2023
+*/
+extern "C"{
+#include "../lib/include/string.h"
 }
 
-#include "prekernel/bootstructure.h"
-
 #include "memory/memory.h"
-#include "memory/memoryinfo.h"
-#include "memory/memory.h"
-#include "memory/VirtualMemoryManager.h"
 #include "memory/KernelHeap.h"
 #include "memory/gdt/gdtc.h"
 #include "memory/TaskStateSegment.h"
-
 #include "supervisorterminal/superVisorTerminal.h"
 
-#include "drivers/io/io.h"
 #include "drivers/vga/VBE.h"
 #include "drivers/pci/pci.h"
 #include "drivers/pit/pit.h"
@@ -24,39 +18,30 @@ extern "C"
 #include "drivers/ide/ide.h"
 
 #include "terminal/kterm.h"
-
-#include "prekernel/multiboot.h"
-#include "bootinfo.h"
-
-#include "bootcheck.h"
-
 #include "interrupts/idt.h"
-#include "time.h"
-#include "cpu.h"
 #include "serial.h"
-#include "time.h"
-#include "definitions.h"
 extern "C"  void LoadGlobalDescriptorTable();
 
-
-/*
-    Copyright © Nigel Barink 2023
-*/
-
-extern "C" void kernel_main ()
+void set_protected_bit()
 {
-    /*
-     * Show a little banner for cuteness
-     */
-    printf("|===    BarinkOS       ===|\n");
-    startSuperVisorTerminal();
-}   
+    // Set the protected bit of control register 0
+    // this will put the CPU into protected mode
+    // NOTE: This should really be a assembly procedure
+    // We cant directly write to control register 0
+    // therefor we copy the value of control register 0 into eax
+    // once we are done manipulating the value we write the value in
+    // eax back to control register 0
 
-extern "C" void early_main()
+    asm volatile("mov %cr0, %eax ");
+    asm volatile("or $1, %eax");
+    asm volatile("mov %eax, %cr0");
+}
+
+extern "C" void kernel ()
 {
+
     init_serial();
     kterm_init();
-
 
     setup_tss();
     initGDT();
@@ -64,19 +49,19 @@ extern "C" void early_main()
     LoadGlobalDescriptorTable();
     flush_tss();
     printf("Memory setup complete!\n");
-  
+
     // Enable interrupts
     asm volatile("STI");
+    initHeap();
+
+    pit_initialise();
 
     ACPI::initialize();
-    PCI_Enumerate();  
+    PCI::Scan();
 
-    TestIDEController();      
-
-    initHeap(); 
+    TestIDEController();
 
     printf("Enable Protected mode and jump to kernel main\n");
-  
 
     // Set the protected bit of control register 0 
     // this will put the CPU into protected mode
@@ -92,6 +77,4 @@ extern "C" void early_main()
 
     pit_initialise();
 
-    kernel_main();
-    
 }

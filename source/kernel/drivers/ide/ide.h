@@ -56,7 +56,7 @@ inline void TestIDEController(){
     int device =1  , function = 1;
     PCIBusAddress IDEControllerPCIAddress = PCIBusAddress{bus,device, function};
 
-    uint8_t ProgIF = GetProgIF(IDEControllerPCIAddress);
+    uint8_t ProgIF = PCI::GetProgIF(IDEControllerPCIAddress);
     printf( "ProgIF: 0x%x\n" ,ProgIF);
 
     //CheckProgIF(ProgIF);
@@ -66,15 +66,15 @@ inline void TestIDEController(){
 
     uint32_t BAR0,BAR1,BAR2,BAR3, BAR4;
 
-    BAR0 = ReadBAR(IDEControllerPCIAddress, 0); 
+    BAR0 = PCI::ReadBAR(IDEControllerPCIAddress, 0);
 
-    BAR1 = ReadBAR(IDEControllerPCIAddress, 1);
+    BAR1 = PCI::ReadBAR(IDEControllerPCIAddress, 1);
 
-    BAR2 = ReadBAR(IDEControllerPCIAddress, 2);
+    BAR2 = PCI::ReadBAR(IDEControllerPCIAddress, 2);
 
-    BAR3 = ReadBAR(IDEControllerPCIAddress, 3);
+    BAR3 = PCI::ReadBAR(IDEControllerPCIAddress, 3);
 
-    BAR4 = ReadBAR(IDEControllerPCIAddress, 4);
+    BAR4 = PCI::ReadBAR(IDEControllerPCIAddress, 4);
 
     // All bars are return 0xffffff for some as of yet mysterious reason!
     printf( "BAR 0: 0x%x\n", BAR0);
