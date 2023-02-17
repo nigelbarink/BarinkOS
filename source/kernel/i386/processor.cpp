@@ -71,3 +71,57 @@ bool processor::hasPageSupport(){
 bool processor::gigabytePages() {
     return cap_page & (0x1 << 26);
 }
+
+void processor::enable_protectedMode()
+{
+    // Set the protected bit of control register 0
+    // this will put the CPU into protected mode
+    // NOTE: This should really be an assembly procedure
+    // We cant directly write to control register 0
+    // therefor we copy the value of control register 0 into eax
+    // once we are done manipulating the value we write the value in
+    // eax back to control register 0
+
+    asm volatile("mov %cr0, %eax ");
+    asm volatile("or $1, %eax");
+    asm volatile("mov %eax, %cr0");
+}
+
+
+
+uint32_t processor::GetEFLAGS()
+{
+    uint32_t EFLAGS = 0;
+    asm volatile ("pushfl;" "movl 4(%%esp), %%edx" : "=d"(EFLAGS));
+    return EFLAGS;
+}
+
+
+uint32_t processor::GetCR0()
+{
+    uint32_t cr0_value;
+    asm volatile ("movl %%cr0, %%edx" : "=d"(cr0_value));
+    return cr0_value;
+
+}
+
+
+uint32_t processor::GetCR2(){
+    uint32_t cr2_value;
+    __asm__ volatile("movl %%cr2, %%edx": "=d"(cr2_value));
+    return cr2_value;
+}
+
+
+uint32_t processor::GetCR3(){
+    uint32_t cr3_value;
+    __asm__ volatile("movl %%cr3, %%edx": "=d"(cr3_value));
+    return cr3_value;
+}
+
+
+uint32_t processor::GetCR4(){
+    uint32_t cr4_value;
+    __asm__ volatile("movl %%cr4, %%edx": "=d"(cr4_value));
+    return cr4_value;
+}

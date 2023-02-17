@@ -5,7 +5,7 @@ CC = ${HOME}/opt/cross/bin/i686-elf-gcc
 CPP = ${HOME}/opt/cross/bin/i686-elf-g++ 
 CFLAGS =  -ffreestanding -Og -ggdb  -Wall -Wextra
 
-OFILES =$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o $(BUILD_DIR)/memory.o  $(BUILD_DIR)/paging.o	$(BUILD_DIR)/VFS.o $(BUILD_DIR)/pit.o 	$(BUILD_DIR)/time.o	$(BUILD_DIR)/keyboard.o	 $(BUILD_DIR)/io.o 	$(BUILD_DIR)/processor.o $(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/sv-terminal.o $(BUILD_DIR)/string.o  $(BUILD_DIR)/prekernel.o $(BUILD_DIR)/cpu.o $(BUILD_DIR)/KHeap.o $(BUILD_DIR)/pci.o $(BUILD_DIR)/pcidevice.o $(BUILD_DIR)/atapiDevice.o $(BUILD_DIR)/ataDevice.o $(BUILD_DIR)/rsdp.o $(BUILD_DIR)/acpi.o
+OFILES =$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o $(BUILD_DIR)/memory.o  $(BUILD_DIR)/paging.o	$(BUILD_DIR)/VFS.o $(BUILD_DIR)/pit.o 	$(BUILD_DIR)/time.o	$(BUILD_DIR)/keyboard.o	 $(BUILD_DIR)/io.o 	$(BUILD_DIR)/processor.o $(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/sv-terminal.o $(BUILD_DIR)/string.o  $(BUILD_DIR)/prekernel.o $(BUILD_DIR)/KHeap.o $(BUILD_DIR)/pci.o $(BUILD_DIR)/pcidevice.o $(BUILD_DIR)/atapiDevice.o $(BUILD_DIR)/ataDevice.o $(BUILD_DIR)/rsdp.o $(BUILD_DIR)/acpi.o
 
 SRC_DIR = source
 BUILD_DIR = build
@@ -133,8 +133,6 @@ $(BUILD_DIR)/KHeap.o:
 $(BUILD_DIR)/prekernel.o:
 	$(CPP) -c $(SRC_DIR)/kernel/prekernel/prekernel.cpp -o $(BUILD_DIR)/prekernel.o $(CFLAGS) -fno-exceptions -fno-rtti
 
-$(BUILD_DIR)/cpu.o:
-	$(CPP) -c $(SRC_DIR)/kernel/cpu.cpp -o $(BUILD_DIR)/cpu.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/processor.o:
 	$(CPP) -c $(SRC_DIR)/kernel/i386/processor.cpp -o $(BUILD_DIR)/processor.o $(CFLAGS) -fno-exceptions -fno-rtti

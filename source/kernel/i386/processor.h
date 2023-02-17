@@ -19,6 +19,13 @@ public:
     static bool gigabytePages();
 
     static bool hasPAEExtension();
+    static void enable_protectedMode();
+
+    static uint32_t GetEFLAGS();
+    static uint32_t GetCR0();
+    static uint32_t GetCR2();
+    static uint32_t GetCR3();
+    static uint32_t GetCR4();
 
 private:
     static uint32_t cap_page;

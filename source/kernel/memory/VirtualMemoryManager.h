@@ -1,6 +1,6 @@
 #pragma once 
 #include "../terminal/kterm.h"
-#include "../cpu.h"
+#include "../i386/processor.h"
 #include "PhysicalMemoryManager.h"
 
 

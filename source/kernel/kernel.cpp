@@ -23,22 +23,6 @@ extern "C"{
 extern "C"  void LoadGlobalDescriptorTable();
 extern "C" void jump_usermode();
 
-
-void set_protected_bit()
-{
-    // Set the protected bit of control register 0
-    // this will put the CPU into protected mode
-    // NOTE: This should really be a assembly procedure
-    // We cant directly write to control register 0
-    // therefor we copy the value of control register 0 into eax
-    // once we are done manipulating the value we write the value in
-    // eax back to control register 0
-
-    asm volatile("mov %cr0, %eax ");
-    asm volatile("or $1, %eax");
-    asm volatile("mov %eax, %cr0");
-}
-
 extern "C" void kernel ()
 {
 
@@ -60,11 +44,10 @@ extern "C" void kernel ()
     // ACPI::initialize(); // FIXME: improper reading of bios memory
     PCI::Scan();
     processor::initialize();
+    processor::enable_protectedMode();
+
     FileSystem::initialize();
 
-    printf("Enable Protected mode and jump to kernel main\n");
-
-    set_protected_bit();
 
 #ifdef USERMODE_RELEASE
     // Lets jump into user mode

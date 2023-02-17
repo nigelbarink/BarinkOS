@@ -1,7 +1,7 @@
 #include "idt.h"
 #include "../drivers/pit/pit.h"
 #include "../drivers/ps-2/keyboard.h"
-#include "../cpu.h"
+#include "../i386/processor.h"
 #include "../memory/VirtualMemoryManager.h"
 IDT_entry idt_table[256];
 IDT_ptr idt_ptr;
@@ -165,7 +165,7 @@ void irs_handler (registers* regs) {
             // Page Fault Exception #PF
             printf("#PF\n");
             #define ALIGN(addr, align) (((addr) & ~((align) - 1)) + (align))
-            FaultingAddress = GetCR2();
+            FaultingAddress = processor::GetCR2();
             
             printf("Accessing the linear address 0x%x resulted in a page fault!\n\n", FaultingAddress);
         
