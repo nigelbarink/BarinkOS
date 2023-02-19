@@ -80,7 +80,7 @@ bool driveAvailable(){
     return true;
 }
 
-MBR* getPartitions(){
+MBR* getPartitions(bool DEBUG = false){
     const int C = 0;
     const int H = 0;
     const int HPC = 16;
@@ -92,67 +92,91 @@ MBR* getPartitions(){
 
     ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, LBA, (uint16_t*)mbr);
 
-    printf("BootSector: 0x%x\n", mbr->ValidBootsector );
-    for( int i = 0 ; i < 4 ; i ++){
-        PartitionTableEntry PT = mbr->TableEntries[i];
+    if(DEBUG){
+        printf("BootSector: 0x%x\n", mbr->ValidBootsector );
+        for( int i = 0 ; i < 4 ; i ++){
+            PartitionTableEntry PT = mbr->TableEntries[i];
 
-        printf("Partition %d [  %d sectors,  PartitionType: %x, 0x%x, \nLBA Start: 0x%x ]\n" ,
-               i, PT.Number_sectors_inPartition, PT.PartitionType, mbr->uniqueID,  PT.LBA_partition_start );
+            printf("Partition %d [  %d sectors,  PartitionType: 0x%x, 0x%x, \nLBA Start: 0x%x ]\n" ,
+                   i, PT.Number_sectors_inPartition, PT.PartitionType, mbr->uniqueID,  PT.LBA_partition_start );
+        }
+
     }
 
     return mbr;
 }
 
-BiosParameterBlock* getBPB(MBR* mbr){
+BiosParameterBlock* getBPB(MBR* mbr, bool DEBUG =false ){
     BiosParameterBlock* bpb = (BiosParameterBlock*) malloc(sizeof(BiosParameterBlock));
-
     ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, mbr->TableEntries[0].LBA_partition_start, (uint16_t*) bpb);
 
-    printf("OEM ID: %s\n", bpb->OEM_id);
-    printf("Bytes per sector: %d\n", bpb->BytesPerSector);
-    printf("Sectors per cluster: %d\n", bpb->SectorsPerCluster);
-    printf("Reserved sectors: %d\n", bpb->ReservedSectors);
-    printf("Number of FAT: %d\n", bpb->NumberOfFileAllocationTables);
-    printf("Number of Dir entries: %d\n", bpb->NumberOfDirectoryEntries);
-    printf("Total Sectors in volume: %d\n", bpb->TotalSectorsInLogicalVolume);
-    printf("Sectors per FAT: %d\n", bpb->NumberOfSectorsPerFAT);
+    if(DEBUG)
+    {
+        printf("OEM ID: %s\n", bpb->OEM_id);
+        printf("Bytes per sector: %d\n", bpb->BytesPerSector);
+        printf("Sectors per cluster: %d\n", bpb->SectorsPerCluster);
+        printf("Reserved sectors: %d\n", bpb->ReservedSectors);
+        printf("Number of FAT: %d\n", bpb->NumberOfFileAllocationTables);
+        printf("Number of Dir entries: %d\n", bpb->NumberOfDirectoryEntries);
+        printf("Total Sectors in volume: %d\n", bpb->TotalSectorsInLogicalVolume);
+        printf("Sectors per FAT: %d\n", bpb->NumberOfSectorsPerFAT);
+    }
+
 
 
     return bpb;
 }
 
-uint16_t* ReadFAT (BiosParameterBlock& bpb , MBR& mbr) {
+uint16_t* ReadFAT (BiosParameterBlock& bpb , MBR& mbr, bool DEBUG = false ) {
     uint32_t FATAddress = mbr.TableEntries[0].LBA_partition_start +  bpb.ReservedSectors ;
     uint16_t* FAT = (uint16_t*)malloc(sizeof (uint16_t) * 256);
     ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, FATAddress, FAT );
 
     // Show data in terminal
-    /*
-    for(unsigned short i : FAT) {
-        printf("%x ", i);
+    if(DEBUG){
+        for( unsigned int i =0 ; i < 256 ; i++) {
+            printf("0x%x ", (unsigned short)FAT[i]);
+        }
+        kterm_put('\n');
     }
-    kterm_put('\n');*/
 
     return FAT;
-
 }
+void readFile(uint32_t DataRegion, DirectoryEntry* entry, uint16_t FATentry, BiosParameterBlock& bpb ){
+    printf("Show contents");
 
+    printf("Start cluster of the file: 0x%x\n", entry->StartingCluster);
+
+    printf("IS it only 1 cluster? %s\n", FATentry == 0xFFFF ? "Yes" : "No");
+
+    uint32_t sector = DataRegion + ((entry->StartingCluster - 0x02) * bpb.SectorsPerCluster);
+
+
+    uint16_t dataBlob[256];
+    ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, sector, dataBlob);
+    for (unsigned short n: dataBlob) {
+        kterm_put(n & 0x00ff);
+
+        kterm_put(n >> 8);
+    }
+    kterm_put('\n');
+}
 void listFilesInRoot(MBR& mbr, BiosParameterBlock& bpb ){
     auto FATAddress = mbr.TableEntries[0].LBA_partition_start +  bpb.ReservedSectors;
     uint32_t RootDirectoryRegion = FATAddress + ( bpb.NumberOfFileAllocationTables * bpb.NumberOfSectorsPerFAT );
     uint32_t DataRegion = RootDirectoryRegion + ((bpb.NumberOfDirectoryEntries * 32) / bpb.BytesPerSector );
     uint16_t* FAT = ReadFAT(bpb, mbr);
 
-
     uint16_t data2 [256];
     ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, RootDirectoryRegion, data2 );
     auto* RootDirectory = (DirectoryEntry*) data2;
+
     // List files in root
-    for(int i= 0; i < bpb.NumberOfDirectoryEntries ; i++ ) {
+    for(int i= 0; i < sizeof (data2) / sizeof (DirectoryEntry); i++ ) {
         auto *entry = (DirectoryEntry * )((uint32_t) RootDirectory + (i * sizeof(DirectoryEntry)));
 
         if (entry->filename[0] == (uint8_t) 0x00)
-            break; // There are no more entries in this directory or the entry is free
+            continue; // There are no more entries in this directory or the entry is free
 
         if ((entry->attribute & 0x01) == 0x01 || (entry->attribute & 0x20) == 0x20)
             continue; // Skip listing if hidden or Achieve flag is set
@@ -163,40 +187,21 @@ void listFilesInRoot(MBR& mbr, BiosParameterBlock& bpb ){
                 break;
             kterm_put(n);
         }
-        kterm_put('\n');
-
         for (unsigned char n: entry->Extension) {
             kterm_put(n);
         }
         kterm_put('\n');
 
+
         printf("Attribute: %x \n", entry->attribute);
         printf("FileSize: %d Bytes\n", entry->FilesizeInBytes);
 
-        if (entry->FilesizeInBytes != 0x0 || (entry->attribute & 0x8) == 0x0) {
-            printf("Show contents");
-
-            printf("Start cluster of the file: 0x%x\n", entry->StartingCluster);
-
-            printf("IS it only 1 cluster? %s\n", FAT[i] == 0xFFFF ? "Yes" : "No");
-
-            uint32_t sector = DataRegion + ((entry->StartingCluster - 0x02) * bpb.SectorsPerCluster);
-
-
-            uint16_t dataBlob[256];
-            ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, sector, dataBlob);
-            for (unsigned short n: dataBlob) {
-                kterm_put(n & 0x00ff);
-
-                kterm_put(n >> 8);
-            }
-            kterm_put('\n');
-
-
+        if (entry->FilesizeInBytes != 0x0  && (entry->attribute == 0x08)) {
+            readFile(DataRegion,entry, FAT[i], bpb);
         }
-        printf("======================\n");
 
     }
+    free(FAT);
 
 }
 
@@ -341,6 +346,9 @@ void FileSystem::initialize()
     MBR* mbr = getPartitions();
     BiosParameterBlock* bootsector =  getBPB(mbr);
     listFilesInRoot(*mbr, *bootsector);
+
+    free(mbr);
+    free(bootsector);
 /*
     mountInfo.numSectors =  bootsector->NumberOfSectorsPerFAT;
     mountInfo.fatOffset = 1;
@@ -348,7 +356,8 @@ void FileSystem::initialize()
     mountInfo.fatEntrySize = 8;
     mountInfo.numRootEntries = bootsector->NumberOfDirectoryEntries;
     mountInfo.rootOffset = (bootsector->NumberOfFileAllocationTables * bootsector->NumberOfSectorsPerFAT) + 1;
-    mountInfo.rootSize = (bootsector->NumberOfDirectoryEntries * 32) / bootsector->BytesPerSector;*/
+    mountInfo.rootSize = (bootsector->NumberOfDirectoryEntries * 32) / bootsector->BytesPerSector;
+*/
 
 
 }

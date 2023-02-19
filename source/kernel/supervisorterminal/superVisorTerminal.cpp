@@ -70,9 +70,17 @@ extern "C" void startSuperVisorTerminal()
                 kterm_init();
                 printf("|===    BarinkOS       ===|\n");
             }
-            if(strncmp("LIST", command, characterCount) == 0)
+            if(strncmp("LIST", command, 4) == 0)
             {
+
+                // slice off the command part
+                char args[characterCount - 4];
+                for(int i = 5 ; i < characterCount; i++) {
+                    args[i] = command[i];
+                }
+
                 printf("=============== DIRECTORY LISTING =================\n");
+                printf("Path to show %s\n", args);
             }
 
             if(strncmp("DEVICES", command, characterCount) == 0){

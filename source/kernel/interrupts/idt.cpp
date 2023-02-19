@@ -308,8 +308,8 @@ void irq_handler (registers regs) {
         break;
 
     default:
-        printf("Interrupt happened!");
-        printf("Received INT: 0x%x\n", regs.int_no);
+        //printf("Interrupt happened!");
+        //printf("Received INT: 0x%x\n", regs.int_no);
         break;
     }        
 

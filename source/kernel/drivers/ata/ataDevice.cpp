@@ -128,7 +128,7 @@ void ATA_DEVICE::Read(uint16_t DEVICE_CHANNEL,  DEVICE_DRIVE drive, uint32_t LBA
         return ;
     }
 
-    printf("Read LBA: 0x%x\n", LBA);
+    //printf("Read LBA: 0x%x\n", LBA);
     // Send 0xE0 for the "master" or 0xF0 for the "slave", ORed with the highest 4 bits of the LBA to port 0x1F6: outb(0x1F6, 0xE0 | (slavebit << 4) | ((LBA >> 24) & 0x0F))
     outb(DEVICE_CHANNEL | 6 , ( 0xE0 | (LBA >>28) ) );
     // Send a NULL byte to port 0x1F1, if you like (it is ignored and wastes lots of CPU time): outb(0x1F1, 0x00)
@@ -156,7 +156,7 @@ void ATA_DEVICE::Read(uint16_t DEVICE_CHANNEL,  DEVICE_DRIVE drive, uint32_t LBA
         return;
     }
 
-    printf("Status: %x\n", status);
+    //printf("Status: %x\n", status);
     // Check if busy!
     while((status & 0x80) == 0x80){
         printf("Reading....\r");

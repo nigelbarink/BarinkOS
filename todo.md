@@ -13,9 +13,9 @@ to do on a more in depth level.
 [x] Setup a proper HEAP \
 [ ] Setup a proper Stack \
 [x] Setup KMalloc and KFree \
-[ ] Merge Functioning Feature branches into sandboxKernelDev \
+[x] Merge Functioning Feature branches into sandboxKernelDev \
 [ ] Remove merged feature branches \
 [ ] Merge sandboxKernelDev with dev \
-[ ] Remove sandboxKernelDev branch \
+[x] Remove sandboxKernelDev branch \
 [ ] Implement proper virtual filesystem 
 

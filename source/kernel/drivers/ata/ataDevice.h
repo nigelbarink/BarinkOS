@@ -10,16 +10,12 @@
 * This first driver wil make use of IO ports.
 * Doing so means reading or writing from disk is going
 * to be very cpu intensive.
-* 
 */
 
 enum DEVICE_DRIVE{
     MASTER = 0xA0,
     SLAVE = 0xB0
 };
-
-
-
 
 namespace ATA_DEVICE{
     void Identify(uint16_t, DEVICE_DRIVE);

@@ -1,7 +1,7 @@
 #include "KernelHeap.h"
 #include "VirtualMemoryManager.h"
 extern "C" const uint32_t kernel_end;
-// Size of heap meta data is 5 bytes 
+// Size of heap metadata is 5 bytes
 struct heap_block{
     uint8_t Used;
     uint32_t Size;
@@ -12,7 +12,7 @@ heap_block* start ;
 
 void* malloc(size_t size)
 {
-    printf("Received request for %d bytes of memory\n", size);
+    //printf("Received request for %d bytes of memory\n", size);
     heap_block* current = start;
 
     // look for a free block
@@ -21,14 +21,14 @@ void* malloc(size_t size)
         if(current->Size >= size && current->Used == false )
         {
             // We found a spot 
-            printf("Block found!\n");
+           // printf("Block found!\n");
 
             // Set the spot to in-use 
             current->Used = true;
 
 
             // split the block 
-            printf("Split block.\n");
+            //printf("Split block.\n");
             uint32_t oldSize = current->Size;
             current->Size = size;
 
@@ -57,7 +57,7 @@ void free(void* addr)
 {
     // clear the free boolean that corresponds to this adddress
     // This should be fairly simple
-    heap_block* allocatedBlock = (heap_block*)(addr - sizeof(heap_block));
+    heap_block* allocatedBlock = (heap_block*)((uint32_t)addr - sizeof(heap_block));
     allocatedBlock->Used = false;
 }
 
