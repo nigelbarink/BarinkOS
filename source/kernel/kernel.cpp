@@ -1,10 +1,6 @@
 /*
     Copyright © Nigel Barink 2023
 */
-extern "C"{
-#include "../lib/include/string.h"
-}
-
 #include "memory/memory.h"
 #include "memory/KernelHeap.h"
 #include "memory/gdt/gdtc.h"

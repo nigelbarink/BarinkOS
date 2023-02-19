@@ -1,5 +1,5 @@
 #pragma once
-#include "../../kernel/memory/KernelHeap.h"
+#include "../kernel/memory/KernelHeap.h"
 #include <stdint.h>
 
 template <typename T>

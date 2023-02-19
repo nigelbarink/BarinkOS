@@ -12,7 +12,6 @@ void ATA_DEVICE::Soft_Reset(uint8_t DEVICE_CHANNEL,DEVICE_DRIVE drive){
 
 }
 
-
 void ATA_DEVICE::Identify(uint16_t DEVICE_CHANNEL,DEVICE_DRIVE drive ){
     // lets ignore which port we actually want to check for now !
 

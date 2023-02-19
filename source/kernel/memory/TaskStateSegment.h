@@ -1,6 +1,6 @@
 #pragma once
 #include "gdt/gdtc.h"
-#include "../../lib/include/string.h"
+#include <CoreLib/Memory.h>
 
 struct TaskStateSegment {
     uint32_t prev_tss;

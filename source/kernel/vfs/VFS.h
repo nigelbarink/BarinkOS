@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-#include "Path.h"
+#include "../../CoreLib/Path.h"
 
 #define FS_FILE 0
 #define FS_DIRECTORY 1

@@ -1,11 +1,10 @@
-
 EMULATOR = qemu-system-i386
 AS = ${HOME}/opt/cross/bin/i686-elf-as
 CC = ${HOME}/opt/cross/bin/i686-elf-gcc
 CPP = ${HOME}/opt/cross/bin/i686-elf-g++ 
-CFLAGS =  -ffreestanding -Og -ggdb  -Wall -Wextra
+CFLAGS =  -ffreestanding -Og -ggdb  -Wall -Wextra  -I source/CoreLib/build/include
 
-OFILES =$(BUILD_DIR)/boot.o $(BUILD_DIR)/Path.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o $(BUILD_DIR)/memory.o  $(BUILD_DIR)/paging.o	$(BUILD_DIR)/VFS.o $(BUILD_DIR)/pit.o 	$(BUILD_DIR)/time.o	$(BUILD_DIR)/keyboard.o	 $(BUILD_DIR)/io.o 	$(BUILD_DIR)/processor.o $(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/sv-terminal.o $(BUILD_DIR)/string.o  $(BUILD_DIR)/prekernel.o $(BUILD_DIR)/KHeap.o $(BUILD_DIR)/pci.o $(BUILD_DIR)/pcidevice.o $(BUILD_DIR)/atapiDevice.o $(BUILD_DIR)/ataDevice.o $(BUILD_DIR)/rsdp.o $(BUILD_DIR)/acpi.o
+OFILES =$(BUILD_DIR)/boot.o $(BUILD_DIR)/kterm.o $(BUILD_DIR)/kernel.o $(BUILD_DIR)/memory.o  $(BUILD_DIR)/paging.o	$(BUILD_DIR)/VFS.o $(BUILD_DIR)/pit.o 	$(BUILD_DIR)/time.o	$(BUILD_DIR)/keyboard.o	 $(BUILD_DIR)/io.o 	$(BUILD_DIR)/processor.o $(BUILD_DIR)/gdtc.o $(BUILD_DIR)/idt.o $(BUILD_DIR)/pic.o $(BUILD_DIR)/sv-terminal.o $(BUILD_DIR)/prekernel.o $(BUILD_DIR)/KHeap.o $(BUILD_DIR)/pci.o $(BUILD_DIR)/pcidevice.o $(BUILD_DIR)/atapiDevice.o $(BUILD_DIR)/ataDevice.o $(BUILD_DIR)/rsdp.o $(BUILD_DIR)/acpi.o
 
 SRC_DIR = source
 BUILD_DIR = build
@@ -53,8 +52,7 @@ test_disk: all
 
 
 build_kernel: $(OBJ_LINK_LIST)
-	$(CC) -T $(SRC_DIR)/kernel//linker.ld -o $(BUILD_DIR)/myos.bin \
-	 -ffreestanding -ggdb -Og -nostdlib $(OBJ_LINK_LIST) -lgcc
+	$(CPP) -T $(SRC_DIR)/kernel/linker.ld -o $(BUILD_DIR)/myos.bin -ffreestanding -ggdb -Og -nostdlib $(OBJ_LINK_LIST) -lgcc -L source/CoreLib/build -lCoreLib
 
 build_x86_64: 
 	$(AS) $(SRC_DIR)/cgc/x86_64/crti.s -o $(BUILD_DIR)/crti_64.o
@@ -71,7 +69,7 @@ $(BUILD_DIR)/kterm.o:
 	$(CPP) -c $(SRC_DIR)/kernel/terminal/kterm.cpp  -o $(BUILD_DIR)/kterm.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/io.o:
-		$(CPP) -c $(SRC_DIR)/kernel/drivers/io/io.cpp  -o $(BUILD_DIR)/io.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c $(SRC_DIR)/kernel/drivers/io/io.cpp  -o $(BUILD_DIR)/io.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(BUILD_DIR)/idt.o:
 	$(CPP) -c $(SRC_DIR)/kernel/interrupts/idt.cpp -o $(BUILD_DIR)/idt.o $(CFLAGS) -fno-exceptions -fno-rtti
@@ -81,9 +79,6 @@ $(BUILD_DIR)/gdtc.o:
 
 $(BUILD_DIR)/pic.o:
 	$(CPP) -c $(SRC_DIR)/kernel/drivers/pic/pic.cpp -o $(BUILD_DIR)/pic.o $(CFLAGS) -fno-exceptions -fno-rtti
-
-$(BUILD_DIR)/string.o:
-	$(CC) -c $(SRC_DIR)/lib/include/string.c  -o $(BUILD_DIR)/string.o $(CFLAGS) -std=gnu99
 
 $(BUILD_DIR)/PhysicalMemoryManager.o:
 	$(CPP) -c $(SRC_DIR)/kernel/memory/PhysicalMemoryManager.cpp  -o $(BUILD_DIR)/PhysicalMemoryManager.o $(CFLAGS) -fno-exceptions -fno-rtti
@@ -135,9 +130,6 @@ $(BUILD_DIR)/prekernel.o:
 
 $(BUILD_DIR)/processor.o:
 	$(CPP) -c $(SRC_DIR)/kernel/i386/processor.cpp -o $(BUILD_DIR)/processor.o $(CFLAGS) -fno-exceptions -fno-rtti
-
-$(BUILD_DIR)/Path.o:
-	$(CPP) -c $(SRC_DIR)/kernel/vfs/Path.cpp -o $(BUILD_DIR)/Path.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 # Assembly -> Object files
 $(BUILD_DIR)/boot.o:

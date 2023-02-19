@@ -4,7 +4,7 @@
 #include "../drivers/ata/ataDevice.h"
 #include "../partitiontable/mbr/MasterBootRecord.h"
 #include "../memory/KernelHeap.h"
-#include "Path.h"
+#include "../../CoreLib/Memory.h"
 #include "../filesystem/FAT/DirectoryEntry.h"
 
 MOUNT_INFO mountInfo;
@@ -389,6 +389,8 @@ char* FindNextEntryName (char* path )
 
 void FileSystem::ResolvePath(Path &path)
 {
+    // See reference material (1) https://man7.org/linux/man-pages/man7/path_resolution.7.html
+
     char* string_path  = path.str();
     void* cpy = string_path;
 
@@ -409,9 +411,6 @@ void FileSystem::ResolvePath(Path &path)
     printf("Look for entry with name: %s\n", entry_name);
     skip = strlen(entry_name);
     free(entry_name);
-
-
-
 
     free(cpy);
 

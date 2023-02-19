@@ -1,7 +1,8 @@
 #pragma once
 #include <stdint.h>
 #include "./../../terminal/kterm.h"
-#include "../../../lib/include/mem.h"
+#include <CoreLib/Memory.h>
+
 struct RSDPTR {
     char signature[8];
     uint8_t Checksum ;

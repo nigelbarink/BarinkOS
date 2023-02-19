@@ -5,7 +5,8 @@
 #include "memoryinfo.h"
 #include "../prekernel/multiboot.h"
 #include "../terminal/kterm.h"
-#include "../../lib/include/mem.h"
+#include <CoreLib/Memory.h>
+
 #include "../bitmap.h"
 
 #define BLOCK_SIZE 4092
