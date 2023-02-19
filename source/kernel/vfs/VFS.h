@@ -1,5 +1,7 @@
 #pragma once
 #include <stdint.h>
+#include "Path.h"
+
 #define FS_FILE 0
 #define FS_DIRECTORY 1
 #define FS_INVALID 2
@@ -72,5 +74,7 @@ extern PFILESYSTEM _filesystems[DEVICE_MAX];
  class FileSystem{
  public:
      static void initialize();
+
+     static void ResolvePath(Path& path);
 
  };

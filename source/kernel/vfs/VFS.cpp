@@ -4,7 +4,7 @@
 #include "../drivers/ata/ataDevice.h"
 #include "../partitiontable/mbr/MasterBootRecord.h"
 #include "../memory/KernelHeap.h"
-#include "../../lib/include/string.h"
+#include "Path.h"
 #include "../filesystem/FAT/DirectoryEntry.h"
 
 MOUNT_INFO mountInfo;
@@ -359,5 +359,60 @@ void FileSystem::initialize()
     mountInfo.rootSize = (bootsector->NumberOfDirectoryEntries * 32) / bootsector->BytesPerSector;
 */
 
+
+}
+
+char* FindNextEntryName (char* path )
+{
+    int length = strlen(path);
+
+    char* name = path;
+    int i = 0;
+
+    if( name[0] == '/')
+        i++;
+
+    while ( name[i] != '/' && i <= length)
+        i++;
+
+    char* s = (char*) malloc(i + 1 * sizeof(char));
+    for ( int a = 0; a < i; a++)
+        s[a] = path[a];
+
+    s[i + 1] = '\0';
+
+    return s;
+
+}
+
+
+
+void FileSystem::ResolvePath(Path &path)
+{
+    char* string_path  = path.str();
+    void* cpy = string_path;
+
+    bool isAbsolutePath = string_path[0] == '/';
+    if(isAbsolutePath)
+    {
+        // strip the first slash
+        string_path++;
+    }
+
+    char* entry_name = FindNextEntryName(string_path);
+    printf("Look for entry with name: %s\n", entry_name);
+    int skip = strlen(entry_name);
+    free(entry_name);
+
+
+    entry_name = FindNextEntryName(string_path + skip);
+    printf("Look for entry with name: %s\n", entry_name);
+    skip = strlen(entry_name);
+    free(entry_name);
+
+
+
+
+    free(cpy);
 
 }

@@ -48,6 +48,10 @@ extern "C" void kernel ()
 
     FileSystem::initialize();
 
+    // Testing my path resolution functions
+    Path test = Path("/boot/myos.bin");
+    FileSystem::ResolvePath(test);
+
 
 #ifdef USERMODE_RELEASE
     // Lets jump into user mode
