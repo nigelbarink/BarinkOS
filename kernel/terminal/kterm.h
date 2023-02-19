@@ -5,7 +5,7 @@
 
 #include "../drivers/vga/colors.h"
 #include "../drivers/io/io.h"
-#include "CoreLib/Memory.h"
+#include <CoreLib/Memory.h>
 
 void kterm_init();
 

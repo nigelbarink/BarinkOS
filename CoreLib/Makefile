@@ -1,17 +1,15 @@
 CPP = ${HOME}/opt/cross/bin/i686-elf-g++
 CFLAGS = -ffreestanding -Og -ggdb -Wall -Wextra
 
-SRC_DIR = .
-BUILD_DIR = build
-OBJ_FOLDER = bin
+BUILD_DIR = ../build/CoreLib
+OBJ_FOLDER = ../bin/CoreLib
 OUTPUTFILE = $(BUILD_DIR)/libCoreLib.a
 
 OFILES = $(OBJ_FOLDER)/memory.o $(OBJ_FOLDER)/path.o $(OBJ_FOLDER)/stack.o $(OBJ_FOLDER)/string.o $(OBJ_FOLDER)/stringview.o
 
-
 .phony: all
 all: $(OUTPUTFILE)
-	cp *.h build/include/
+	cp *.h $(BUILD_DIR)/include/CoreLib
 
 $(OUTPUTFILE): $(OFILES)
 	ar -rc $(OUTPUTFILE) $(OFILES)

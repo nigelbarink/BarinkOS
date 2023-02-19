@@ -1,4 +1,4 @@
-.include "./source/kernel/boot/multiboot.s"
+.include "./boot/multiboot.s"
 /*
 *	Allocate initial stack
 */
@@ -108,10 +108,10 @@ isPaging:
 	jmp 1b
 
 
-.include "./source/kernel/memory/gdt/gdt.s"
-.include "./source/kernel/irs_table.s"
-.include "./source/kernel/irq_table.s"
-.include "./source/kernel/interrupts/idt.s"
+.include "./memory/gdt/gdt.s"
+.include "./irs_table.s"
+.include "./irq_table.s"
+.include "./interrupts/idt.s"
 
 .globl jump_usermode
 jump_usermode:
