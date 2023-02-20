@@ -1,4 +1,3 @@
-EMULATOR = qemu-system-i386
 AS = ${HOME}/opt/cross/bin/i686-elf-as
 CC = ${HOME}/opt/cross/bin/i686-elf-gcc
 CPP = ${HOME}/opt/cross/bin/i686-elf-g++ 
