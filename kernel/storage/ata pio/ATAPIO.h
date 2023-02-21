@@ -3,8 +3,6 @@
 #include "../ide/ideCommands.h"
 #include "../ide/sampleIDE.definitions.h"
 #include "../../devices/BlockDevice.h"
-
-
 #include "../../terminal/kterm.h"
 
 /*
@@ -19,7 +17,7 @@ enum DEVICE_DRIVE{
 };
 
 
-enum BUS_PORT {
+enum  ATAPIO_PORT {
     Primary = 0x1f0,
     Secondary = 0x170
 };
@@ -29,10 +27,10 @@ enum BUS_PORT {
 class ATAPIO
 {
 public:
-    static void Identify(uint16_t, DEVICE_DRIVE);
+    static bool Identify(ATAPIO_PORT, DEVICE_DRIVE);
     static void Read (uint16_t, DEVICE_DRIVE, uint32_t, uint16_t*);
     static void Write(uint16_t, DEVICE_DRIVE);
-    static void Soft_Reset(uint8_t ,DEVICE_DRIVE );
+    static void Soft_Reset(ATAPIO_PORT , DEVICE_DRIVE );
 };
 
 

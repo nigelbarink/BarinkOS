@@ -9,11 +9,8 @@
 
 echo "Building a FAT16 filesystem"
 
-
-su 
-
-# dd if=/dev/zero of=diks.img bs=512 count=131072
-# fdisk disk.img
+dd if=/dev/zero of=disk.img bs=512 count=131072
+fdisk disk.img
 # Use the following options in fdisk (Format Disk Tool)
 # We want to create a MBR (NOT GPT) Partition table containing 1 logical disk 
 # with a primary FAT16 partition marked bootable
@@ -42,23 +39,23 @@ su
 # w
 
 # Create a "block" device from the disk.img
-# losetup /dev/loop9 disk.img
+losetup /dev/loop9 disk.img
 
 # Format the partition on the disk as FAT16
-# mkdosfs -F16 /dev/loop9
+mkdosfs -F16 /dev/loop9
 
 # Mount the disk to a folder on our dev machine
-# mount /dev/loop9 /mnt
+mount /dev/loop9 /mnt
 
 # Install the grub bootloader onto the disk 
-# grub-install --no-floppy --modules="normal multiboot" /dev/loop9 --target=i386-pc --boot-directory=/mnt/boot --force
+grub-install --no-floppy --modules="normal multiboot" /dev/loop9 --target=i386-pc --boot-directory=/mnt/boot --force
 
 # copy the necessary OS files 
-# cp root/boot/myos.bin /mnt/boot/myos.bin
-# cp root/boot/grub/grub.cfg /mnt/boot/grub/grub.cfg
+cp root/boot/myos.bin /mnt/boot/myos.bin
+cp root/boot/grub/grub.cfg /mnt/boot/grub/grub.cfg
 
 # Unmount the device
-# umount /mnt
+umount /mnt
 
-# Destroy the loop device 
-# losetup -d /dev/loop9
+# Destroy the loop device
+losetup -d /dev/loop9

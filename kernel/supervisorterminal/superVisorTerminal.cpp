@@ -1,8 +1,8 @@
 #include "superVisorTerminal.h"
-#include "../storage/ata pio/ataDevice.h"
-#include "../partitiontable/mbr/MasterBootRecord.h"
-#include "../filesystem/FAT/BiosParameterBlock.h"
-#include "../filesystem/FAT/DirectoryEntry.h"
+#include "../storage/ata pio/ATAPIO.h"
+#include "../storage/partitiontables/mbr/MasterBootRecord.h"
+#include "../storage/filesystems/FAT/BiosParameterBlock.h"
+#include "../storage/filesystems/FAT/DirectoryEntry.h"
 
 bool isRunning = true;
 extern "C" void startSuperVisorTerminal()

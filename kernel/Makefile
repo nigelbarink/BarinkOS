@@ -33,7 +33,8 @@ OFILES = $(OBJ_DIR)/boot.o	\
 		 $(OBJ_DIR)/atapiDevice.o \
 		 $(OBJ_DIR)/ataDevice.o \
 		 $(OBJ_DIR)/rsdp.o \
-		 $(OBJ_DIR)/acpi.o
+		 $(OBJ_DIR)/acpi.o \
+		 $(OBJ_DIR)/fat.o
 
 OBJ_LINK_LIST = $(CRTI_OBJ) $(CRTBEGIN_OBJ) $(OFILES) $(CRTEND_OBJ) $(CRTN_OBJ)  
 INTERNAL_OBJS = $(CRTI_OBJ) $(OFILES) $(CRTN_OBJ)
@@ -79,7 +80,7 @@ $(OBJ_DIR)/atapiDevice.o:
 	$(CPP) -c storage/atapi/atapiDevice.cpp  -o $(OBJ_DIR)/atapiDevice.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(OBJ_DIR)/ataDevice.o:
-	$(CPP) -c "storage/ata pio/ataDevice.cpp"  -o $(OBJ_DIR)/ataDevice.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c "storage/ata pio/ATAPIO.cpp"  -o $(OBJ_DIR)/ataDevice.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(OBJ_DIR)/rsdp.o:
 	$(CPP) -c acpi/rsdp.cpp  -o $(OBJ_DIR)/rsdp.o $(CFLAGS) -fno-exceptions -fno-rtti
@@ -91,7 +92,7 @@ $(OBJ_DIR)/pit.o:
 	$(CPP) -c drivers/pit/pit.cpp  -o $(OBJ_DIR)/pit.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(OBJ_DIR)/VFS.o:
-	$(CPP) -c storage/vfs/VFS.cpp  -o $(OBJ_DIR)/VFS.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c storage/vfs/vfs.cpp  -o $(OBJ_DIR)/VFS.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(OBJ_DIR)/keyboard.o:
 	$(CPP) -c drivers/ps-2/keyboard.cpp  -o $(OBJ_DIR)/keyboard.o $(CFLAGS) -fno-exceptions -fno-rtti
@@ -116,6 +117,9 @@ $(OBJ_DIR)/prekernel.o:
 
 $(OBJ_DIR)/processor.o:
 	$(CPP) -c i386/processor.cpp -o $(OBJ_DIR)/processor.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+$(OBJ_DIR)/fat.o:
+	$(CPP) -c storage/filesystems/FAT/FAT.cpp -o $(OBJ_DIR)/fat.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 # Assembly -> Object files
 $(OBJ_DIR)/boot.o:

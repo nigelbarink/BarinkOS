@@ -1,4 +1,4 @@
-#include "ataDevice.h"
+#include "ATAPIO.h"
 #include "../../io/io.h"
 
 #define IS_BIT_SET(x, bit) ((x >> bit & 0x1) == 1)
@@ -91,7 +91,7 @@ void ATAPIO::Write(uint16_t data, DEVICE_DRIVE dev){
 
 }
 
-void ATAPIO::Identify(uint16_t DEVICE_CHANNEL,DEVICE_DRIVE drive ){
+bool ATAPIO::Identify(ATAPIO_PORT DEVICE_CHANNEL, DEVICE_DRIVE drive ){
     // lets ignore which port we actually want to check for now !
 
     /*
@@ -125,12 +125,11 @@ void ATAPIO::Identify(uint16_t DEVICE_CHANNEL,DEVICE_DRIVE drive ){
     // Select the target drive
     outb(DEVICE_CHANNEL | 6, drive); // on the primary bus select the master drive
     outb(DEVICE_CHANNEL | 6 , 0x0); // write 0 to the controlport for some reason
-
     outb(DEVICE_CHANNEL | 6, drive);
     uint8_t status = inb(DEVICE_CHANNEL | 7 );
     if(status == 0x00){
         printf("No drive\n");
-        return;
+        return false;
     }
     // send the identify command;
     outb(DEVICE_CHANNEL | 7, 0xEC);
@@ -153,7 +152,7 @@ void ATAPIO::Identify(uint16_t DEVICE_CHANNEL,DEVICE_DRIVE drive ){
     uint8_t status2 = inb(DEVICE_CHANNEL | 7);
     if( status2 == 0x00){
         printf("No drive\n");
-        return;
+        return false;
     }
 
     //printf("Waiting until ready...\n");
@@ -163,7 +162,7 @@ void ATAPIO::Identify(uint16_t DEVICE_CHANNEL,DEVICE_DRIVE drive ){
 
     if( status2 & 0x01){
         printf("Error!\n");
-        return ;
+        return false;
     }
 
     uint16_t deviceIdentify [256] = {0};
@@ -182,17 +181,17 @@ void ATAPIO::Identify(uint16_t DEVICE_CHANNEL,DEVICE_DRIVE drive ){
         kterm_put((char)(deviceIdentify[i] & 0x00FF));
     }
     kterm_put('\n');
-
+    return true;
 }
 
-void ATAPIO::Soft_Reset(uint8_t DEVICE_CHANNEL,DEVICE_DRIVE drive){
+void ATAPIO::Soft_Reset(ATAPIO_PORT DEVICE_CHANNEL, DEVICE_DRIVE drive){
     printf("Soft reseting drive...\n");
-   // outb(channels[DEVICE_CHANNEL].base + 7 , 0x4);
+    outb(DEVICE_CHANNEL + 7 , 0x4);
     // wait a bit..
     for(int i = 0 ; i < 1000000; i++){
         asm volatile("NOP");
     }
-    //outb(channels[DEVICE_CHANNEL].base + 7 , 0x0);
+    outb(DEVICE_CHANNEL + 7 , 0x0);
 
 }
 

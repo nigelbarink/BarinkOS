@@ -1,20 +1,40 @@
 //
 // Created by nigel on 21/02/23.
 //
-
 #include "FAT.h"
+#include "../../ata pio/ATAPIO.h"
+#include "../../../memory/KernelHeap.h"
+#include <CoreLib/Memory.h>
 
-void FAT::Read()
+void FAT::Read(PFILE file, unsigned  char* buffer , unsigned int length)
 {
 
 }
 
-void FAT::Open()
+FILE FAT::Open(char* filename)
 {
+
+    char* tokstate = NULL;
+    char* nextdir = strtok(filename, "/", &tokstate);
+
+    while (nextdir)
+    {
+
+        // Read the root directory
+        printf("First entry to look for: %s\n", nextdir);
+
+
+
+        nextdir = strtok(NULL, "/", &tokstate);
+    }
+
+    FILE file;
+    file.flags = FS_INVALID;
+    return file;
 
 }
 
-void FAT::Write()
+void FAT::Write(PFILE file, unsigned char* buffer, unsigned int length)
 {
 
 }
@@ -28,9 +48,17 @@ void ParseDateInteger(unsigned int date){
 
 }
 
-BiosParameterBlock* getBPB(MBR* mbr, bool DEBUG =false ){
+
+BiosParameterBlock* getBPB(PTR_PARTITION partition, bool DEBUG =false ){
     BiosParameterBlock* bpb = (BiosParameterBlock*) malloc(sizeof(BiosParameterBlock));
-    ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, mbr->TableEntries[0].LBA_partition_start, (uint16_t*) bpb);
+
+    ATAPIO_PORT port = (ATAPIO_PORT)(partition->Disk & 0x01FF);
+    DEVICE_DRIVE drive = (DEVICE_DRIVE)(partition->Disk >> 16);
+
+    printf("ATAPIO_PORT: 0x%x DEVICE_DRIVE: 0x%x\n",port, drive);
+    printf("Partition Start Address (LBA): 0x%x\n", partition->StartAddress);
+
+    ATAPIO::Read(ATAPIO_PORT::Primary, DEVICE_DRIVE::MASTER, partition->StartAddress, (uint16_t*) bpb);
 
     if(DEBUG)
     {
@@ -44,15 +72,37 @@ BiosParameterBlock* getBPB(MBR* mbr, bool DEBUG =false ){
         printf("Sectors per FAT: %d\n", bpb->NumberOfSectorsPerFAT);
     }
 
-
-
     return bpb;
 }
 
-uint16_t* ReadFAT (BiosParameterBlock& bpb , MBR& mbr, bool DEBUG = false ) {
-    uint32_t FATAddress = mbr.TableEntries[0].LBA_partition_start +  bpb.ReservedSectors ;
+bool FAT::Validate(PTR_PARTITION partition )
+{
+
+    auto* bootParams = getBPB(partition, true);
+
+    if(bootParams->OEM_id) {
+        return true;
+    }
+
+    return false;
+
+}
+
+void FAT::Info(_PARTITION *pPartition, PFS pSystem) {
+    pSystem->Read = FAT::Read;
+    pSystem->Write = FAT::Write;
+    pSystem->Open = FAT::Open;
+
+
+}
+
+uint16_t* ReadFAT (BiosParameterBlock& bpb , PTR_PARTITION partition, bool DEBUG = false ) {
+    uint32_t FATAddress = partition->StartAddress +  bpb.ReservedSectors ;
     uint16_t* FAT = (uint16_t*)malloc(sizeof (uint16_t) * 256);
-    ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, FATAddress, FAT );
+
+    ATAPIO_PORT port = (ATAPIO_PORT)(partition->Disk & 0x01FF);
+    DEVICE_DRIVE drive = (DEVICE_DRIVE)(partition->Disk >> 16);
+    ATAPIO::Read(port, drive, FATAddress, FAT );
 
     // Show data in terminal
     if(DEBUG){
@@ -76,7 +126,7 @@ void readFile(uint32_t DataRegion, DirectoryEntry* entry, uint16_t FATentry, Bio
 
 
     uint16_t dataBlob[256];
-    ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, sector, dataBlob);
+    ATAPIO::Read(ATAPIO_PORT::Primary, DEVICE_DRIVE::MASTER, sector, dataBlob);
     for (unsigned short n: dataBlob) {
         kterm_put(n & 0x00ff);
 
@@ -84,7 +134,7 @@ void readFile(uint32_t DataRegion, DirectoryEntry* entry, uint16_t FATentry, Bio
     }
     kterm_put('\n');
 }
-
+/*
 void listFilesInRoot(MBR& mbr, BiosParameterBlock& bpb ){
     auto FATAddress = mbr.TableEntries[0].LBA_partition_start +  bpb.ReservedSectors;
     uint32_t RootDirectoryRegion = FATAddress + ( bpb.NumberOfFileAllocationTables * bpb.NumberOfSectorsPerFAT );
@@ -265,3 +315,4 @@ FILE fsysFatOpenSubDir(FILE kFile, const char* filename){
     file.flags = FS_INVALID;
     return file;
 }
+ */

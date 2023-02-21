@@ -1,19 +1,19 @@
 #pragma once 
 #include <stdint-gcc.h>
 #include "PartitionTableEntry.h"
-#include "../../memory/KernelHeap.h"
-#include "../../storage/ata pio/ataDevice.h"
+#include "../../../memory/KernelHeap.h"
+#include "../../ata pio/ATAPIO.h"
 
 struct MBR {
     uint8_t code [440];
     uint32_t uniqueID;
     uint16_t Reserved;
-    PartitionTableEntry TableEntries[4];
+    struct PartitionTableEntry TableEntries[4];
     uint16_t ValidBootsector;
 }__attribute__((packed));
 
 
-MBR* getPartitions(  bool DEBUG = false){
+inline MBR* GetPartitions(bool DEBUG = false){
     const int C = 0;
     const int H = 0;
     const int HPC = 16;
@@ -21,10 +21,13 @@ MBR* getPartitions(  bool DEBUG = false){
 
     int S =1;
     uint32_t LBA = (C*HPC+H) * SPT + (S-1);
+
     MBR* mbr =(MBR*) malloc(sizeof (MBR));
 
-    ATAPIO::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, LBA, (uint16_t*)mbr);
+    ATAPIO::Read(ATAPIO_PORT::Primary, DEVICE_DRIVE::MASTER, LBA, (uint16_t*)mbr);
 
+
+    printf("MBR (In Memory) Address 0x%x, Size = %d\n", mbr, sizeof (MBR));
     if(DEBUG){
         printf("BootSector: 0x%x\n", mbr->ValidBootsector );
         for( int i = 0 ; i < 4 ; i ++){

@@ -5,7 +5,7 @@
 #include "ExtendBootRecord.h"
 #include "BiosParameterBlock.h"
 #include "DirectoryEntry.h"
-
+#include "../../vfs/StorageTypes.h"
 
 // Date Format
 // [0..4] Day
@@ -20,9 +20,17 @@
 
 class FAT {
 public:
-    void Open();
-    void Read();
-    void Write();
+
+
+
+    static bool Validate(PTR_PARTITION partition );
+
+    static FILE Open(char* filename);
+    static void Read(PFILE file, unsigned  char* buffer , unsigned int length);
+    static void Write(PFILE file, unsigned char* buffer, unsigned int length);
+
+    static void Info(_PARTITION *pPartition, PFS pSystem);
+
 private:
     enum struct TYPE{
         FAT,

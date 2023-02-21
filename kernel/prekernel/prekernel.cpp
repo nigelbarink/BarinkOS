@@ -6,7 +6,7 @@
 #define CHECK_FLAG(flags, bit) ((flags) & (1 <<(bit)))
 #define VADDR_TO_PADDR(vaddr) (vaddr - 0xC0000000)
 #define PADDR_TO_VADDR(paddr) (paddr + 0xC0000000)
-multiboot_info_t* global_mbi;
+BootInfoBlock* BIB;
 
 extern "C" void prekernelSetup  ( unsigned long magic, multiboot_info_t* mbi) 
 {
@@ -21,7 +21,6 @@ extern "C" void prekernelSetup  ( unsigned long magic, multiboot_info_t* mbi)
         }
 
         mbi = PADDR_TO_VADDR(mbi);
-        global_mbi = mbi;
 
         // Setup the physical memory manager immmediatly 
         // Doing so saves the complications of doing it later when 
@@ -82,13 +81,14 @@ extern "C" void prekernelSetup  ( unsigned long magic, multiboot_info_t* mbi)
         }
 
         // allocate a full block for the other boot info!
-        BootInfoBlock* BIB = (BootInfoBlock*) allocate_block();
+        BIB = (BootInfoBlock*) allocate_block();
 
         
         /* is boot device valid ? */
         if (CHECK_FLAG (mbi->flags, 1))
         {
                 BIB->bootDeviceID = mbi->boot_device;
+
         } else{
                 BIB->bootDeviceID = 0x11111111;
         }

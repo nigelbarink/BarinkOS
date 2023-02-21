@@ -26,7 +26,15 @@ typedef struct _FILE_SYSTEM{
     FILE (*Directory) (const char* Directoryname);
     void (*Mount) ();
     void (*Read) (PFILE file, unsigned char* buffer, unsigned int length);
-    void (Close) (PFILE);
-    FILE (*Open) (const char* filename);
+    void (*Write)(PFILE file, unsigned char* buffer, unsigned int length);
+    void (*Close) (PFILE);
+    FILE (*Open) (char* filename);
 }FILESYSTEM, *PFS;
 
+typedef struct _PARTITION {
+    uint32_t Disk;
+    uint32_t StartAddress;
+    uint32_t Sectors;
+    uint8_t Fs_hint;
+    uint8_t Attributes;
+}PARTITION, *PTR_PARTITION;
