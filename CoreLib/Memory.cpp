@@ -56,3 +56,43 @@ int strncmp ( const char* str1, const char* str2, size_t num ){
 
     return 0;
 }
+
+char* strchr(const char* s , int c){
+    while(*s) {
+        if(*s == c) return const_cast<char*>(s);
+        s++;
+    }
+    return NULL;
+}
+char* strtok(char* str, const char* delim , char**saveptr){
+    char *begin;
+    if(str) {
+        begin = str;
+    }
+    else if (*saveptr) {
+        begin = *saveptr;
+    }
+    else {
+        return NULL;
+    }
+
+    while(strchr(delim, begin[0])) {
+        begin++;
+    }
+
+
+    char *next = NULL;
+    for(int i = 0; i < strlen(delim); i++) {
+        char *temp = strchr(begin, delim[i]);
+        if(temp < next || next == NULL) {
+            next = temp;
+        }
+    }
+    if(!next) {
+        *saveptr = NULL;
+        return begin;
+    }
+    *next = 0;
+    *saveptr=next+1;
+    return begin;
+}

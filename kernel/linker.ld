@@ -25,6 +25,7 @@ SECTIONS
 	.rodata ALIGN (4K) : AT (ADDR (.rodata) - 0xC0000000)
 	{
 		*(.rodata)
+		*(.symtab)
 	}
 	.data ALIGN (4K) : AT (ADDR (.data) - 0xC0000000)
 	{
@@ -36,6 +37,8 @@ SECTIONS
 		*(.bss)
 		*(.bootstrap_stack)
 	}
+
+
 	_kernel_end = .;
 	kernel_end = .; /* For legacy reasons */
 }

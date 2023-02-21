@@ -40,6 +40,10 @@ INTERNAL_OBJS = $(CRTI_OBJ) $(OFILES) $(CRTN_OBJ)
 
 all:  build
 
+clean:
+	rm $(OBJ_DIR)/* -r
+
+
 build: $(OBJ_LINK_LIST)
 	$(CPP) -T linker.ld -o $(BUILD_DIR)/myos.bin -ffreestanding -ggdb -Og -nostdlib $(OBJ_LINK_LIST) -lgcc -L ../build/CoreLib -lCoreLib
 
@@ -51,7 +55,7 @@ $(OBJ_DIR)/kterm.o:
 	$(CPP) -c terminal/kterm.cpp  -o $(OBJ_DIR)/kterm.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(OBJ_DIR)/io.o:
-	$(CPP) -c drivers/io/io.cpp  -o $(OBJ_DIR)/io.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c io/io.cpp  -o $(OBJ_DIR)/io.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(OBJ_DIR)/idt.o:
 	$(CPP) -c interrupts/idt.cpp -o $(OBJ_DIR)/idt.o $(CFLAGS) -fno-exceptions -fno-rtti
@@ -66,28 +70,28 @@ $(OBJ_DIR)/PhysicalMemoryManager.o:
 	$(CPP) -c memory/PhysicalMemoryManager.cpp  -o $(OBJ_DIR)/PhysicalMemoryManager.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(OBJ_DIR)/pci.o:
-	$(CPP) -c drivers/pci/pci.cpp  -o $(OBJ_DIR)/pci.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c pci/pci.cpp  -o $(OBJ_DIR)/pci.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(OBJ_DIR)/pcidevice.o:
-	$(CPP) -c drivers/pci/pciDevice.cpp  -o $(OBJ_DIR)/pcidevice.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c pci/pciDevice.cpp  -o $(OBJ_DIR)/pcidevice.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(OBJ_DIR)/atapiDevice.o:
-	$(CPP) -c drivers/atapi/atapiDevice.cpp  -o $(OBJ_DIR)/atapiDevice.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c storage/atapi/atapiDevice.cpp  -o $(OBJ_DIR)/atapiDevice.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(OBJ_DIR)/ataDevice.o:
-	$(CPP) -c drivers/ata/ataDevice.cpp  -o $(OBJ_DIR)/ataDevice.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c "storage/ata pio/ataDevice.cpp"  -o $(OBJ_DIR)/ataDevice.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(OBJ_DIR)/rsdp.o:
-	$(CPP) -c drivers/acpi/rsdp.cpp  -o $(OBJ_DIR)/rsdp.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c acpi/rsdp.cpp  -o $(OBJ_DIR)/rsdp.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(OBJ_DIR)/acpi.o:
-	$(CPP) -c drivers/acpi/acpi.cpp -o $(OBJ_DIR)/acpi.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c acpi/acpi.cpp -o $(OBJ_DIR)/acpi.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(OBJ_DIR)/pit.o:
 	$(CPP) -c drivers/pit/pit.cpp  -o $(OBJ_DIR)/pit.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(OBJ_DIR)/VFS.o:
-	$(CPP) -c vfs/VFS.cpp  -o $(OBJ_DIR)/VFS.o $(CFLAGS) -fno-exceptions -fno-rtti
+	$(CPP) -c storage/vfs/VFS.cpp  -o $(OBJ_DIR)/VFS.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(OBJ_DIR)/keyboard.o:
 	$(CPP) -c drivers/ps-2/keyboard.cpp  -o $(OBJ_DIR)/keyboard.o $(CFLAGS) -fno-exceptions -fno-rtti

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "terminal/kterm.h"
-#include "drivers/io/io.h"
+#include "io/io.h"
 #define PORT 0x3f8 
 static int init_serial() {
 

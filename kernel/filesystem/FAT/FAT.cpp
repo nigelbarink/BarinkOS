@@ -1,109 +1,31 @@
-#include "VFS.h"
-#include "../filesystem/FAT/BiosParameterBlock.h"
-#include "../drivers/ide/ide.h"
-#include "../drivers/ata/ataDevice.h"
-#include "../partitiontable/mbr/MasterBootRecord.h"
-#include "../memory/KernelHeap.h"
-#include "../../CoreLib/Memory.h"
-#include "../filesystem/FAT/DirectoryEntry.h"
+//
+// Created by nigel on 21/02/23.
+//
 
-MOUNT_INFO mountInfo;
+#include "FAT.h"
 
-PFILESYSTEM _filesystems[DEVICE_MAX];
-
-FILE volOpenFile(const char* fname)
-{
-    if(fname){
-        unsigned char device = 'a';
-
-        char* filename = (char*) fname;
-
-        if(fname[1]== ':'){
-            device = fname[0];
-            filename += 2; // strip the volume component from the path
-        }
-
-        if(_filesystems[device - 'a']){
-            FILE file = _filesystems[device-'a']->Open(filename);
-            file.device = device;
-            return file;
-        }
-    }
-
-    FILE file;
-    file.flags = FS_INVALID;
-    return file;
-}
-
-extern void volReadFile(PFILE file, unsigned char* Buffer, unsigned int length)
+void FAT::Read()
 {
 
 }
-extern void volCloseFile(PFILE file)
+
+void FAT::Open()
 {
-    if( file->device < DEVICE_MAX){
-    //    _filesystems[file->device]->Close(file);
-    }
-}
-
-extern void volRegisterFilesystem(PFILESYSTEM fsys , unsigned int deviceID){
-    if(deviceID < DEVICE_MAX)
-        if(fsys)
-            _filesystems[deviceID] = fsys;
-}
-
-extern void volUnregisterFilesystem(PFILESYSTEM){
 
 }
 
-extern void volUnregisterFileSystemByID(unsigned int deviceID){
+void FAT::Write()
+{
 
 }
 
-enum BUS_PORT {
-    Primary = 0x1f0,
-    Secondary = 0x170
-};
+void ParseDateInteger(unsigned int date){
+    printf("Date (hex) 0x%x\n", date);
+    unsigned int year = (date >> 9 )+ 1980;
+    unsigned int month = (date & 0xf0   ) >> 4;
+    unsigned int day = date & 0xf ;
+    printf("Date: (D,M,Y) %d, %d ,%d\n", day , month, year );
 
-bool driveAvailable(){
-    int devNumber = 0;
-    for ( auto device : ide_devices){
-        if(!device.Reserved)
-            continue;
-        devNumber++;
-    }
-
-
-    // FIXME: If no drive is connected we continue trying to read from
-    // a not connected drive!
-    ATA_DEVICE::Identify((uint16_t) BUS_PORT::Primary, DEVICE_DRIVE::MASTER);
-    return true;
-}
-
-MBR* getPartitions(bool DEBUG = false){
-    const int C = 0;
-    const int H = 0;
-    const int HPC = 16;
-    const int SPT = 63;
-
-    int S =1;
-    uint32_t LBA = (C*HPC+H) * SPT + (S-1);
-    MBR* mbr =(MBR*) malloc(sizeof (MBR));
-
-    ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, LBA, (uint16_t*)mbr);
-
-    if(DEBUG){
-        printf("BootSector: 0x%x\n", mbr->ValidBootsector );
-        for( int i = 0 ; i < 4 ; i ++){
-            PartitionTableEntry PT = mbr->TableEntries[i];
-
-            printf("Partition %d [  %d sectors,  PartitionType: 0x%x, 0x%x, \nLBA Start: 0x%x ]\n" ,
-                   i, PT.Number_sectors_inPartition, PT.PartitionType, mbr->uniqueID,  PT.LBA_partition_start );
-        }
-
-    }
-
-    return mbr;
 }
 
 BiosParameterBlock* getBPB(MBR* mbr, bool DEBUG =false ){
@@ -142,6 +64,7 @@ uint16_t* ReadFAT (BiosParameterBlock& bpb , MBR& mbr, bool DEBUG = false ) {
 
     return FAT;
 }
+
 void readFile(uint32_t DataRegion, DirectoryEntry* entry, uint16_t FATentry, BiosParameterBlock& bpb ){
     printf("Show contents");
 
@@ -161,6 +84,7 @@ void readFile(uint32_t DataRegion, DirectoryEntry* entry, uint16_t FATentry, Bio
     }
     kterm_put('\n');
 }
+
 void listFilesInRoot(MBR& mbr, BiosParameterBlock& bpb ){
     auto FATAddress = mbr.TableEntries[0].LBA_partition_start +  bpb.ReservedSectors;
     uint32_t RootDirectoryRegion = FATAddress + ( bpb.NumberOfFileAllocationTables * bpb.NumberOfSectorsPerFAT );
@@ -178,8 +102,12 @@ void listFilesInRoot(MBR& mbr, BiosParameterBlock& bpb ){
         if (entry->filename[0] == (uint8_t) 0x00)
             continue; // There are no more entries in this directory or the entry is free
 
-        if ((entry->attribute & 0x01) == 0x01 || (entry->attribute & 0x20) == 0x20)
-            continue; // Skip listing if hidden or Achieve flag is set
+        if (entry->attribute & ATTRIBUTES::ATT_HIDDEN)
+            continue;
+        if(entry->attribute & ATTRIBUTES::ATTR_SYSTEM)
+            continue;
+        if(entry->attribute & ATTRIBUTES::ATTR_VOLUME_ID)
+            continue;
 
         // Print the filename;
         for (char n: entry->filename) {
@@ -196,7 +124,7 @@ void listFilesInRoot(MBR& mbr, BiosParameterBlock& bpb ){
         printf("Attribute: %x \n", entry->attribute);
         printf("FileSize: %d Bytes\n", entry->FilesizeInBytes);
 
-        if (entry->FilesizeInBytes != 0x0  && (entry->attribute == 0x08)) {
+        if (entry->FilesizeInBytes != 0x0  && (entry->attribute != 0x10)) {
             readFile(DataRegion,entry, FAT[i], bpb);
         }
 
@@ -205,8 +133,6 @@ void listFilesInRoot(MBR& mbr, BiosParameterBlock& bpb ){
 
 }
 
-
-/*
 FILE fsysFatDirectory (const char* DirectoryName){
     FILE file;
     unsigned char* buf;
@@ -248,7 +174,7 @@ FILE fsysFatDirectory (const char* DirectoryName){
     return file;
 
 }
- */
+
 
 void fsysFATRead(PFILE file, unsigned char* buffer, unsigned int length){
     if(file){
@@ -294,7 +220,7 @@ void fsysFATRead(PFILE file, unsigned char* buffer, unsigned int length){
 
     }
 }
-/*
+
 FILE fsysFatOpenSubDir(FILE kFile, const char* filename){
     FILE file;
 
@@ -338,80 +264,4 @@ FILE fsysFatOpenSubDir(FILE kFile, const char* filename){
     // unable to find file
     file.flags = FS_INVALID;
     return file;
-}
-*/
-
-void FileSystem::initialize()
-{
-    MBR* mbr = getPartitions();
-    BiosParameterBlock* bootsector =  getBPB(mbr);
-    listFilesInRoot(*mbr, *bootsector);
-
-    free(mbr);
-    free(bootsector);
-/*
-    mountInfo.numSectors =  bootsector->NumberOfSectorsPerFAT;
-    mountInfo.fatOffset = 1;
-    mountInfo.fatSize = bootsector->NumberOfSectorsPerFAT;
-    mountInfo.fatEntrySize = 8;
-    mountInfo.numRootEntries = bootsector->NumberOfDirectoryEntries;
-    mountInfo.rootOffset = (bootsector->NumberOfFileAllocationTables * bootsector->NumberOfSectorsPerFAT) + 1;
-    mountInfo.rootSize = (bootsector->NumberOfDirectoryEntries * 32) / bootsector->BytesPerSector;
-*/
-
-
-}
-
-char* FindNextEntryName (char* path )
-{
-    int length = strlen(path);
-
-    char* name = path;
-    int i = 0;
-
-    if( name[0] == '/')
-        i++;
-
-    while ( name[i] != '/' && i <= length)
-        i++;
-
-    char* s = (char*) malloc(i + 1 * sizeof(char));
-    for ( int a = 0; a < i; a++)
-        s[a] = path[a];
-
-    s[i + 1] = '\0';
-
-    return s;
-
-}
-
-
-
-void FileSystem::ResolvePath(Path &path)
-{
-    // See reference material (1) https://man7.org/linux/man-pages/man7/path_resolution.7.html
-
-    char* string_path  = path.str();
-    void* cpy = string_path;
-
-    bool isAbsolutePath = string_path[0] == '/';
-    if(isAbsolutePath)
-    {
-        // strip the first slash
-        string_path++;
-    }
-
-    char* entry_name = FindNextEntryName(string_path);
-    printf("Look for entry with name: %s\n", entry_name);
-    int skip = strlen(entry_name);
-    free(entry_name);
-
-
-    entry_name = FindNextEntryName(string_path + skip);
-    printf("Look for entry with name: %s\n", entry_name);
-    skip = strlen(entry_name);
-    free(entry_name);
-
-    free(cpy);
-
 }

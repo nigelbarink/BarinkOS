@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-#include "../io/io.h"
+#include "../../io/io.h"
 #include "../ide/ideCommands.h"
 #include "../ide/sampleIDE.definitions.h"
 
@@ -10,6 +10,7 @@
 * This first driver wil make use of IO ports.
 * Doing so means reading or writing from disk is going
 * to be very cpu intensive.
+* 
 */
 
 enum DEVICE_DRIVE{
@@ -17,11 +18,12 @@ enum DEVICE_DRIVE{
     SLAVE = 0xB0
 };
 
-namespace ATA_DEVICE{
-    void Identify(uint16_t, DEVICE_DRIVE);
-    void Read (uint16_t, DEVICE_DRIVE, uint32_t, uint16_t*);
-    void Write(uint16_t, DEVICE_DRIVE);
-    void Soft_Reset(uint8_t ,DEVICE_DRIVE );
+
+namespace ATAPI_DEVICE
+{
+    bool isPacketDevice();
+    void Identify   ( uint8_t,    DEVICE_DRIVE );
+    void Read       ( uint8_t,    DEVICE_DRIVE );
+    void Write      ( uint8_t,    DEVICE_DRIVE );
+    
 };
-
-

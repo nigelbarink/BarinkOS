@@ -8,6 +8,6 @@ class ACPI {
         // doing more systems initialization
         
     private:
-       static RSDPTR* rsd_ptr;
+       static RSDPDescriptor* rsd_ptr;
        static RSDT* rsd_table;
 };

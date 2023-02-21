@@ -1,10 +1,10 @@
 #pragma once 
-#include <stdint.h>
+#include <stdint-gcc.h>
 #include <stddef.h>
 #include <stdbool.h>
 
 #include "../drivers/vga/colors.h"
-#include "../drivers/io/io.h"
+#include "../io/io.h"
 #include <CoreLib/Memory.h>
 
 void kterm_init();

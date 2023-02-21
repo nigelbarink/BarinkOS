@@ -1,112 +1,9 @@
 #include "ataDevice.h"
-#define IS_BIT_SET(x, bit) ((x >> bit & 0x1) == 1) 
+#include "../../io/io.h"
 
-void ATA_DEVICE::Soft_Reset(uint8_t DEVICE_CHANNEL,DEVICE_DRIVE drive){
-        printf("Soft reseting drive...\n");
-        outb(channels[DEVICE_CHANNEL].base + 7 , 0x4);
-        // wait a bit..
-        for(int i = 0 ; i < 1000000; i++){
-            asm volatile("NOP");
-        }   
-        outb(channels[DEVICE_CHANNEL].base + 7 , 0x0);
+#define IS_BIT_SET(x, bit) ((x >> bit & 0x1) == 1)
 
-}
-
-void ATA_DEVICE::Identify(uint16_t DEVICE_CHANNEL,DEVICE_DRIVE drive ){
-    // lets ignore which port we actually want to check for now !
-
-    /*
-        THE STEPS INVOLVED
-
-        1. Select the target drive by sending master (0x0A) or slave (0x0B) to the 
-        drive select IO port
-
-        2. Set the Sectorcount, LBAlo, LBAmid and LBAhi IO ports to 0 
-
-        3. Send the identify command (0xEC) to the command IO port 
-
-        4. Read the status port 
-            4.2 If the value is 0x0 the drive does not exist
-            4.3 If it has any other value continue
-        5. poll the status port until bit 7 is clear.
-        6. Check if the LBAmid and LBAhi ports are non-zero
-            6.2. If non-zero stop polling this is not an ATA device
-            6.3 If zero continue
-        
-        7. poll status port until bit 3 is set or bit 0 is set
-
-        8. if err is clear, read the data from the data port 
-
-
-    */
-
-   
-    //printf("channel selected: 0x%x", DEVICE_CHANNEL);
-    // Assuming Master here 
-    // Select the target drive
-    outb(DEVICE_CHANNEL | 6, drive); // on the primary bus select the master drive
-    outb(DEVICE_CHANNEL | 6 , 0x0); // write 0 to the controlport for some reason
-
-    outb(DEVICE_CHANNEL | 6, drive);
-    uint8_t status = inb(DEVICE_CHANNEL | 7 );
-    if(status == 0x00){
-        printf("No drive\n");
-        return;
-    }
-    // send the identify command;
-    outb(DEVICE_CHANNEL | 7, 0xEC);
-
-  
-   // set the sectorCount, LBAlo, LBAmid, LBA,hi IO ports to 0
-   outb(DEVICE_CHANNEL | 2, 0);
-
-   outb(DEVICE_CHANNEL | 3, 0);
-
-   outb(DEVICE_CHANNEL | 4, 0);
-
-   outb(DEVICE_CHANNEL | 5, 0);
-
-   // send the identify command ;
-   //printf("command sent!\n");
-   outb(DEVICE_CHANNEL | 7 , 0xEC);
-
-   // read the status port 
-   uint8_t status2 = inb(DEVICE_CHANNEL | 7);
-   if( status2 == 0x00){
-       printf("No drive\n");
-       return;
-   }
-
-   //printf("Waiting until ready...\n");
-   while(((status2 & 0x80 == 0x80) 
-   && (status2 & 0x01) != 0x01)
-   ) status2 = inb(DEVICE_CHANNEL | 7);
-
-   if( status2 & 0x01){
-       printf("Error!\n");
-       return ;
-   }
-
-    uint16_t deviceIdentify [256] = {0};
-
-    for ( int i = 0; i < 256; i++){
-        uint16_t data;
-        asm volatile ("inw %1, %0" : "=a"(data): "Nd"(DEVICE_CHANNEL));
-
-        deviceIdentify[i] = data;
-    }
-
-
-    printf("Model-label (ASCII hex): ");
-    for(int i = 27; i < 47; i++){
-        kterm_put((char)(deviceIdentify[i] >> 8));
-        kterm_put((char)(deviceIdentify[i] & 0x00FF));
-    }
-    kterm_put('\n');
-
-}
-
-void ATA_DEVICE::Read(uint16_t DEVICE_CHANNEL,  DEVICE_DRIVE drive, uint32_t LBA, uint16_t* buffer) {
+void ATAPIO::Read(uint16_t DEVICE_CHANNEL,  DEVICE_DRIVE drive, uint32_t LBA, uint16_t* buffer) {
     /*
     Assume you have a sectorcount byte and a 28 bit LBA value. A sectorcount of 0 means 256 sectors = 128K.
 
@@ -188,6 +85,116 @@ void ATA_DEVICE::Read(uint16_t DEVICE_CHANNEL,  DEVICE_DRIVE drive, uint32_t LBA
 
 }
 
-void ATA_DEVICE::Write(uint16_t DEVICE_CHANNEL, DEVICE_DRIVE drive) {
+void ATAPIO::Write(uint16_t data, DEVICE_DRIVE dev){
+
     printf("Not implemented\n");
+
 }
+
+void ATAPIO::Identify(uint16_t DEVICE_CHANNEL,DEVICE_DRIVE drive ){
+    // lets ignore which port we actually want to check for now !
+
+    /*
+        THE STEPS INVOLVED
+
+        1. Select the target drive by sending master (0x0A) or slave (0x0B) to the
+        drive select IO port
+
+        2. Set the Sectorcount, LBAlo, LBAmid and LBAhi IO ports to 0
+
+        3. Send the identify command (0xEC) to the command IO port
+
+        4. Read the status port
+            4.2 If the value is 0x0 the drive does not exist
+            4.3 If it has any other value continue
+        5. poll the status port until bit 7 is clear.
+        6. Check if the LBAmid and LBAhi ports are non-zero
+            6.2. If non-zero stop polling this is not an ATA device
+            6.3 If zero continue
+
+        7. poll status port until bit 3 is set or bit 0 is set
+
+        8. if err is clear, read the data from the data port
+
+
+    */
+
+
+    //printf("channel selected: 0x%x", DEVICE_CHANNEL);
+    // Assuming Master here
+    // Select the target drive
+    outb(DEVICE_CHANNEL | 6, drive); // on the primary bus select the master drive
+    outb(DEVICE_CHANNEL | 6 , 0x0); // write 0 to the controlport for some reason
+
+    outb(DEVICE_CHANNEL | 6, drive);
+    uint8_t status = inb(DEVICE_CHANNEL | 7 );
+    if(status == 0x00){
+        printf("No drive\n");
+        return;
+    }
+    // send the identify command;
+    outb(DEVICE_CHANNEL | 7, 0xEC);
+
+
+    // set the sectorCount, LBAlo, LBAmid, LBA,hi IO ports to 0
+    outb(DEVICE_CHANNEL | 2, 0);
+
+    outb(DEVICE_CHANNEL | 3, 0);
+
+    outb(DEVICE_CHANNEL | 4, 0);
+
+    outb(DEVICE_CHANNEL | 5, 0);
+
+    // send the identify command ;
+    //printf("command sent!\n");
+    outb(DEVICE_CHANNEL | 7 , 0xEC);
+
+    // read the status port
+    uint8_t status2 = inb(DEVICE_CHANNEL | 7);
+    if( status2 == 0x00){
+        printf("No drive\n");
+        return;
+    }
+
+    //printf("Waiting until ready...\n");
+    while(((status2 & 0x80 == 0x80)
+           && (status2 & 0x01) != 0x01)
+            ) status2 = inb(DEVICE_CHANNEL | 7);
+
+    if( status2 & 0x01){
+        printf("Error!\n");
+        return ;
+    }
+
+    uint16_t deviceIdentify [256] = {0};
+
+    for ( int i = 0; i < 256; i++){
+        uint16_t data;
+        asm volatile ("inw %1, %0" : "=a"(data): "Nd"(DEVICE_CHANNEL));
+
+        deviceIdentify[i] = data;
+    }
+
+
+    printf("Model-label (ASCII hex): ");
+    for(int i = 27; i < 47; i++){
+        kterm_put((char)(deviceIdentify[i] >> 8));
+        kterm_put((char)(deviceIdentify[i] & 0x00FF));
+    }
+    kterm_put('\n');
+
+}
+
+void ATAPIO::Soft_Reset(uint8_t DEVICE_CHANNEL,DEVICE_DRIVE drive){
+    printf("Soft reseting drive...\n");
+   // outb(channels[DEVICE_CHANNEL].base + 7 , 0x4);
+    // wait a bit..
+    for(int i = 0 ; i < 1000000; i++){
+        asm volatile("NOP");
+    }
+    //outb(channels[DEVICE_CHANNEL].base + 7 , 0x0);
+
+}
+
+
+

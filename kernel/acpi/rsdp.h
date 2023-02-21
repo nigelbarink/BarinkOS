@@ -1,9 +1,9 @@
 #pragma once
-#include <stdint.h>
-#include "./../../terminal/kterm.h"
+#include "../terminal/kterm.h"
 #include <CoreLib/Memory.h>
+#include <stdint-gcc.h>
 
-struct RSDPTR {
+struct RSDPDescriptor {
     char signature[8];
     uint8_t Checksum ;
     char OEMID [6];
@@ -14,22 +14,22 @@ struct RSDPTR {
 struct ACPISDTHeader{
     char Signature[4];
     uint32_t Length;
+    uint8_t Revision;
     uint8_t CheckSum;
     char OEMID[6];
     char OEMTableID[8];
     uint32_t OEMRevision;
     uint32_t CreatorID;
     uint32_t CreatorRevision;
-}__attribute__((packed));
+};
 
 
 struct RSDT{
-    struct ACPISDTHeader header;
+    struct ACPISDTHeader h;
     uint32_t PointerToSDT[]; // Length of array : (header.Length - sizeof(header))/ 4
 }__attribute__((packed));
+RSDPDescriptor* FindRSD();
 
-RSDPTR* FindRSD();
+void printRSD(RSDPDescriptor* rsd);
 
-void printRSD(RSDPTR* rsd);
-
-RSDT* getRSDT(RSDPTR* rsd);
+RSDT* getRSDT(RSDPDescriptor* rsd);

@@ -7,14 +7,15 @@
 #include "memory/TaskStateSegment.h"
 #include "supervisorterminal/superVisorTerminal.h"
 #include "drivers/vga/VBE.h"
-#include "drivers/pci/pci.h"
+#include "pci/pci.h"
 #include "drivers/pit/pit.h"
-#include "drivers/acpi/acpi.h"
+#include "acpi/acpi.h"
 #include "i386/processor.h"
 #include "terminal/kterm.h"
 #include "interrupts/idt.h"
 #include "serial.h"
-#include "vfs/VFS.h"
+#include "storage/vfs/VFS.h"
+#include "../CoreLib/Memory.h"
 
 extern "C"  void LoadGlobalDescriptorTable();
 extern "C" void jump_usermode();
@@ -24,6 +25,7 @@ extern "C" void kernel ()
 
     init_serial();
     kterm_init();
+
 
     setup_tss();
     initGDT();
@@ -37,16 +39,13 @@ extern "C" void kernel ()
 
     initHeap();
     pit_initialise();
-    // ACPI::initialize(); // FIXME: improper reading of bios memory
-    PCI::Scan();
+    ACPI::initialize();
+
+    //PCI::Scan();
     processor::initialize();
     processor::enable_protectedMode();
 
-    FileSystem::initialize();
-
-    // Testing my path resolution functions
-    Path test = Path("/boot/myos.bin");
-    FileSystem::ResolvePath(test);
+    VirtualFileSystem::initialize();
 
 
 #ifdef USERMODE_RELEASE

@@ -6,7 +6,7 @@
 #define CHECK_FLAG(flags, bit) ((flags) & (1 <<(bit)))
 #define VADDR_TO_PADDR(vaddr) (vaddr - 0xC0000000)
 #define PADDR_TO_VADDR(paddr) (paddr + 0xC0000000)
-
+multiboot_info_t* global_mbi;
 
 extern "C" void prekernelSetup  ( unsigned long magic, multiboot_info_t* mbi) 
 {
@@ -21,8 +21,8 @@ extern "C" void prekernelSetup  ( unsigned long magic, multiboot_info_t* mbi)
         }
 
         mbi = PADDR_TO_VADDR(mbi);
+        global_mbi = mbi;
 
-        
         // Setup the physical memory manager immmediatly 
         // Doing so saves the complications of doing it later when 
         // paging is enabled 

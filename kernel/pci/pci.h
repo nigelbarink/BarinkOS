@@ -1,7 +1,7 @@
 #pragma once
 #include <stdint.h>
 #include "../io/io.h"
-#include "../../terminal/kterm.h"
+#include "../terminal/kterm.h"
 #include "pciDevice.h"
 
 // Configuration Space Access Mechanism #1

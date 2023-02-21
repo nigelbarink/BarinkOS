@@ -1,10 +1,10 @@
 #pragma once
-#include <stdint.h> 
-#include "../pci/pciDevice.h"
-#include "../pci/pci.h"
+#include <stdint-gcc.h>
 #include "../../terminal/kterm.h"
 #include "ideCommands.h"
 #include "sampleIDE.h"
+#include "../../pci/pciDevice.h"
+#include "../../pci/pci.h"
 
 #define IS_BIT_SET(x, bit) ((x >> bit & 0x1) == 1) 
 

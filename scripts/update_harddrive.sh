@@ -1,4 +1,7 @@
 #!/bin/bash
+
+echo "running in cwd : "
+ echo $(pwd)
 echo "Mount harddrive image as block device"
 sudo losetup /dev/loop9 disk.img
 sudo mount /dev/loop9 /mnt

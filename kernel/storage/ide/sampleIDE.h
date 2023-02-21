@@ -1,5 +1,5 @@
 #pragma once
-#include <stdint.h> 
+#include <stdint-gcc.h>
 #include "../../terminal/kterm.h"
 #include "sampleIDE.definitions.h"
 #include "ideCommands.h"
@@ -239,4 +239,20 @@ inline void Detect_IO_Ports(uint32_t BAR0, uint32_t BAR1,uint32_t BAR2, uint32_t
     channels[ATA_PRIMARY  ].bmide = (BAR4 & (~1)) + 0; // Bus Master IDE
     channels[ATA_SECONDARY].bmide = (BAR4 & (~1)) + 8; // Bus Master IDE
 
+}
+
+
+bool driveAvailable(){
+    int devNumber = 0;
+    for ( auto device : ide_devices){
+        if(!device.Reserved)
+            continue;
+        devNumber++;
+    }
+
+
+    // FIXME: If no drive is connected we continue trying to read from
+    // a not connected drive!
+    //ATAPIO::Identify((uint16_t) BUS_PORT::Primary, DEVICE_DRIVE::MASTER);
+    return true;
 }
