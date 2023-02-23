@@ -1,6 +1,6 @@
-AS = ${HOME}/opt/cross/bin/i686-elf-as
-CC = ${HOME}/opt/cross/bin/i686-elf-gcc
-CPP = ${HOME}/opt/cross/bin/i686-elf-g++ 
+AS = /opt/cross/bin/i686-elf-as
+CC = /opt/cross/bin/i686-elf-gcc
+CPP = /opt/cross/bin/i686-elf-g++
 CFLAGS =  -ffreestanding -Og -ggdb  -Wall -Wextra  -I ../build/CoreLib/include
 BUILD_DIR = ../build/kernel
 OBJ_DIR = ../bin/kernel
