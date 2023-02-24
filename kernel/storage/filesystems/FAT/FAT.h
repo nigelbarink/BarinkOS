@@ -18,25 +18,6 @@ struct ExtendedBootRecord_FAT16{
     uint8_t SecRmndr[512];
 }__attribute__((packed));
 
-struct ExtendedBootRecord_FAT32{
-    uint32_t SectorsPerFAT;
-    uint16_t Flags;
-    const uint16_t FAT_VERSION_NUMBER;
-    uint32_t rootDirectory_clusterNumber;// Often set to 2;
-    uint16_t FSInfo_SectorNumber;
-    uint16_t backup_bpb_sectorNumber;
-    uint8_t Reserved [12];
-    uint8_t DriveNumber;
-    uint8_t Reserved2;
-    uint8_t Signature; // must be 0x28 or 0x29
-    uint32_t VOLUME_ID_SERIAL;
-    uint8_t volume_label[11];
-    uint8_t SystemIdentifierString [8]; // ALWAYS "FAT32 " but spec says do not trust
-    uint8_t BootCode [420]; // NICE
-    uint16_t PartitionSignature; // 0xAA55
-
-}__attribute__((packed));
-
 struct BiosParameterBlock {
     uint8_t jmpBoot[3];
     uint8_t OEMName [8];
@@ -66,25 +47,10 @@ struct DIR {
     uint16_t FstClusHi; // High Word of first data cluster for file/directory described
     uint16_t WrtTime; // Last Modification time | Must equal CrtTime
     uint16_t WrtDate; // Last Modification date |  Must equal CrtDate
-    uint16_t FstClusLO; // Low word of first data cluster for file/directory described
+    uint16_t FstClusLo; // Low word of first data cluster for file/directory described
     uint32_t FileSize; // size in bytes of file/directory described
 }__attribute__((packed));
 
-typedef struct _DIRECTORY{
-    uint8_t Filename[8];
-    uint8_t Ext[3];
-    uint8_t Attrib;
-    uint8_t Reserved;
-    uint8_t TimeCreatedMs;
-    uint16_t TimeCreated;
-    uint16_t DateCreated;
-    uint16_t DateLastAccessed;
-    uint16_t FirstClusterHiBytes;
-    uint16_t LastModTime;
-    uint16_t LastModDate;
-    uint16_t FirstCluster;
-    uint32_t FileSize;
-}__attribute__((packed)) DIRECTORY, *PDIRECTORY;
 
 enum struct FAT_TYPE{
     FAT12,
@@ -115,7 +81,10 @@ public:
     static uint16_t GetFATEntry(BiosParameterBlock*, unsigned int);
     static uint16_t DetermineFreeSpace();
     static int GetSectorOfRootDirectory(BiosParameterBlock*);
-    static int RootDirSize(BiosParameterBlock*);
+    static unsigned int RootDirSize(BiosParameterBlock*);
+    static void OpenSubdir (DIR*, BiosParameterBlock*);
+
+
 
     static const int  FREE = 0x0000;
     static const int  ALLOCATED = 0x0002;

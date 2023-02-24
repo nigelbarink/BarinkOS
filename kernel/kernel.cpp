@@ -78,7 +78,6 @@ extern "C" void kernel ()
     int fat_size = bpb->FATSz16;
     int root_dir_sectors = FAT::RootDirSize(bpb);
     int first_data_sector = bpb->RsvdSecCnt + (bpb->NumFATs * fat_size) + root_dir_sectors ;
-    int first_fat_sector = bpb->RsvdSecCnt;
     int data_sectors = bpb->TotSec32 - (bpb->RsvdSecCnt + (bpb->NumFATs * fat_size) + root_dir_sectors);
     int total_clusters = data_sectors / bpb->SecPerClus;
 
@@ -98,6 +97,7 @@ extern "C" void kernel ()
             continue;
         }
 
+
         if(entry->ATTR & FAT::ATTRIBUTES::ATTR_HIDDEN){
             continue;
         }
@@ -105,9 +105,9 @@ extern "C" void kernel ()
         if(entry->ATTR & FAT::ATTRIBUTES::ATTR_SYSTEM)
             continue;
 
+
         if(entry->ATTR & FAT::ATTRIBUTES::ATTR_VOLUME_ID){
             continue;
-
         }
         if (!(entry->ATTR & FAT::ATTRIBUTES::ATTR_LONG_NAME)){
             for(char n : entry->Name){
@@ -116,10 +116,13 @@ extern "C" void kernel ()
                 kterm_put(n);
             }
         }else{
-            printf("Long file name detected!\n");
+            printf("Long file name detected!");
         }
-        printf(" [Size: %d bytes, Attributes: %x\n", entry->ATTR, entry->FileSize);
 
+        printf(" [Size: %d bytes, Attributes: %d]\n", entry->ATTR, entry->FileSize);
+        if(entry->ATTR & FAT::ATTRIBUTES::ATTR_DIRECTORY ){
+            FAT::OpenSubdir(entry, bpb);
+        }
 
     }
 

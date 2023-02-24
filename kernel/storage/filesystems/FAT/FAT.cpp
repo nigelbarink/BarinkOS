@@ -113,12 +113,7 @@ BiosParameterBlock* FAT::getBPB( bool DEBUG  ){
     return bpb;
 }
 uint16_t FAT::GetFATEntry (BiosParameterBlock* bpb, unsigned int cluster){
-    int FATSz =0;
-    if(bpb->FATSz16 != 0){
-        FATSz = bpb->FATSz16;
-    } else{
-        //FATSz = bpb->FATSz32;
-    }
+    int FATSz = bpb->FATSz16;
 
     int FATOffset = 0;
     FAT_TYPE type = FAT::determineFATType(bpb);
@@ -130,7 +125,7 @@ uint16_t FAT::GetFATEntry (BiosParameterBlock* bpb, unsigned int cluster){
 
     int thisFATSecNum = bpb->RsvdSecCnt + (FATOffset / bpb->BytsPerSec); // Sector number containing the entry for the cluster
 
-    // For any other FAT other then the default
+    // For any other FAT other than the default
     // SectorNumber = (FATNumber * FATSz) + ThisFATSecNum
 
     uint16_t buff[bpb->BytsPerSec];
@@ -179,14 +174,10 @@ int FAT::GetSectorOfRootDirectory (BiosParameterBlock* bpb)
    return (bpb->RsvdSecCnt + (bpb->NumFATs * bpb->FATSz16));
 }
 
-int FAT::RootDirSize(BiosParameterBlock* bpb)
+unsigned int FAT::RootDirSize(BiosParameterBlock* bpb)
 {
-    int size = bpb->RootEntCnt * 32;
-    if((size % bpb->BytsPerSec) != 0){
-        printf("ERR: Root entry count invalid!\n");
-        return -1;
-    }
-    return size;
+    return ((bpb->RootEntCnt * 32) + (bpb->BytsPerSec -1)) /bpb->BytsPerSec;
+
 }
 
 
@@ -206,6 +197,73 @@ uint16_t* ReadFAT (BiosParameterBlock& bpb ,  bool DEBUG = false ) {
     }
 
     return FAT;
+}
+
+void FAT::OpenSubdir(DIR* directory, BiosParameterBlock* bpb ){
+
+    unsigned int cluster = directory->FstClusLo;
+    printf("Listing contents of " );
+
+     for(unsigned char n : directory->Name){
+         if(n == 0x20)
+             continue;
+         kterm_put(n);
+     }
+    kterm_put('\n');
+    printf("FsCluHi: 0x%x , FsCluLo: 0x%x\n", directory->FstClusHi, directory->FstClusLo);
+    printf("Cluster: 0x%x\n", cluster);
+    unsigned int FATEntry = FAT::GetFATEntry(bpb, cluster);
+    printf("FAT_Entry: 0x%x\n", FATEntry);
+
+    unsigned int root_dir_sectors = FAT::RootDirSize(bpb);
+    unsigned int fat_size = bpb->FATSz16;
+    unsigned int first_data_sector = bpb->RsvdSecCnt + ( bpb->NumFATs * fat_size) + root_dir_sectors;
+    unsigned int first_directory_sector = ((cluster - 2) * bpb->SecPerClus) + first_data_sector;
+    printf("Directory first sector 0x%x\n" , first_directory_sector);
+    uint16_t data[256];
+    ATAPIO::Read(ATAPIO_PORT::Primary, DEVICE_DRIVE::MASTER, first_directory_sector, data);
+
+    auto* directoryContents = (DIR*) data;
+    for(int i = 0; i < sizeof(data) / sizeof(DIR); i++){
+        DIR* entry = (DIR*)((uint32_t)directoryContents + (i * sizeof(DIR)));
+
+        if(entry->Name[0] == FAT::FREE_DIR || entry->Name[0] == FAT::FREE_DIR_2 || entry->Name[0] == 0xE5)
+            continue;
+
+        if(entry->ATTR & FAT::ATTRIBUTES::ATTR_HIDDEN){
+            continue;
+        }
+
+        if(entry->ATTR & FAT::ATTRIBUTES::ATTR_SYSTEM)
+            continue;
+
+
+        if(entry->ATTR & FAT::ATTRIBUTES::ATTR_VOLUME_ID){
+            continue;
+        }
+
+        if (!(entry->ATTR & FAT::ATTRIBUTES::ATTR_LONG_NAME)){
+            for(char n : entry->Name){
+                if(n == 0x20)
+                    continue;
+                kterm_put(n);
+            }
+            kterm_put('\n');
+        }else{
+            printf("LFN\n");
+        }
+
+
+
+
+
+
+
+
+    }
+
+
+
 }
 
 
