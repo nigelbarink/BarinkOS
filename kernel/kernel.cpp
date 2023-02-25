@@ -122,6 +122,8 @@ extern "C" void kernel ()
         printf(" [Size: %d bytes, Attributes: %d]\n", entry->ATTR, entry->FileSize);
         if(entry->ATTR & FAT::ATTRIBUTES::ATTR_DIRECTORY ){
             FAT::OpenSubdir(entry, bpb);
+        } else {
+            FAT::readFile(entry, bpb);
         }
 
     }

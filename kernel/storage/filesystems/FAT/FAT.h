@@ -83,6 +83,7 @@ public:
     static int GetSectorOfRootDirectory(BiosParameterBlock*);
     static unsigned int RootDirSize(BiosParameterBlock*);
     static void OpenSubdir (DIR*, BiosParameterBlock*);
+    static void readFile(DIR*, BiosParameterBlock*);
 
 
 

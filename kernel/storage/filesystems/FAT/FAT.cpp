@@ -146,8 +146,6 @@ uint16_t FAT::GetFATEntry (BiosParameterBlock* bpb, unsigned int cluster){
 
 }
 
-
-
 uint16_t FAT::DetermineFreeSpace()
 {
     // Loop through all FAT entries in all FAT's
@@ -179,8 +177,6 @@ unsigned int FAT::RootDirSize(BiosParameterBlock* bpb)
     return ((bpb->RootEntCnt * 32) + (bpb->BytsPerSec -1)) /bpb->BytsPerSec;
 
 }
-
-
 
 uint16_t* ReadFAT (BiosParameterBlock& bpb ,  bool DEBUG = false ) {
     uint32_t FATAddress = /*StartAddress*/ 0x00 +  bpb.RsvdSecCnt ;
@@ -253,41 +249,28 @@ void FAT::OpenSubdir(DIR* directory, BiosParameterBlock* bpb ){
             printf("LFN\n");
         }
 
-
-
-
-
-
-
-
     }
-
-
 
 }
 
+void FAT::readFile(DIR* fileEntry , BiosParameterBlock* bpb){
+    unsigned int cluster = fileEntry->FstClusLo;
+    unsigned int FATEntry = FAT::GetFATEntry(bpb, cluster);
+    unsigned int root_dir_sectors = FAT::RootDirSize(bpb);
+    unsigned int fat_size = bpb->FATSz16;
+    unsigned int first_data_sector = bpb->RsvdSecCnt + (bpb->NumFATs * fat_size) + root_dir_sectors;
+    unsigned int file_data_sector = ((cluster -2) * bpb->SecPerClus) + first_data_sector;
+    printf("FAT entry = %x\n", FATEntry);
+    uint16_t data[256];
+    ATAPIO::Read(ATAPIO_PORT::Primary, DEVICE_DRIVE::MASTER, file_data_sector, data);
 
-void readFile(uint32_t DataRegion, DIR* entry, uint16_t FATentry, BiosParameterBlock& bpb ){
-    printf("Show contents");
-
-    printf("Start cluster of the file: 0x%x\n", entry->FileSize);
-
-    printf("IS it only 1 cluster? %s\n", FATentry == 0xFFFF ? "Yes" : "No");
-
-    uint32_t sector = DataRegion + ((entry->FileSize - 0x02) * bpb.SecPerClus);
-
-
-    uint16_t dataBlob[256];
-    ATAPIO::Read(ATAPIO_PORT::Primary, DEVICE_DRIVE::MASTER, sector, dataBlob);
-    for (unsigned short n: dataBlob) {
+    for (unsigned short n : data)
+    {
         kterm_put(n & 0x00ff);
-
         kterm_put(n >> 8);
     }
-    kterm_put('\n');
+
 }
-
-
 
 /*
 file fsysFatDirectory (const char* DirectoryName){
