@@ -5,7 +5,7 @@ BUILD_DIR = ../build/CoreLib
 OBJ_FOLDER = ../bin/CoreLib
 OUTPUTFILE = $(BUILD_DIR)/libCoreLib.a
 
-OFILES = $(OBJ_FOLDER)/memory.o $(OBJ_FOLDER)/path.o $(OBJ_FOLDER)/stack.o $(OBJ_FOLDER)/string.o $(OBJ_FOLDER)/stringview.o
+OFILES = $(OBJ_FOLDER)/ctype.o $(OBJ_FOLDER)/memory.o $(OBJ_FOLDER)/path.o $(OBJ_FOLDER)/stack.o $(OBJ_FOLDER)/string.o $(OBJ_FOLDER)/stringview.o
 
 .phony: all
 all: $(OUTPUTFILE)
@@ -14,6 +14,11 @@ all: $(OUTPUTFILE)
 $(OUTPUTFILE): $(OFILES)
 	pwd
 	ar -rc $(OUTPUTFILE) $(OFILES)
+
+
+
+$(OBJ_FOLDER)/ctype.o: ctype.cpp
+	$(CPP) -c ctype.cpp -o $(OBJ_FOLDER)/ctype.o $(CFLAGS)
 
 $(OBJ_FOLDER)/memory.o: Memory.cpp
 	$(CPP) -c Memory.cpp -o $(OBJ_FOLDER)/memory.o $(CFLAGS)
