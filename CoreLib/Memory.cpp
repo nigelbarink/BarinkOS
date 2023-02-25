@@ -32,6 +32,17 @@ int memcmp( const void* ptr1, const void* ptr2, size_t num)
 
 }
 
+void memcpy (void* dest, const void* src, size_t count ){
+    for( int i = 0; i < count; i++){
+        ((char *)dest)[i] = ((const char*)src)[i];
+    }
+}
+
+
+
+
+
+
 size_t strlen(const char* str) {
     size_t len = 0;
     while(str[len]){

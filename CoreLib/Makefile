@@ -1,4 +1,4 @@
-CPP = ${HOME}/opt/cross/bin/i686-elf-g++
+CPP = /opt/cross/bin/i686-elf-g++
 CFLAGS = -ffreestanding -Og -ggdb -Wall -Wextra
 
 BUILD_DIR = ../build/CoreLib
@@ -12,6 +12,7 @@ all: $(OUTPUTFILE)
 	cp *.h $(BUILD_DIR)/include/CoreLib
 
 $(OUTPUTFILE): $(OFILES)
+	pwd
 	ar -rc $(OUTPUTFILE) $(OFILES)
 
 $(OBJ_FOLDER)/memory.o: Memory.cpp
