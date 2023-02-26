@@ -5,6 +5,8 @@
 #pragma once
 
 #include "../../../terminal/kterm.h"
+#include "../../../memory/KernelHeap.h"
+#include "../../../../CoreLib/Memory.h"
 
 // Date Format
 // [0..4] Day

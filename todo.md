@@ -4,7 +4,7 @@
 
 
 This list keeps me focused and organised so I don't forget what
-needs to be done. It is a expansion on the features markdown file which describes the features. Here I put things I need to remember 
+needs to be done. It is a expansion on the features markdown FILE which describes the features. Here I put things I need to remember 
 to do on a more in depth level.
 
 ## --

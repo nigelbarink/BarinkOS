@@ -63,32 +63,18 @@ enum struct FAT_TYPE{
 class FAT {
 public:
 
-
     // Wanted API for vfs
-    static file Open(char* filename);
-    static int close(file* file);
-    static int Read(file* file, void* buffer , int length);
-    static int Write(file* file, const void* buffer, int length);
-    static int create(inode* dir_node, inode** target, const char* component_name);
-    static int lookup(inode* , inode**, const char*);
-    static int compare(directoryEntry* , char* , char*);
-    static superblock* Mount(filesystem* fs, const char* name ,vfsmount* mount);
+    static FILE Open(char* filename);
+    static int close(FILE* file);
+    static int Read(FILE* file, void* buffer , unsigned  int length);
+    static int Write(FILE* file, const void* buffer, unsigned int length);
+    static int Create(inode* dir_node, inode** target, const char* component_name);
+    static DirectoryNode* Lookup(inode* , DirectoryNode*);
+    static int Compare(DirectoryNode* , char *filename, char *filename2);
+    static FS_SUPER* Mount(filesystem* fs, const char* name , vfsmount* mount);
 
-    // TEMP
-    static void listFilesInRoot(MBR* mbr, BiosParameterBlock* bpb );
-    static BiosParameterBlock* getBPB( bool DEBUG =false );
-    static FAT_TYPE determineFATType(BiosParameterBlock* bpb);
-    static uint16_t GetFATEntry(BiosParameterBlock*, unsigned int);
-    static uint16_t DetermineFreeSpace();
-    static int GetSectorOfRootDirectory(BiosParameterBlock*);
-    static unsigned int RootDirSize(BiosParameterBlock*);
-    static void OpenSubdir (DIR*, BiosParameterBlock*);
-    static void readFile(DIR*, BiosParameterBlock*);
-
-
-
-    static const int  FREE = 0x0000;
-    static const int  ALLOCATED = 0x0002;
+    static const int FREE = 0x0000;
+    static const int ALLOCATED = 0x0002;
     static const int BAD = 0xFFF7;
     static const int EOF = 0xFFFF;
 
@@ -98,6 +84,9 @@ public:
     static const char DOS_TRAILING_SPACE = 0x20;
     static const char FREE_DIR = 0xE5; // If KANJI charset 0x05
     static const char FREE_DIR_2 = 0x00; // All directories after this are free including this one
+    static void ListRootDirectoryContents(BiosParameterBlock* bpb );
+    static BiosParameterBlock* GetBiosParameterBlock(bool DEBUG =false );
+
 
     enum ATTRIBUTES {
         ATTR_READ_ONLY = 0x01,
@@ -111,6 +100,13 @@ public:
 
 private:
 
+    static FAT_TYPE DetermineFATType(BiosParameterBlock* bpb);
+    static uint16_t GetFATEntry(BiosParameterBlock*, unsigned int);
+    static uint16_t DetermineFreeSpace();
+    static int GetSectorOfRootDirectory(BiosParameterBlock*);
+    static unsigned int RootDirSize(BiosParameterBlock*);
+    static void OpenSubdir (DIR*, BiosParameterBlock*);
+    static void ReadFileContents(DIR *fileEntry, BiosParameterBlock *bpb);
 
     enum ENTRY_SIZE {
         FAT12 = 12,

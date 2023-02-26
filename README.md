@@ -27,7 +27,7 @@ Enumerating the PCI bus
 Correctly identified our ATAPI device 🎉
 
 ![Reading Files from FAT-16](screenshots/ReadingFilesFromFAT16.png) \
-Reading a file from a FAT-16 Formatted drive 
+Reading a FILE from a FAT-16 Formatted drive 
 
 ________________________
 

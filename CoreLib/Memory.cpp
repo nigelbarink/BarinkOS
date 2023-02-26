@@ -32,7 +32,7 @@ int memcmp( const void* ptr1, const void* ptr2, size_t num)
 
 }
 
-void memcpy (void* dest, const void* src, size_t count ){
+[[maybe_unused]] void memcpy (void* dest, const void* src, size_t count ){
     for( int i = 0; i < count; i++){
         ((char *)dest)[i] = ((const char*)src)[i];
     }

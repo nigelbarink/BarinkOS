@@ -16,6 +16,7 @@
 #include "serial.h"
 #include "storage/vfs/vfs.h"
 #include "storage/filesystems/FAT/FAT.h"
+#include "../CoreLib/Memory.h"
 
 
 extern "C"  void LoadGlobalDescriptorTable();
@@ -57,85 +58,25 @@ extern "C" void kernel ()
 
     printf("Part1: %d, Part2: %d, Part3: %d\n", part1, part2 , part3);
     ATAPIO::Identify(ATAPIO_PORT::Primary, DEVICE_DRIVE::MASTER);
-    auto* bpb = FAT::getBPB(false);
-    auto* mbr = GetPartitions(false);
-    auto fsType = FAT::determineFATType(bpb);
-    switch (fsType) {
-        case FAT_TYPE::FAT12:
-            printf("FAT12 Disk!\n");
-            break;
-        case FAT_TYPE::FAT16:
-            printf("FAT16 Disk!\n");
-            break;
-        case FAT_TYPE::FAT32:
-            printf("FAT32 Disk!\n");
-            break;
+
+    VirtualFileSystem::initialize();
+
+    printf("Lets open hello.txt\n");
+    auto fontFile = VirtualFileSystem::open("/HELLO   TXT", 0);
+    if(fontFile->flags == 0){
+        uint16_t* contents = (uint16_t*) malloc(sizeof(uint16_t) * 256);
+        fontFile->read(fontFile, contents, 512);
+
+       for(int i =0 ; i < fontFile->root->size; i++ ){
+            kterm_put(contents[i] & 0x00ff);
+            kterm_put(contents[i] >> 8);
+        }
+        kterm_put('\n');
+        free((void*)contents);
+    }else{
+        printf("Could not find file\n");
     }
 
-
-    // list files in root
-    int total_sectors = bpb->TotSec32;
-    int fat_size = bpb->FATSz16;
-    int root_dir_sectors = FAT::RootDirSize(bpb);
-    int first_data_sector = bpb->RsvdSecCnt + (bpb->NumFATs * fat_size) + root_dir_sectors ;
-    int data_sectors = bpb->TotSec32 - (bpb->RsvdSecCnt + (bpb->NumFATs * fat_size) + root_dir_sectors);
-    int total_clusters = data_sectors / bpb->SecPerClus;
-
-
-    int first_root_dir_sector = first_data_sector - root_dir_sectors;
-    //int first_sector_of_cluster = ((cluster - 2) * bpb->SecPerClus) + first_data_sector;
-    uint16_t data[256];
-    ATAPIO::Read(ATAPIO_PORT::Primary, DEVICE_DRIVE::MASTER, first_root_dir_sector, data);
-
-    auto* RootDirectory = (DIR*)data;
-    for(int i = 0; i < sizeof(data) / sizeof (DIR); i++)
-    {
-        DIR* entry = (DIR*)((uint32_t)RootDirectory + (i * sizeof(DIR)));
-
-
-        if(entry->Name[0] == FAT::FREE_DIR || entry->Name[0] == FAT::FREE_DIR_2 || entry->Name[0] == 0xE5){
-            continue;
-        }
-
-
-        if(entry->ATTR & FAT::ATTRIBUTES::ATTR_HIDDEN){
-            continue;
-        }
-
-        if(entry->ATTR & FAT::ATTRIBUTES::ATTR_SYSTEM)
-            continue;
-
-
-        if(entry->ATTR & FAT::ATTRIBUTES::ATTR_VOLUME_ID){
-            continue;
-        }
-        if (!(entry->ATTR & FAT::ATTRIBUTES::ATTR_LONG_NAME)){
-            for(char n : entry->Name){
-                if(n == 0x20)
-                    continue;
-                kterm_put(n);
-            }
-        }else{
-            printf("Long file name detected!");
-        }
-
-        printf(" [Size: %d bytes, Attributes: %d]\n", entry->ATTR, entry->FileSize);
-        if(entry->ATTR & FAT::ATTRIBUTES::ATTR_DIRECTORY ){
-            FAT::OpenSubdir(entry, bpb);
-        } else {
-            FAT::readFile(entry, bpb);
-        }
-
-    }
-
-
-
-
-
-
- //   VirtualFileSystem::initialize();
-
-   // VirtualFileSystem::open("/hello.txt", 0);
 
 
 #ifdef USERMODE_RELEASE

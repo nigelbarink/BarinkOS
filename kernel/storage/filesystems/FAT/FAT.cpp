@@ -4,10 +4,14 @@
 #include "FAT.h"
 #include "../../ata pio/ATAPIO.h"
 #include "../../../memory/KernelHeap.h"
-#include "../../../../CoreLib/Memory.h"
 #include "../../partitiontables/mbr/MasterBootRecord.h"
+#include "../../../../CoreLib/ctype.h"
+#include "../../../../CoreLib/Memory.h"
 #include <CoreLib/Memory.h>
-superblock* FAT::Mount(filesystem *fs, const char* name ,vfsmount *mnt)
+#include <CoreLib/ctype.h>
+
+// exposed driver API
+FS_SUPER* FAT::Mount(filesystem *fs, const char* name , vfsmount *mnt)
 {
 
     if( strncmp (fs->name, "fat", 3 ) != 0 )
@@ -15,58 +19,138 @@ superblock* FAT::Mount(filesystem *fs, const char* name ,vfsmount *mnt)
         printf("Can't mount filesystem with none fat type!\n");
         return nullptr;
     }
+    auto* bpb =  GetBiosParameterBlock();
+    auto fat_type = DetermineFATType(bpb);
 
-    superblock* sb = (superblock*) malloc(sizeof(superblock));
-    directoryEntry* root = (directoryEntry*) malloc(sizeof (directoryEntry));
+    if(fat_type != FAT_TYPE::FAT16)
+        return nullptr;
+
+    FS_SUPER* sb = (FS_SUPER*) malloc(sizeof(FS_SUPER));
+    DirectoryNode* root = (DirectoryNode*) malloc(sizeof (DirectoryNode));
+    inode* node = (inode*) malloc(sizeof(inode));
+
+    root->children = nullptr;
+    node->internal = (void*)FAT::GetSectorOfRootDirectory(bpb); //sector number;
+    node->lookup = FAT::Lookup;
     root->name = (char*) name;
-    root->node = nullptr;
+    root->node = node;
     root->parent = nullptr;
-
-    dentry_operations* op = (dentry_operations*) malloc(sizeof(dentry_operations));
-    op->compare = FAT::compare;
-
-
-    root->op = op;
-
-
+    root->compare = FAT::Compare;
     mnt->mnt_count =1;
     mnt->mnt_devname = "QEMU HDD";
     mnt->mnt_flags = 0;
     mnt->mnt_parent = nullptr;
-
     mnt->root = root;
     mnt->sb = sb;
-
     sb->type = fs;
     sb->root = root;
-    //sb->fs_info = getBPB();
+    sb->fs_info = bpb;
 
     return sb;
 }
-int FAT::Read(file* file, void* buffer , int length)
-{
-    return 0;
-}
-int FAT::Write(file* file, const void* buffer, int length)
-{
-    return 0;
-}
-int FAT::compare (directoryEntry*, char* filename, char* filename2)
-{
-    // use the size of the smallest string
-    int a = strlen(filename);
-    int b = strlen(filename2);
+FILE FAT::Open(char* filename){
 
-    if( a == b ){
-        return strncmp(filename, filename2, a);
+    return (FILE){nullptr, 0, nullptr, nullptr, 1} ;
+}
+int FAT::Read(FILE* file, void* buffer , unsigned int length)
+{
+
+    if(file == nullptr)
+    {
+        printf("NO FILE!!\n");
+        return -1;
     }
-    return a-b;
+    inode* node = file->root;
+
+    if(node== nullptr)
+    {
+        printf("No INODE!\n");
+        return -1;
+    }
+
+    int cluster = (int)node->internal;
+    auto* bpb = FAT::GetBiosParameterBlock();
+
+    unsigned int FAT_entry = FAT::GetFATEntry(bpb, cluster);
+    unsigned int root_dir_sector = FAT::RootDirSize(bpb);
+    unsigned int fat_size = bpb->FATSz16;
+    unsigned int first_data_sector = bpb->RsvdSecCnt + (bpb->NumFATs * fat_size) + root_dir_sector;
+    unsigned int file_data_sector = ((cluster - 2) * bpb->SecPerClus) + first_data_sector;
+
+    ATAPIO::Read(ATAPIO_PORT::Primary, DEVICE_DRIVE::MASTER, file_data_sector, (uint16_t*)buffer);
+
+    return 0;
 }
-int FAT::create(inode* dir_node, inode** target, const char* component_name){}
-int FAT::lookup (inode*, inode**, const char*){}
+
+int FAT::Write(FILE* file, const void* buffer, unsigned int length)
+{
+    return 0;
+}
+
+int FAT::Compare (DirectoryNode*, char* filename, char* filename2)
+{
+    //TODO Implement proper compare method for 8.3 filenames
+   // printf("COMPARE: %s with %s\n", filename, filename2);
+    return memcmp(filename, filename2, 11);
+}
+
+int FAT::Create(inode* dir_node, inode** target, const char* component_name){}
+
+DirectoryNode* FAT::Lookup (inode* currentDir , DirectoryNode*  dir)
+{
+
+    uint16_t data[256];
+    ATAPIO::Read(ATAPIO_PORT::Primary, DEVICE_DRIVE::MASTER, (int)currentDir->internal , data);
+
+    List* lastAdded = nullptr;
+    auto* directory = (DIR*)data;
+    for(int i = 0; i < sizeof(data) / sizeof (DIR); i++)
+    {
+        DIR* entry = (DIR*)((uint32_t)directory + (i * sizeof(DIR)));
+        if(
+            entry->Name[0] == FAT::FREE_DIR ||
+            entry->Name[0] == FAT::FREE_DIR_2 ||
+            entry->Name[0] == 0xE5 ||
+            entry->ATTR & FAT::ATTRIBUTES::ATTR_VOLUME_ID ||
+            entry->ATTR & FAT::ATTRIBUTES::ATTR_SYSTEM ||
+            entry->ATTR & FAT::ATTRIBUTES::ATTR_HIDDEN
+        ){
+            continue;
+        }
+
+        auto* dirNode = (DirectoryNode*) malloc(sizeof (DirectoryNode));
+
+        char* name = (char*)malloc(sizeof(char[11]));
+        memcpy(name, entry->Name, 11 );
+        dirNode->name = name;
+        dirNode->compare = dir->compare;
+        dirNode->parent = dir;
+
+        dirNode->node= (inode*) malloc(sizeof (inode));
+        dirNode->node->internal = (void*)entry->FstClusLo;
+
+        dirNode->node->read = currentDir->read;
+        dirNode->node->lookup = currentDir->lookup;
+        dirNode->node->sb = currentDir->sb;
+        dirNode->node->size = entry->FileSize;
+
+        List* dirlist = (List*) malloc(sizeof (List));
+        dirlist->data = dirNode;
+        dirlist->next = nullptr;
+
+        lastAdded = dirlist;
+        auto* temp = dir->children;
+        dir->children = lastAdded;
+        lastAdded->next = temp;
 
 
-FAT_TYPE FAT::determineFATType(BiosParameterBlock* bpb){
+    }
+
+    return (DirectoryNode*)dir;
+}
+
+// internal functions
+FAT_TYPE FAT::DetermineFATType(BiosParameterBlock* bpb){
     int RootDirSector = ((bpb->RootEntCnt * 32) + (bpb->BytsPerSec -1)) / bpb->BytsPerSec;
     int FATSz = 0;
     if(bpb->FATSz16 != 0){
@@ -93,7 +177,7 @@ FAT_TYPE FAT::determineFATType(BiosParameterBlock* bpb){
         return FAT_TYPE::FAT32;
     }
 };
-BiosParameterBlock* FAT::getBPB( bool DEBUG  ){
+BiosParameterBlock* FAT::GetBiosParameterBlock(bool DEBUG  ){
     BiosParameterBlock* bpb = (BiosParameterBlock*) malloc(sizeof(BiosParameterBlock));
     uint16_t StartAddress = 0x00 ;
     ATAPIO::Read(ATAPIO_PORT::Primary, DEVICE_DRIVE::MASTER, StartAddress, (uint16_t*) bpb);
@@ -114,24 +198,20 @@ BiosParameterBlock* FAT::getBPB( bool DEBUG  ){
 }
 uint16_t FAT::GetFATEntry (BiosParameterBlock* bpb, unsigned int cluster){
     int FATSz = bpb->FATSz16;
-
     int FATOffset = 0;
-    FAT_TYPE type = FAT::determineFATType(bpb);
+    FAT_TYPE type = FAT::DetermineFATType(bpb);
     if( type == FAT_TYPE::FAT16){
         FATOffset = cluster *2;
     } else if( type == FAT_TYPE::FAT32){
         FATOffset = cluster * 4;
     }
-
     int thisFATSecNum = bpb->RsvdSecCnt + (FATOffset / bpb->BytsPerSec); // Sector number containing the entry for the cluster
 
     // For any other FAT other than the default
     // SectorNumber = (FATNumber * FATSz) + ThisFATSecNum
 
     uint16_t buff[bpb->BytsPerSec];
-
     ATAPIO::Read(ATAPIO_PORT::Primary, DEVICE_DRIVE::MASTER, thisFATSecNum, buff );
-
     int thisFATEntOffset = FATOffset % bpb->BytsPerSec; // offset  for the entry in the sector containing the entry for the cluster
     uint16_t ClusterEntryValue = 0;
     // Get the FATEntry
@@ -145,7 +225,6 @@ uint16_t FAT::GetFATEntry (BiosParameterBlock* bpb, unsigned int cluster){
     }
 
 }
-
 uint16_t FAT::DetermineFreeSpace()
 {
     // Loop through all FAT entries in all FAT's
@@ -166,35 +245,15 @@ the FAT entry for the last cluster) must be set to 0x0 during volume initializat
 
 
 }
-
 int FAT::GetSectorOfRootDirectory (BiosParameterBlock* bpb)
 {
    return (bpb->RsvdSecCnt + (bpb->NumFATs * bpb->FATSz16));
 }
-
 unsigned int FAT::RootDirSize(BiosParameterBlock* bpb)
 {
     return ((bpb->RootEntCnt * 32) + (bpb->BytsPerSec -1)) /bpb->BytsPerSec;
 
 }
-
-uint16_t* ReadFAT (BiosParameterBlock& bpb ,  bool DEBUG = false ) {
-    uint32_t FATAddress = /*StartAddress*/ 0x00 +  bpb.RsvdSecCnt ;
-    uint16_t* FAT = (uint16_t*)malloc(sizeof (uint16_t) * 256);
-
-    ATAPIO::Read(ATAPIO_PORT::Primary, DEVICE_DRIVE::MASTER, FATAddress, FAT );
-
-    // Show data in terminal
-    if(DEBUG){
-        for( unsigned int i =0 ; i < 256 ; i++) {
-            printf("0x%x ", (unsigned short)FAT[i]);
-        }
-        kterm_put('\n');
-    }
-
-    return FAT;
-}
-
 void FAT::OpenSubdir(DIR* directory, BiosParameterBlock* bpb ){
 
     unsigned int cluster = directory->FstClusLo;
@@ -252,9 +311,9 @@ void FAT::OpenSubdir(DIR* directory, BiosParameterBlock* bpb ){
     }
 
 }
-
-void FAT::readFile(DIR* fileEntry , BiosParameterBlock* bpb){
+void FAT::ReadFileContents(DIR* fileEntry , BiosParameterBlock* bpb){
     unsigned int cluster = fileEntry->FstClusLo;
+    printf("cluster NR: %x\n", cluster);
     unsigned int FATEntry = FAT::GetFATEntry(bpb, cluster);
     unsigned int root_dir_sectors = FAT::RootDirSize(bpb);
     unsigned int fat_size = bpb->FATSz16;
@@ -269,140 +328,63 @@ void FAT::readFile(DIR* fileEntry , BiosParameterBlock* bpb){
         kterm_put(n & 0x00ff);
         kterm_put(n >> 8);
     }
+    kterm_put('\n');
 
 }
+void FAT::ListRootDirectoryContents(BiosParameterBlock* bpb){
+    int total_sectors = bpb->TotSec32;
+    int fat_size = bpb->FATSz16;
+    int root_dir_sectors = FAT::RootDirSize(bpb);
+    int first_data_sector = bpb->RsvdSecCnt + (bpb->NumFATs * fat_size) + root_dir_sectors ;
+    int data_sectors = bpb->TotSec32 - (bpb->RsvdSecCnt + (bpb->NumFATs * fat_size) + root_dir_sectors);
+    int total_clusters = data_sectors / bpb->SecPerClus;
 
-/*
-file fsysFatDirectory (const char* DirectoryName){
-    file file;
-    unsigned char* buf;
-    PDIRECTORY directory;
 
-    char DosFileName[11];
-    //ToDosFileName(DirectoryName, DosFileName, 11);
-    DosFileName[11] =0;
+    int first_root_dir_sector = first_data_sector - root_dir_sectors;
+    //int first_sector_of_cluster = ((cluster - 2) * bpb->SecPerClus) + first_data_sector;
+    uint16_t data[256];
+    ATAPIO::Read(ATAPIO_PORT::Primary, DEVICE_DRIVE::MASTER, first_root_dir_sector, data);
 
-    for (int sector=0; sector <14 ; sector++){
-        ATAPIO::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, mountInfo.rootOffset + sector, (uint16_t*)buf);
-        directory = (PDIRECTORY) buf;
+    auto* RootDirectory = (DIR*)data;
+    for(int i = 0; i < sizeof(data) / sizeof (DIR); i++)
+    {
+        DIR* entry = (DIR*)((uint32_t)RootDirectory + (i * sizeof(DIR)));
 
-        for (int i =0; i < 16; i++){
-            char name[11];
-            memcpy(name, directory->Filename, 11);
-            name[11]=0;
 
-            if(strncmp(DosFileName, name, 11) == 0){
-                strcpy(file.name, DirectoryName);
-                file.id = 0;
-                file.currentCluster = directory->FirstCluster;
-                file.eof = 0;
-                file.filelength = directory->FileSize;
-
-                if(directory->Attrib == 0x10){
-                    file.flags = 2;
-                } else {
-                    file.flags = 1;
-                }
-                return file;
-            }
-            directory++;
+        if(entry->Name[0] == FAT::FREE_DIR || entry->Name[0] == FAT::FREE_DIR_2 || entry->Name[0] == 0xE5){
+            continue;
         }
-    }
-
-    // Can't find file
-    file.flags = -1;
-    return file;
-
-}
 
 
-void fsysFATRead(PFILE file, unsigned char* buffer, unsigned int length){
-    if(file){
-        unsigned int physSector = 32 + (file->currentCluster - 1);
-        const unsigned int  SECTOR_SIZE = 512;
-        // read sector
-        ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, physSector, (uint16_t*) buffer );
+        if(entry->ATTR & FAT::ATTRIBUTES::ATTR_HIDDEN){
+            continue;
+        }
 
-        unsigned int FAT_Offset = file->currentCluster + (file->currentCluster /2);
-        unsigned int FAT_Sector = 1 + (FAT_Offset / SECTOR_SIZE);
-        unsigned int entryOffset =FAT_Offset % SECTOR_SIZE;
+        if(entry->ATTR & FAT::ATTRIBUTES::ATTR_SYSTEM)
+            continue;
 
-        uint8_t FAT[SECTOR_SIZE*2];
-        ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, FAT_Sector,(uint16_t*) FAT); // Read 1st FAT sector
 
-        ATA_DEVICE::Read(BUS_PORT::Primary, DEVICE_DRIVE::MASTER, FAT_Sector +1, (uint16_t*)FAT+SECTOR_SIZE);
-
-        // read entry for next cluster
-        uint16_t nextCluster = *(uint16_t*) &FAT[entryOffset];
-
-        // test if entry is odd or even
-        if(file->currentCluster & 0x0001){
-            nextCluster>>= 4; // grab the high 12 bits
+        if(entry->ATTR & FAT::ATTRIBUTES::ATTR_VOLUME_ID){
+            continue;
+        }
+        if (!(entry->ATTR & FAT::ATTRIBUTES::ATTR_LONG_NAME)){
+            for(char n : entry->Name){
+                if(n == 0x20)
+                    continue;
+                kterm_put(n);
+            }
         }else{
-            nextCluster &= 0x0FFF; // grab the low 12 bits
+            printf("Long file name detected!");
         }
 
-        // test for end of file
-        if(nextCluster >= 0xff8){
-            file->eof -1;
-            return;
+        printf(" [Size: %d bytes, Attributes: %d]\n", entry->ATTR, entry->FileSize);
+        if(entry->ATTR & FAT::ATTRIBUTES::ATTR_DIRECTORY ){
+            FAT::OpenSubdir(entry, bpb);
+        } else {
+            FAT::ReadFileContents(entry, bpb);
         }
-
-        // test for file corruption
-        if(nextCluster == 0){
-            file->eof =1;
-            return;
-        }
-
-        // set next cluster
-        file->currentCluster = nextCluster;
-
 
     }
 }
 
-FILE fsysFatOpenSubDir(FILE kFile, const char* filename){
-    FILE file;
 
-    char DosFileName[11];
-    ToDosFileName(filename, DosFileName, 11);
-    DosFileName[11] = 0;
-
-    while(!kFile.eof){
-        //read directory
-        unsigned char buf[512];
-        fsysFATRead(&file, buf, 512);
-
-        PDIRECTORY  pkDir = (PDIRECTORY) buf;
-
-        for (unsigned int i = 0; i < 16; i++){
-            // get current filename
-            char name[11];
-            memcpy(name, pkDir->Filename, 11);
-            name[11] = 0;
-
-            if(strncmp(name, DosFileName, 11) == 0){
-                strcpy(file.name, filename);
-                file.id = 0;
-                file.currentCluster = pkDir->FirstCluster;
-                file.filelength = pkDir->FileSize;
-                file.eof = 0;
-
-                // set file type;
-                if(pkDir->Attrib == 0x10){
-                    file.flags = 2;
-                } else{
-                    file.flags = 1;
-                }
-
-                return file;
-            }
-            // go to next entry
-            pkDir++;
-        }
-    }
-    // unable to find file
-    file.flags = -1;
-    return file;
-}
-*/

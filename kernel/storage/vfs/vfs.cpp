@@ -14,17 +14,21 @@ int VirtualFileSystem::superblock_number =0;
 int VirtualFileSystem::filesystem_number =0;
 
 filesystem* VirtualFileSystem::filesystems[4];
-superblock* VirtualFileSystem::superblocks[8];
+FS_SUPER* VirtualFileSystem::superblocks[8];
 vfsmount* VirtualFileSystem::mounts[12];
 
 void VirtualFileSystem::Mount(filesystem* fs, const char* name)
 {
-    vfsmount* mnt_point = (vfsmount*) malloc(sizeof(vfsmount));
-    superblock* sb = fs->mount(fs, name,  mnt_point);
 
+    vfsmount* mnt_point = (vfsmount*) malloc(sizeof(vfsmount));
+    FS_SUPER* sb = fs->mount(fs, name, mnt_point);
+    if( sb == nullptr){
+        printf("mount failed!\n");
+        return;
+    }
     mounts[mount_number++] = mnt_point;
     superblocks[superblock_number++] = sb;
-
+    mnt_point->mnt_count = 1;
     rootfs = mnt_point;
 }
 
@@ -54,64 +58,58 @@ int VirtualFileSystem::register_filesystem(struct filesystem* fs) {
 
 }
 
-struct file* VirtualFileSystem::open(const char* pathname, int flags){
+FILE* VirtualFileSystem::open(const char* pathname, int flags){
     // 1. Lookup pathname from the root node
-    // 2. Create a new file descriptor for this v_node if found.
+    // 2. Create a new file descriptor for this inode if found.
     // 3. Create a new file if O_CREATE is specified in the flags.
-
-    // See reference material (1) https://man7.org/linux/man-pages/man7/path_resolution.7.html
-
-   // FILE file = ->Open(filename);
-    if(pathname[0] != '/'){
-        printf("We won't handle relative paths yet!");
-        file file;
-        file.flags = 1;
-        return &file;
-    }
-
-
-
-    auto* dentry = rootfs->root;
-
-    int result = dentry->op->compare(dentry, "/", dentry->name);
-    if(result != 0 ){
-        printf("rootfs not called / \n");
-        file file;
-        file.flags = 1;
-        return &file;
-    }
-
+    FILE* file = (FILE*) malloc(sizeof (FILE)) ;
+    auto* rootentry = rootfs->root;
     char* tokstate = nullptr;
     auto nextdir = strtok ((char*)pathname, "/", &tokstate );
-    while (nextdir)
-    {
-        printf("Look for dentry: %s\n", nextdir);
-        // look to its children
-        if (dentry->children ) {
-            printf("No children | children unknown!\n");
-            break;
-        }
-        if (dentry->op->compare(dentry, nextdir, dentry->name))
-        {
-            // file found
-            nextdir = strtok(nullptr, "/", &tokstate);
-        }
 
+    // look up children if not filled
+    if(rootentry->children == nullptr)
+    {
+        rootentry = rootentry->node->lookup(rootentry->node, rootentry);
     }
 
-    file  file;
-    file.flags = 1;
-    return &file;
+    if(rootentry->children == nullptr)
+    {
+        file->flags =1;
+        return file;
+    }
+
+    // let's just loop through the folder first
+    auto* child = rootentry->children;
+    while(child->next != nullptr){
+
+        auto* directory = (DirectoryNode*)child->data;
+        if( directory->compare(directory, directory->name, nextdir) == 0){
+            nextdir = strtok(nullptr, "/", &tokstate);
+            if(nextdir == NULL){
+                file->root = directory->node;
+                file->flags =0;
+                file->read = FAT::Read;
+                return file;
+            }
+        }
+        child = child->next;
+    }
+
+
+
+    file->flags = 1;
+    return file;
 }
 
-int VirtualFileSystem::close (struct file* file){
+int VirtualFileSystem::close (struct FILE* file){
     // 1. release the file descriptor
 }
-int VirtualFileSystem::write(struct file* file, const void* buf, size_t len){
+int VirtualFileSystem::write(struct FILE* file, const void* buf, unsigned int len){
     // 1. Write len bytes from buf to the opened file.
     // 2. return written size or error code if an error occurs
 }
-int VirtualFileSystem::read (struct file*  file, void* buf, size_t len){
+int VirtualFileSystem::read (struct FILE*  file, void* buf, unsigned int len){
     // 1. read min(len, readable file data size) bytes ro buf from the opened file.
     // 2. return read size or error code if an error occurs
 }
