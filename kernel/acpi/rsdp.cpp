@@ -1,5 +1,6 @@
 #include "rsdp.h"
 #include "../memory/VirtualMemoryManager.h"
+#include "../../CoreLib/Memory.h"
 
 
 void printRSD(RSDPDescriptor* rsd){
@@ -16,7 +17,6 @@ void printRSD(RSDPDescriptor* rsd){
     kterm_put('\n');
 
     printf("Revision: %d\n", rsd->Revision);
-    printf("RSDT Address: 0x%x\n", rsd->RsdtAddress );
 }
 
 RSDPDescriptor* FindRSD(){
@@ -30,11 +30,4 @@ RSDPDescriptor* FindRSD(){
         }
     }
     return (RSDPDescriptor*) memory_byte;
-}
-
-
-RSDT* getRSDT(RSDPDescriptor* rsd){
-    printf("rsdt Address: 0x%x\n", rsd->RsdtAddress);
-    return (RSDT*)rsd->RsdtAddress ;
-
 }
