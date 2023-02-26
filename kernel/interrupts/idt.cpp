@@ -3,6 +3,9 @@
 #include "../drivers/ps-2/keyboard.h"
 #include "../i386/processor.h"
 #include "../memory/VirtualMemoryManager.h"
+#include "../syscalls.h"
+
+
 IDT_entry idt_table[256];
 IDT_ptr idt_ptr;
 
@@ -18,7 +21,7 @@ void set_id_entry (uint8_t num , uint32_t base, uint16_t sel,  uint8_t flags){
 
 void irs_handler (registers* regs) {
      uint32_t FaultingAddress;
-        //printf("(IRS) Interrupt number: %d \r", regs.int_no);
+        printf("(IRS) Interrupt number: %d \n EAX: ", regs->int_no, regs->eax);
         switch (regs->int_no)
         {
         case 0:
@@ -259,6 +262,29 @@ void irs_handler (registers* regs) {
             printf("EBP: 0x%x\n", regs->ebp); 
         break;
 
+        case 50:
+            printf("SYSTEMCALL\n");
+            printf("EAX 0x%x\n", regs->eax);
+
+                switch (regs->eax) {
+                    case 0x0:
+                        printf("test!\n");
+                        break;
+                    case 0x5:
+                        sys_open();
+                        break;
+                    case 0x10:
+                        sys_read((FILE*)regs->ebx, (char*)regs->ecx);
+                        break;
+                    case 0x20:
+                        sys_write((FILE*)regs->ebx, (const char*)regs->ecx, regs->edx);
+                        break;
+                    case 0x666:
+                        sys_version();
+                        break;
+
+                };
+        break;
         default:
             // PANIC!!!
             break;
@@ -269,9 +295,6 @@ void irs_handler (registers* regs) {
 }
 
 void irq_handler (registers regs) {
-
-    
-
     switch (regs.int_no) {
     case 0:
             pit_tick++;
@@ -328,7 +351,7 @@ void irq_handler (registers regs) {
 }
 
 void initidt(){
-    // Initialise the IDT pointer
+    // Initialize the IDT pointer
     idt_ptr.length = sizeof(IDT_entry) * 255;
     idt_ptr.base = (uint32_t)&idt_table;
 
@@ -371,7 +394,7 @@ void initidt(){
     set_id_entry(30, (uint32_t) irs30 , 0x08, 0x8E);
     set_id_entry(31, (uint32_t) irs31 , 0x08, 0x8E);
 
-
+    set_id_entry(0x50, (uint32_t) irs50, 0x08, 0x8E);
     //print_serial("Remapping PIC\n");
     PIC_remap(0x20, 0x28);
 

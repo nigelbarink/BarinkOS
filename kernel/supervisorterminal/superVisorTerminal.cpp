@@ -6,6 +6,8 @@
 bool isRunning = true;
 extern "C" void startSuperVisorTerminal()
 {
+
+
     /*
     * Show a little banner for cuteness
     */
@@ -62,7 +64,8 @@ extern "C" void startSuperVisorTerminal()
             {
                 // Show version information 
                 printf("========= Version ========\n");
-                printf("Kernel v%d\n", 0);
+
+                asm volatile ("movl $0x666, %eax; int $0x50");
 
             }
             if(strncmp("CLEAR", command, characterCount) == 0)

@@ -1,115 +1,32 @@
 .globl irq0
-irq0:
-	cli 
-	push $0
-	push $0
-	jmp irq_common
 
-.globl irq1
-irq1:
-	cli 
-	push $0
-	push $1
-	jmp irq_common
+.macro IRQ NAME, VECTOR
+    .globl irq\NAME
+    irq\NAME:
+        cli
+        push $0
+        push \VECTOR
+        jmp irq_common
+.endm
 
-.globl irq2
-irq2:
-	cli 
-	push $0
-	push $2
-	jmp irq_common
-
-.globl irq3
-irq3:
-	cli 
-	push $0
-	push $3
-	jmp irq_common
-
-.globl irq4
-irq4:
-	cli 
-	push $0
-	push $4
-	jmp irq_common
-
-.globl irq5
-irq5:
-	cli 
-	push $0
-	push $5
-	jmp irq_common
-
-.globl irq6
-irq6:
-	cli 
-	push $0
-	push $6
-	jmp irq_common
-
-.globl irq7
-irq7:
-	cli 
-	push $0
-	push $7
-	jmp irq_common
-
-.globl irq8
-irq8:
-	cli 
-	push $0
-	push $8
-	jmp irq_common
-
-.globl irq9
-irq9:
-	cli 
-	push $0
-	push $9
-	jmp irq_common
-
-.globl irq10
-irq10:
-	cli 
-	push $0
-	push $10
-	jmp irq_common
-
-.globl irq11
-irq11:
-	cli 
-	push $0
-	push $11
-	jmp irq_common
+IRQ 0 $0
+IRQ 1 $1
+IRQ 2 $2
+IRQ 3 $3
+IRQ 4 $4
+IRQ 5 $5
+IRQ 6 $6
+IRQ 7 $7
+IRQ 8 $8
+IRQ 9 $9
+IRQ 10 $10
+IRQ 11 $11
+IRQ 12 $12
+IRQ 13 $13
+IRQ 14 $14
+IRQ 15 $15
 
 
-.globl irq12
-irq12:
-	cli 
-	push $0
-	push $12
-	jmp irq_common
-
-.globl irq13
-irq13:
-	cli 
-	push $0
-	push $13
-	jmp irq_common
-
-.globl irq14
-irq14:
-	cli 
-	push $0
-	push $14
-	jmp irq_common
-
-.globl irq15
-irq15:
-	cli 
-	push $0
-	push $15
-	jmp irq_common
 
 irq_common:
 	pusha

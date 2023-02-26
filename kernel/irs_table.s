@@ -53,7 +53,7 @@ ISR_NOERRORCODE 28 $28
 ISR_NOERRORCODE 29 $29
 ISR_NOERRORCODE 30 $30
 ISR_NOERRORCODE 31 $31
-
+ISR_NOERRORCODE 50 $50
 
 irs_common:
 	pusha 				# Pushes edi,esi,ebp,esp,ebx,edx,ecx,eax
@@ -74,7 +74,7 @@ irs_common:
 
 	call irs_handler
 	
-	pop %eax
+	pop %eax        // pop stack pointer
 	pop %ebx		// reload ther orignal data segment descriptor
 	mov %bx, %ds
 	mov %bx, %es
@@ -82,6 +82,6 @@ irs_common:
 	mov %bx, %gs
 
 	popa
-	add  $12, %esp  # cleans push error and irs code
+	add  $8, %esp  # cleans push error and irs code
 
 	iret # pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP

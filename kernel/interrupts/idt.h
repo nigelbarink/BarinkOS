@@ -70,6 +70,7 @@ extern "C" {
     extern void irs29 ();
     extern void irs30 ();
     extern void irs31 ();
+    extern void irs50();
 
 
 
