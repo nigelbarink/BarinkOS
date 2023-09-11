@@ -39,7 +39,7 @@ OFILES = $(OBJ_DIR)/boot.o	\
 OBJ_LINK_LIST = $(CRTI_OBJ) $(CRTBEGIN_OBJ) $(OFILES) $(CRTEND_OBJ) $(CRTN_OBJ)  
 INTERNAL_OBJS = $(CRTI_OBJ) $(OFILES) $(CRTN_OBJ)
 
-all:  build
+all: clean build
 
 clean:
 	rm $(OBJ_DIR)/* -r
@@ -49,7 +49,7 @@ build: $(OBJ_LINK_LIST)
 	$(CPP) -T linker.ld -o $(BUILD_DIR)/myos.bin -ffreestanding -ggdb -Og -nostdlib $(OBJ_LINK_LIST) -lgcc -L ../build/CoreLib -lCoreLib
 
 # C++ definition -> Object files
-$(OBJ_DIR)/kernel.o:
+$(OBJ_DIR)/kernel.o: kernel.cpp
 	$(CPP) -c kernel.cpp -o $(OBJ_DIR)/kernel.o $(CFLAGS) -fno-exceptions -fno-rtti
 
 $(OBJ_DIR)/kterm.o:
