@@ -23,11 +23,22 @@ RSDPDescriptor* FindRSD(){
     char* memory_byte = (char*) 0x000f2e14;
     const void* string = "RSD PTR ";
 
-    for( ; (uint32_t) memory_byte < 0x00100000; memory_byte+=10){
+
+    for( ; (uint32_t) memory_byte < 0x0100000; memory_byte+=10){
         if( memcmp(memory_byte , string , 8 ) ==  0 ) {
         printf("RSD PTR found at 0x%x !\n", memory_byte);
+        return (RSDPDescriptor*) memory_byte;
         break;
         }
     }
-    return (RSDPDescriptor*) memory_byte;
+
+    memory_byte = (char*) 0x000E0000;
+    for ( ;(uint32_t) memory_byte < 0x000FFFFF; memory_byte += 1)
+    {
+        if( memcmp(memory_byte , string , 8 ) ==  0 ) {
+            printf("RSD PTR found at 0x%x !\n", memory_byte);
+            return (RSDPDescriptor*) memory_byte;
+            break;
+        }
+    }
 }

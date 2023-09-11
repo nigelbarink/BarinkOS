@@ -16,10 +16,9 @@ struct ACPISDTHeader{
     uint32_t CreatorRevision;
 };
 
-
 struct RSDT{
     struct ACPISDTHeader h;
-    uint32_t PointerToSDT[]; // Length of array : (header.Length - sizeof(header))/ 4
+    uint32_t *PointerToSDT; // Length of array : (header.Length - sizeof(header))/ 4
 }__attribute__((packed));
 
 
@@ -28,7 +27,7 @@ struct RSDPDescriptor {
     uint8_t Checksum ;
     char OEMID [6];
     uint8_t Revision;
-    RSDT* RsdtAddress;
+    uint32_t RsdtAddress;
 }__attribute__((packed));
 
 struct RSCPDescriptor20{
