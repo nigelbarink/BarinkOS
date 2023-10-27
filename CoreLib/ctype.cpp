@@ -108,7 +108,7 @@ int isprint (int ch){
         return 1;
     if(isspace(ch))
         return 1;
-
+    return 0;
 }
 
 
