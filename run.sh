@@ -17,6 +17,7 @@ if ! make 2> warnings.log 1> /dev/null ; then
 fi)
 
 ./scripts/update_harddrive.sh
+./scripts/create_symbol_lookup.sh
 
 args="";
 if [[ $1 == "-d" ]]

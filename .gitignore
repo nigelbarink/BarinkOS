@@ -11,3 +11,5 @@ root/
 *.a
 
 
+/CoreLib/warnings.log
+/kernel/warnings.log

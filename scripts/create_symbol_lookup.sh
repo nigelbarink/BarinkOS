@@ -1,3 +1,4 @@
 #!/bin/bash
-
-objcopy --only-keep-debug build/kernel/myos.bin kernel.sym
+echo "creating symbols file"
+echo $(pwd)
+objcopy --only-keep-debug root/boot/myos.bin kernel.sym
