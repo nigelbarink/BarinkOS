@@ -42,43 +42,33 @@ extern "C" void kernel ()
 {
     init_serial();
     kterm_init();
-
+    print_serial("kterm initialized...\n");
     setup_tss();
     initGDT();
     initidt();
     LoadGlobalDescriptorTable();
     flush_tss();
     printf("Memory setup complete!\n");
-
+    print_serial("Memory initialized....\n");
     // Enable interrupts
     asm volatile("STI");
-
     initHeap();
-    pit_initialise();
-    ACPI::initialize();
-    PCI::Scan();
+    print_serial("Heap initialized...\n");
+    //pit_initialise();
+
+
+    //ACPI::initialize();
+    //PCI::Scan();
     processor::initialize();
     processor::enable_protectedMode();
     initBootDrive();
     VirtualFileSystem::initialize();
 
-    
-
+    print_serial("Run test!");
+#define VFS_EXAMPLE
 #ifdef VFS_EXAMPLE
     auto fontFile = VirtualFileSystem::open("/FONT    PSF", 0);
-    if(grubcfg->flags == 0){
-        uint16_t* contents = (uint16_t*) malloc(sizeof(uint16_t) * 256);
-        grubcfg->read(grubcfg, contents, 512);
-
-        for(int i =0 ; i < grubcfg->root->size; i++ ){
-            kterm_put(contents[i] & 0x00ff);
-            kterm_put(contents[i] >> 8);
-        }
-        kterm_put('\n');
-        free((void*)contents);
-    }else{
-        printf("Could not find file\n");
-    }
+    printf("Size of font file: %d bytes", fontFile->root->size); // COOL This Works like a charm
 #endif
 
 #ifdef USERMODE_RELEASE
@@ -86,6 +76,7 @@ extern "C" void kernel ()
     jump_usermode();
 #else
     startSuperVisorTerminal();
+
 #endif
 
 }

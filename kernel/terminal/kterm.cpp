@@ -21,7 +21,14 @@ void kterm_init () {
     kterm_row = 0;
     kterm_column = 0;
     kterm_color = vga_entry_color ( VGA_COLOR_LIGHT_GREY , VGA_COLOR_BLACK);
-    kterm_buffer = (uint16_t*) 0xC03FF000;
+
+    //Physical address
+    // 0xB8000
+    // Virtual address
+    // 0xC03FF000
+
+    //kterm_buffer = ((uint16_t*) 0xB8000);
+    kterm_buffer = ((uint16_t*)  0xC03FF000 );
     
     for (size_t y = 0; y < VGA_HEIGHT; y++ ){
         for( size_t x = 0; x < VGA_WIDTH; x++){
@@ -59,7 +66,6 @@ void disable_cursor()
         outb(0x3D5, 0x20);
 }
 
-
 void update_cursor(int x, int y){
     uint16_t pos = y * VGA_WIDTH + x;
 
@@ -85,8 +91,6 @@ int get_cursor_x (uint16_t cursor_pos) {
 int get_cursor_y (uint16_t cursor_pos ) {
     return cursor_pos / VGA_WIDTH;
 }
-
-
 
 /**
  *  With the help from:
@@ -134,7 +138,6 @@ void kterm_writestring(const char* data ){
     kterm_write(data, strlen(data));
 }
 
-
 static void itoa (char *buf, int base, int d) {
     char *p = buf;
     char *p1, *p2;
@@ -173,28 +176,28 @@ static void itoa (char *buf, int base, int d) {
 
 void printf ( const char *format, ...) {
     
-    char **arg = (char **)&format;
+    auto **arg = (unsigned char **)&format;
     int c;
     char buf[20];
 
     arg++;
     
-    while ((c = *format++) != 0){
+    while ((c = *(const unsigned char*)format++) != 0){
         if( c != '%')
             kterm_put(c);
         else{
-            char *p, *p2;
+            char const *p, *p2;
             int pad0 = 0, pad = 0;
 
-            c = *format++;
+            c = *(const unsigned char*)format++;
             if(c =='0'){
                 pad0 = 1;
-                c = *format++;
+                c = *(const unsigned char*)format++;
             }
 
             if ( c >= '0' && c <= '9'){
                 pad = c - '0';
-                c = *format++;
+                c = *(const unsigned char*)format++;
             }
 
             switch (c)
@@ -210,7 +213,7 @@ void printf ( const char *format, ...) {
                 break;
             
             case 's':
-                p = *arg++;
+                p = (char const *)*arg++;
                 if(!p)
                     p = "(null)";
                 
@@ -224,7 +227,7 @@ void printf ( const char *format, ...) {
 
 
             default:
-                kterm_put(*((int *)arg++));
+                kterm_put(*(int *) arg++); // NOLINT(cppcoreguidelines-narrowing-conversions)
                 break;
             }
         }

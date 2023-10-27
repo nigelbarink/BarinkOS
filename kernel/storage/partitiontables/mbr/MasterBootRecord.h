@@ -22,22 +22,22 @@ inline MBR* GetPartitions(bool DEBUG = false){
     int S =1;
     uint32_t LBA = (C*HPC+H) * SPT + (S-1);
 
-    MBR* mbr =(MBR*) malloc(sizeof (MBR));
+    uint16_t* mbr =(uint16_t*) malloc(sizeof (MBR));
 
-    ATAPIO::Read(ATAPIO_PORT::Primary, DEVICE_DRIVE::MASTER, LBA, (uint16_t*)mbr);
+    ATAPIO::Read(ATAPIO_PORT::Primary, DEVICE_DRIVE::MASTER, LBA,  mbr );
+    auto bootRecord = (MBR*)(mbr);
 
-
-    printf("MBR (In Memory) Address 0x%x, Size = %d\n", mbr, sizeof (MBR));
+    printf("MBR (In Memory) Address 0x%x, Size = %d\n", bootRecord, sizeof (MBR));
     if(DEBUG){
-        printf("BootSector: 0x%x\n", mbr->ValidBootsector );
+        printf("BootSector: 0x%x\n", bootRecord->ValidBootsector );
         for( int i = 0 ; i < 4 ; i ++){
-            PartitionTableEntry PT = mbr->TableEntries[i];
+            PartitionTableEntry PT = bootRecord->TableEntries[i];
 
             printf("Partition %d [  %d sectors,  PartitionType: 0x%x, 0x%x, \nLBA Start: 0x%x ]\n" ,
-                   i, PT.Number_sectors_inPartition, PT.PartitionType, mbr->uniqueID,  PT.LBA_partition_start );
+                   i, PT.Number_sectors_inPartition, PT.PartitionType, bootRecord->uniqueID,  PT.LBA_partition_start );
         }
 
     }
 
-    return mbr;
+    return bootRecord;
 }

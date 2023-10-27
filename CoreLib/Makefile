@@ -15,8 +15,6 @@ $(OUTPUTFILE): $(OFILES)
 	pwd
 	ar -rc $(OUTPUTFILE) $(OFILES)
 
-
-
 $(OBJ_FOLDER)/ctype.o: ctype.cpp
 	$(CPP) -c ctype.cpp -o $(OBJ_FOLDER)/ctype.o $(CFLAGS)
 

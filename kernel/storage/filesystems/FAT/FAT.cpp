@@ -107,16 +107,30 @@ DirectoryNode* FAT::Lookup (inode* currentDir , DirectoryNode*  dir)
     for(int i = 0; i < sizeof(data) / sizeof (DIR); i++)
     {
         DIR* entry = (DIR*)((uint32_t)directory + (i * sizeof(DIR)));
+
+
         if(
             entry->Name[0] == FAT::FREE_DIR ||
-            entry->Name[0] == FAT::FREE_DIR_2 ||
-            entry->Name[0] == 0xE5 ||
             entry->ATTR & FAT::ATTRIBUTES::ATTR_VOLUME_ID ||
             entry->ATTR & FAT::ATTRIBUTES::ATTR_SYSTEM ||
             entry->ATTR & FAT::ATTRIBUTES::ATTR_HIDDEN
         ){
             continue;
         }
+
+
+        if( entry->ATTR & FAT::ATTRIBUTES::ATTR_DIRECTORY){
+            printf("entry in directory\n");
+            for(int i = 0; i < 11 ;i ++)
+                kterm_put(entry->Name[i]);
+            kterm_put('\n');
+        }
+
+
+
+
+        if( entry->Name[0] == FAT::FREE_DIR_2 )
+            break;
 
         auto* dirNode = (DirectoryNode*) malloc(sizeof (DirectoryNode));
 

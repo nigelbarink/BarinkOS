@@ -80,20 +80,37 @@ FILE* VirtualFileSystem::open(const char* pathname, int flags){
     }
 
     // let's just loop through the folder first
+    printf("looking for: ");
+    for(int i = 0; i < 5; i++)
+        kterm_put(nextdir[i]);
+    kterm_put('\n');
     auto* child = rootentry->children;
     while(child->next != nullptr){
-
         auto* directory = (DirectoryNode*)child->data;
+
+        for(int i = 0; i < 11 ; i++)
+            kterm_put(directory->name[i]);
+        kterm_put('\n');
+
         if( directory->compare(directory, directory->name, nextdir) == 0){
             nextdir = strtok(nullptr, "/", &tokstate);
+            printf("Found dir!\n");
             if(nextdir == NULL){
                 file->root = directory->node;
                 file->flags =0;
                 file->read = FAT::Read;
                 return file;
             }
+            printf("continue searching next directory!\n");
+            if(directory->children == nullptr)
+                directory->node->lookup(directory->node, directory);
+
+
+            child = directory->children;
+
+        }else{
+            child = child->next;
         }
-        child = child->next;
     }
 
 
