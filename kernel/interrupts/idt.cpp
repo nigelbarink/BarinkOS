@@ -191,7 +191,7 @@ void irs_handler (registers* regs) {
                 printf("* Page protection violation!\n");
             } else{
                 printf("* Page not-present!\n");
-                Immediate_Map(FaultingAddress, FaultingAddress - 0xC0000000);
+                //Immediate_Map(FaultingAddress, FaultingAddress);
              
             }
 

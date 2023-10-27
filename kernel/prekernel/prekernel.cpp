@@ -2,6 +2,8 @@
 #include <stddef.h>
 #include "multiboot.h"
 #include "../memory/PhysicalMemoryManager.h"
+#include "../memory/VirtualMemoryManager.h"
+#include "../acpi/acpi.h"
 
 #define CHECK_FLAG(flags, bit) ((flags) & (1 <<(bit)))
 #define VADDR_TO_PADDR(vaddr) (vaddr - 0xC0000000)
@@ -10,7 +12,6 @@ BootInfoBlock* BIB;
 
 extern "C" void prekernelSetup  ( unsigned long magic, multiboot_info_t* mbi) 
 {
-
         /*
         * Check Multiboot magic number
         */ 
@@ -21,18 +22,13 @@ extern "C" void prekernelSetup  ( unsigned long magic, multiboot_info_t* mbi)
         }
 
         mbi = PADDR_TO_VADDR(mbi);
-
-        // Setup the physical memory manager immmediatly 
-        // Doing so saves the complications of doing it later when 
-        // paging is enabled 
-
         /*
         If we got a memory map from our bootloader we 
         should be parsing it to find out the memory regions available.
         */
         if (CHECK_FLAG(mbi->flags, 6))
-        {  
-               
+        {
+
                 // Calculate total memory size 
                 uint32_t RAM_size = 0;
                 for(
@@ -56,6 +52,8 @@ extern "C" void prekernelSetup  ( unsigned long magic, multiboot_info_t* mbi)
                                 deallocate_region(mmap->addr, mmap->len);
                         if(mmap->type == MULTIBOOT_MEMORY_ACPI_RECLAIMABLE)
                                 allocate_region(mmap->addr, mmap->len);
+                                // memory map
+                                Immediate_Map(mmap->addr , mmap->addr);
                         if(mmap->type == MULTIBOOT_MEMORY_RESERVED)
                                 allocate_region(mmap->addr, mmap->len);
                         if(mmap->type == MULTIBOOT_MEMORY_NVS)
@@ -99,8 +97,6 @@ extern "C" void prekernelSetup  ( unsigned long magic, multiboot_info_t* mbi)
                 uint32_t i;
 
                 BIB->GrubModuleCount = mbi->mods_count;
-
-
                 for(i = 0, mod = (multiboot_module_t *) mbi->mods_addr; i < mbi->mods_count; i++ , mod++){
                         
                 }
@@ -135,6 +131,6 @@ extern "C" void prekernelSetup  ( unsigned long magic, multiboot_info_t* mbi)
 
                    // NOTE: Do something with it.. (Store it , process it etc...)
         } else{
-                BIB->EnabledVBE;
+                BIB->EnabledVBE  = false;
         }
 }
