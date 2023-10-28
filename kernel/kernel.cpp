@@ -16,7 +16,8 @@
 #include "storage/filesystems/FAT/FAT.h"
 #include "acpi/acpi.h"
 #include "memory/VirtualMemoryManager.h"
-#include "drivers/serial/serial.h"
+#include "klog.h"
+
 
 extern BootInfoBlock* BIB;
 extern "C"  void LoadGlobalDescriptorTable();
@@ -45,9 +46,14 @@ extern "C" void kernel ()
     initidt();
     LoadGlobalDescriptorTable();
     flush_tss();
-    printf("Memory setup complete!\n");
+
+
+    print_info("Memory setup complete!\n");
     // Enable interrupts
     asm volatile("STI");
+
+
+
     initHeap();
     //pit_initialise();
 
@@ -59,16 +65,9 @@ extern "C" void kernel ()
     initBootDrive();
     VirtualFileSystem::initialize();
 
-
-    // Test new serial driver
-    SerialConfig debug_com1_config{
-            COM1,
-            0x03,
-            0x00
-    };
-    Serial com1 = Serial(debug_com1_config);
-
-    com1.write((void*)"Hello world!\n", 14);
+    print_dbg("Hello debug!\n");
+    print_info("Hello info!\n");
+    print_err("Hello error!\n");
 
 #define VFS_EXAMPLE
 #ifdef VFS_EXAMPLE
