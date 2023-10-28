@@ -34,7 +34,8 @@ OFILES = $(OBJ_DIR)/boot.o	\
 		 $(OBJ_DIR)/ataDevice.o \
 		 $(OBJ_DIR)/rsdp.o \
 		 $(OBJ_DIR)/acpi.o \
-		 $(OBJ_DIR)/fat.o
+		 $(OBJ_DIR)/fat.o \
+		 $(OBJ_DIR)/serial.o
 
 OBJ_LINK_LIST = $(CRTI_OBJ) $(CRTBEGIN_OBJ) $(OFILES) $(CRTEND_OBJ) $(CRTN_OBJ)  
 INTERNAL_OBJS = $(CRTI_OBJ) $(OFILES) $(CRTN_OBJ)
@@ -120,6 +121,11 @@ $(OBJ_DIR)/processor.o:
 
 $(OBJ_DIR)/fat.o:
 	$(CPP) -c storage/filesystems/FAT/FAT.cpp -o $(OBJ_DIR)/fat.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+$(OBJ_DIR)/serial.o:
+	$(CPP) -c drivers/serial/serial.cpp -o $(OBJ_DIR)/serial.o $(CFLAGS) -fno-exceptions -fno-rtti
+
+
 
 # Assembly -> Object files
 $(OBJ_DIR)/boot.o:

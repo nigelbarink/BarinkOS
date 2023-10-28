@@ -12,12 +12,11 @@
 #include "i386/processor.h"
 #include "terminal/kterm.h"
 #include "interrupts/idt.h"
-#include "serial.h"
 #include "storage/vfs/vfs.h"
 #include "storage/filesystems/FAT/FAT.h"
 #include "acpi/acpi.h"
 #include "memory/VirtualMemoryManager.h"
-
+#include "drivers/serial/serial.h"
 
 extern BootInfoBlock* BIB;
 extern "C"  void LoadGlobalDescriptorTable();
@@ -40,20 +39,16 @@ void initBootDrive(){
 
 extern "C" void kernel ()
 {
-    init_serial();
     kterm_init();
-    print_serial("kterm initialized...\n");
     setup_tss();
     initGDT();
     initidt();
     LoadGlobalDescriptorTable();
     flush_tss();
     printf("Memory setup complete!\n");
-    print_serial("Memory initialized....\n");
     // Enable interrupts
     asm volatile("STI");
     initHeap();
-    print_serial("Heap initialized...\n");
     //pit_initialise();
 
 
@@ -64,11 +59,23 @@ extern "C" void kernel ()
     initBootDrive();
     VirtualFileSystem::initialize();
 
-    print_serial("Run test!");
+
+    // Test new serial driver
+    SerialConfig debug_com1_config{
+            COM1,
+            0x03,
+            0x00
+    };
+    Serial com1 = Serial(debug_com1_config);
+
+    com1.write((void*)"Hello world!\n", 14);
+
 #define VFS_EXAMPLE
 #ifdef VFS_EXAMPLE
     auto fontFile = VirtualFileSystem::open("/FONT    PSF", 0);
-    printf("Size of font file: %d bytes", fontFile->root->size); // COOL This Works like a charm
+    printf("Size of font file: %d bytes\n", fontFile->root->size); // COOL This Works like a charm
+
+
 #endif
 
 #ifdef USERMODE_RELEASE

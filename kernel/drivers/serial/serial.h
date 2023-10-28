@@ -1,19 +1,29 @@
 #pragma once
+// For now these are the standard
+// serial ports we can talk to
+enum SERIALPORT {
+    COM1 = 0x3F8,
+    COM2 = 0x2F8,
+    COM3 = 0x3E8,
+    COM4 = 0x2E8
+};
 
-class Serial {
+struct SerialConfig {
+    SERIALPORT port;
+    char baud_rate_lo ;
+    char baud_rate_hi;
+};
+
+
+class Serial   {
 
     public: 
-        static Serial init();
-        
-        void print();
+        Serial (SerialConfig config );
 
-    private: 
-        const int COM1 = 0x3F8;
-        const int COM2 = 0x2F8;
-        const int COM3 = 0x3E8;
-        const int COM4 = 0x2E8;
+        char read();
+        void write(void* data, int length);
 
-
-        Serial();
-        ~Serial();
+    private:
+        SERIALPORT port;
+        int is_transmit_empty();
 };
