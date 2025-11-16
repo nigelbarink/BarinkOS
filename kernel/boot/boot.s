@@ -59,6 +59,10 @@ _start:
 	movl $(boot_page_table - 0xC0000000 + 0x003), boot_page_directory - 0xC0000000 + 0
 	movl $(boot_page_table - 0xC0000000 + 0x003), boot_page_directory - 0xC0000000 + 768 * 4
 
+# movl source, destination
+    movl $(boot_page_directory - 0xC0000000 + 0x003), boot_page_directory - 0xC0000000 + 1024 * 4
+
+
 	# Set cr3 to the address of the boot_page_directory
 	movl $(boot_page_directory - 0xC0000000), %ecx
 	movl %ecx, %cr3
@@ -98,7 +102,7 @@ isPaging:
 	call prekernelSetup
 
 	# Unmap the identity mapping as it is now unnecessary  
-	# movl $0, boot_page_directory + 0
+	movl $0, boot_page_directory + 0
 
 
 	call kernel

@@ -4,7 +4,7 @@
 #include "../i386/processor.h"
 #include "../memory/VirtualMemoryManager.h"
 #include "../syscalls.h"
-
+#include "../klog.h"
 
 IDT_entry idt_table[256];
 IDT_ptr idt_ptr;
@@ -91,7 +91,6 @@ void irs_handler (registers* regs) {
             printf("EIP: 0x%x\n", regs->eip);
             printf("EAX: 0x%x\n", regs->eax);
             printf("EBP: 0x%x\n", regs->ebp);
-            while(true);
         break;
 
         case 9:

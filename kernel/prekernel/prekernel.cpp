@@ -53,7 +53,7 @@ extern "C" void prekernelSetup  ( unsigned long magic, multiboot_info_t* mbi)
                         if(mmap->type == MULTIBOOT_MEMORY_ACPI_RECLAIMABLE)
                                 allocate_region(mmap->addr, mmap->len);
                                 // memory map
-                                Immediate_Map(mmap->addr , mmap->addr);
+                                Immediate_Map(PADDR_TO_VADDR(mmap->addr) , mmap->addr);
                         if(mmap->type == MULTIBOOT_MEMORY_RESERVED)
                                 allocate_region(mmap->addr, mmap->len);
                         if(mmap->type == MULTIBOOT_MEMORY_NVS)
